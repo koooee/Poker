@@ -14,6 +14,7 @@
 
 #include "string.h"
 
+
 char *hands[] = {
   "High Card",
   "Pair",
@@ -71,6 +72,17 @@ int bestfull(char *f)
 	  return i;
 	}
     }
+}
+
+char *tinvert(CARD *hand, int num_cards, char *result)
+{
+  int i;
+  for(i = 0; i < num_cards; i++)
+    {
+      result[i+i] = ranks[hand[i].rank];
+      result[i+i+1] = suits[hand[i].suit];
+    }
+  return result;
 }
 
 char test_for_sf(BIN *bin)
@@ -393,7 +405,7 @@ int tsf()
   PLAYER p;
   CARD *h[10] = {
     /* Pretty Standard Cases */
-    tconvert("AsKcTc5s4s3s2s", 7)
+    tconvert("AcAsKs5s4s3s2s", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
@@ -742,22 +754,27 @@ void big_test_five()
 
 void big_test_2()
 {
-  const char* deck[52] = {"As","Ks","Qs","Js","Ts","9s","8s","7s","6s","5s","4s","3s","2s"
-		    ,"Ac","Kc","Qc","Jc","Tc","9c","8c","7c","6c","5c","4c","3c","2c"
-		    ,"Ah","Kh","Qh","Jh","Th","9h","8h","7h","6h","5h","4h","3h","2h"
-		    ,"Ad","Kd","Qd","Jd","Td","9d","8d","7d","6d","5d","4d","3d","2d"};
+  const char* deck[52] = {
+    "As","Ks","Qs","Js","Ts","9s","8s","7s","6s","5s","4s","3s","2s"
+    ,"Ac","Kc","Qc","Jc","Tc","9c","8c","7c","6c","5c","4c","3c","2c"
+    ,"Ah","Kh","Qh","Jh","Th","9h","8h","7h","6h","5h","4h","3h","2h"
+    ,"Ad","Kd","Qd","Jd","Td","9d","8d","7d","6d","5d","4d","3d","2d"};
 
-  int one, two, three, four, five, six, seven, count=0, summer, size=52, i, rnk, z, index;
+  int one, two, three, four, five, six, seven, count=0, summer, size=52, i, rnk, z;
   int freqs[9];
   char hand[14];
   CARD *hnd;
   PLAYER p;
+  char *r = malloc(14 * sizeof(char));
+  FILE *sf;
+  sf = fopen("sf_big.txt", "a");
+  
   strcpy(hand, "");
   hnd = malloc(7 * sizeof(CARD));
   init_bin(&p.bin);
   for(z = 0; z < 9; z++)
     freqs[z] = 0;
-
+  freqs[0] = 0;
   for(one = 0; one < size; one++){
     /* printf("one: %d\n ", one); */
     for(i = 0; i < 14; i++)
@@ -795,19 +812,20 @@ void big_test_2()
 
 		  strcat(hand, deck[seven]);
 		  /* printf("Hand is: %s\n", hand); */
+
 		  hnd = tconvert(hand, 7);
 		  for(z = 0; z < 7; z++)
 		    p.hand[z] = hnd[z];
+
+
 		  free(hnd);
-		  rnk = rank_hand(hnd, &p.bin, 7);
-		  index = 0;
-		  for(; index < 4; index++)
+		  rnk = rank_hand(p.hand, &p.bin, 7);
+		  tinvert(p.hand, 7, r);
+		  if(rnk == 8)
 		    {
-		      if(p.bin.SF.b_count[index] > 4 && rnk == 5)
-			{
-			  printh(p.hand, 7);
-			  printb(&p.bin);
-			}
+		      fwrite(r, sizeof(char), 14, sf);
+		      fwrite("\n", sizeof(char), 1, sf);
+		  
 		    }
 		  freqs[rnk]++;
 		  /* printf("Hand is: %s\twith rank: %d\n", hand, rnk); */
@@ -829,6 +847,7 @@ void big_test_2()
 
   printf("Count is: %d\n", count);
   printf("Sum is: %d\n", summer);
+  fclose(sf);
 
 }
 
@@ -844,8 +863,11 @@ void all_sf_combos()
   PLAYER player;
 
   char hand[14];
+  char *r = malloc(14 * sizeof(char));
   CARD *hnd;
-  int i, j, k, l, m, n, p, rnk, count=0;
+  int i, j, k, l, m, n, p, rnk, count=0, index;
+  FILE *sf;
+  sf = fopen("sf_combos.txt", "a");
   for(p = 0; p < 52; p++)
     used[p] = FALSE;
 
@@ -877,22 +899,32 @@ void all_sf_combos()
 		}
 	    }
 
+
 	  /*can choose from any of the remaining 47 cards*/
 	  for(m = 0; m < 52; m++)
 	    for(n = m+1; n < 52; n++)
 	      {
+		hand[10] = '\0';
+		hand[11] = '\0';
+		hand[12] = '\0';
+		hand[13] = '\0';
 		if(used[n] == FALSE && used[m] == FALSE)
 		  {
 		    strcat(hand, deck[m]);
 		    strcat(hand, deck[n]);
 		    hnd = tconvert(hand, 7);
-		    rnk = rank_hand(hnd, &player.bin, 7);
-		    /* printf("Hand: %s\n", hand); */
+
+		    for(index = 0; index < 7; index++)
+		      player.hand[index] = hnd[index];
+
+		    rnk = rank_hand(player.hand, &player.bin, 7);
+
+		    tinvert(player.hand, 7, r);
+		    fwrite(r, sizeof(char), 14, sf);
+		    fwrite("\n", sizeof(char), 1, sf);
+		    free(hnd);
+		    /* printf("Hand: %s", hand); */
 		    /* printh(hnd, 7); */
-		    if(rnk != 8)
-		      {
-			printf("Imposter! "); printh(hnd, 7);
-		      }
 
 		    for(p = 10; p < 14; p++)
 		      hand[p] = '\0';
@@ -911,6 +943,7 @@ void all_sf_combos()
 	}
     }
   printf("Count is: %d\n", count);
+  fclose(sf);
 }
 
 void TestDistance()
@@ -991,6 +1024,6 @@ void ttest()
   /* big_test_five(); */
   /* big_test_seven(); */
   /* TestDistance(); */
-  all_sf_combos();
+  /* all_sf_combos(); */
   big_test_2();
 }

@@ -33,6 +33,12 @@ void sort_hand(CARD *hand, int hand_size)
 	  {
 	    swap(&hand[i], &hand[j]);
 	  }
+	else if(hand[i].rank == hand[j].rank)
+	  {
+	    if(hand[i].suit < hand[j].suit)
+	      swap(&hand[i], &hand[j]);
+	  }
+	else ;
       }
 }
 int sum_of_distances(CARD *hand, int len)
@@ -130,19 +136,14 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		{/* check if the last card in the SF bin and Current card are worthy of SF bin */
 
 		  if(bin->is_full[8] == FALSE && current_count > 0)
-		    {
-		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin, 8);
-		      
-		      if(bin->SF.b_count[c2.suit] >= 5)
-			bin->is_full[8] = TRUE;
-		    }
+		    Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin, 8);
 		}
 	      else
 		{/* clear the bin because we have ruined any chance of a straight flush */
 		    bin->SF.b[c2.suit] = clearbin(&bin->SF.b[c2.suit], &bin->SF.b_count[c2.suit], bin->SF.b_max);
 		}
 	    }
-	  if(i == size_of_hand-1)
+	  if(i == size_of_hand-2)
 	    {/* special case for the last cards: since aces are high and low, also could have SF with Pair of aces..etc */
 	      	  int current_count = bin->SF.b_count[c2.suit];
 		  CARD last;
@@ -153,8 +154,6 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		      if(distance(last, c2) == 1 && bin->is_full[8] == FALSE)
 			{/* Check for SF bin conditions */
 			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin, 8);
-			  if(bin->SF.b_count[c2.suit] >= 5)
-			    bin->is_full[8] = TRUE;
 			}
 				      
 		      if(last.rank == 0 && hand[0].rank == 12)
@@ -165,8 +164,6 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 			      if(hand[cnt].suit == last.suit && bin->is_full[8] == FALSE)
 				{
 				  Add(hand[cnt], &bin->SF.b[hand[cnt].suit], bin->SF.b_max, &bin->SF.b_count[hand[cnt].suit], bin, 8);
-				  if(bin->SF.b_count[hand[cnt].suit] >= 5)
-				    bin->is_full[8] = TRUE;
 				}
 			      cnt++;
 			    }
@@ -175,47 +172,30 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    }
 	}
 
-      /* Flushes */
+      /* /\* Flushes *\/ */
       if(bin->is_full[5] == FALSE)
-	{
-	  if(i % 2 == 0)
-	    {/* add on the evens otherwise we would count every card twice */
+      	{
+      	  if(i % 2 == 0)
+      	    {/* add on the evens otherwise we would count every card twice */
 
-	      /* Regardless, we add cards to the Flush bin */
-	      Add(c, &bin->F.b[c.suit], bin->F.b_max, &bin->F.b_count[c.suit], bin, 5);
-	      if(bin->F.b_count[c2.suit] < bin->F.b_max)
-		{/* we can add second card */
-		  Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin, 5);
-		  if(bin->F.b_count[c2.suit] == 5)
-		    bin->is_full[5] = TRUE;
-		}
-	      else
-		{ /* our bin is full */
-		  bin->is_full[5] = TRUE;
-		}
-	    }/* END if(i % 2 == 0) */
-	  else
-	    {/* check for the last card */
-	      if(i == size_of_hand-2)
-		{
-		  if(bin->is_full[5] == FALSE)
-		    {
-		      Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin, 5);
-		      if(bin->F.b_count[c2.suit] == 5)
-			bin->is_full[5] = TRUE;
-		    }
-		}
-	    }
-
-	  /*
-	    Now check if that bin is full....The Add function should probably be marking bins as full rather than
-	    me manually doing it
-	  */
-	  if(bin->F.b_count[c.suit] == 5 || bin->F.b_count[c2.suit] == 5)
-	    {
-	      bin->is_full[5] = TRUE;
-	    }
-	}
+      	      /* Regardless, we add cards to the Flush bin */
+      	      Add(c, &bin->F.b[c.suit], bin->F.b_max, &bin->F.b_count[c.suit], bin, 5);
+      	      if(bin->F.b_count[c2.suit] < bin->F.b_max)
+      		{/* we can add second card */
+      		  Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin, 5);
+      		}
+      	    }/* END if(i % 2 == 0) */
+      	  else
+      	    {/* check for the last card */
+      	      if(i == size_of_hand-2)
+      		{
+      		  if(bin->is_full[5] == FALSE)
+      		    {
+      		      Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin, 5);
+      		    }
+      		}
+      	    }
+      	}
 
       int delta = distance(c, c2);
       if(delta == 0)
@@ -283,12 +263,12 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		      Add(c2, &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin, 7);
 		      Add(hand[i+2], &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin, 7);
 		      Add(hand[i+3], &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin, 7);
-			  bin->is_full[7] = TRUE;
+		      bin->is_full[7] = TRUE;
 		    }
 		}
 	    }
 	  
-	}
+	} /* End cards match */
       if(delta == 1)
 	{/* Cards differ by one */
 
@@ -307,13 +287,10 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	      else
 	  	{/* Just add the second otherwise we will get dups */
 	  	  Add(c2, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
-		  if(bin->S.b_count == 5){
-		    bin->is_full[4] = TRUE;
-
 	  	}
-	      }
-		
 	    }
+		
+
 	}/* END IF delta == 1 */
 
       if(delta > 1 && delta < 12)
@@ -365,10 +342,6 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	      if(bin->S.b[0].rank == 3)
 		{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
 		  Add(temp, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
-		  if(bin->S.b_count == 5)
-		    {
-		      bin->is_full[4] = TRUE;
-		    }
 		}
 	    }
 
@@ -380,11 +353,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 
 		  if(bin->SF.b[temp.suit][0].rank == 3)
 		    {/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
-
 		      Add(temp, &bin->SF.b[temp.suit], bin->SF.b_max, &bin->SF.b_count[temp.suit], bin, 8);
-
-		      if(bin->SF.b_count[temp.suit] >= 5)
-			bin->is_full[8] = TRUE;
 		    }
 		}
 	    }
