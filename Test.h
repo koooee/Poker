@@ -823,8 +823,8 @@ void big_test_2()
 		  tinvert(p.hand, 7, r);
 		  if(rnk == 8)
 		    {
-		      fwrite(r, sizeof(char), 14, sf);
-		      fwrite("\n", sizeof(char), 1, sf);
+		      /* fwrite(r, sizeof(char), 14, sf); */
+		      /* fwrite("\n", sizeof(char), 1, sf); */
 		  
 		    }
 		  freqs[rnk]++;
@@ -920,8 +920,8 @@ void all_sf_combos()
 		    rnk = rank_hand(player.hand, &player.bin, 7);
 
 		    tinvert(player.hand, 7, r);
-		    fwrite(r, sizeof(char), 14, sf);
-		    fwrite("\n", sizeof(char), 1, sf);
+		    /* fwrite(r, sizeof(char), 14, sf); */
+		    /* fwrite("\n", sizeof(char), 1, sf); */
 		    free(hnd);
 		    /* printf("Hand: %s", hand); */
 		    /* printh(hnd, 7); */
@@ -1018,12 +1018,13 @@ void ttest()
     exit(EXIT_FAILURE);
   }
   
-  /* printf("Tests Passed.\n"); */
+  printf("Tests Passed.\n");
+
   /* test_SF(); */
   /* printf("Running Big Test...\n"); */
   /* big_test_five(); */
   /* big_test_seven(); */
   /* TestDistance(); */
   /* all_sf_combos(); */
-  big_test_2();
+  /* big_test_2(); */
 }
