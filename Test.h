@@ -12,6 +12,8 @@
    I wanted to do to an individual rank.  I know it is a bit reduntant.
 */
 
+#include "string.h"
+
 char *hands[] = {
   "High Card",
   "Pair",
@@ -70,6 +72,7 @@ int bestfull(char *f)
 	}
     }
 }
+
 char test_for_sf(BIN *bin)
 {
   int i,j,is_one, total;
@@ -77,25 +80,28 @@ char test_for_sf(BIN *bin)
   is_one = 0;
   for(i = 0; i < 4; i++)
     {
-      if(bin->SF.b_count[i] == 5)
+      if(bin->F.b_count[i] == 5)
 	{
 	  is_one++;
 	  sort_hand(bin->SF.b[i], 5);
 	  total = 0;
 	  for(j = 0; j < 4; j++)
 	    {
-	      c_one = bin->SF.b[i][j];
-	      c_two = bin->SF.b[i][j+1];
+	      c_one = bin->F.b[i][j];
+	      c_two = bin->F.b[i][j+1];
 	      total += distance(c_one, c_two);
-	      if(total == 4)
-		{
-		  return TRUE;
-		}
 	    }
+	  if(total == 4)
+	    {
+	      return TRUE;
+	    }
+
 	}
     }
   return FALSE;
 }
+
+
 
 int thc()
 {/* Test High Card, 0 - Failure; 1 - Success */
@@ -387,7 +393,7 @@ int tsf()
   PLAYER p;
   CARD *h[10] = {
     /* Pretty Standard Cases */
-    tconvert("AsAc3s4s5s2s2c", 7)
+    tconvert("AsKcTc5s4s3s2s", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
@@ -518,13 +524,13 @@ int tfh()
   return 1;
   
 }
-void check_for_same(CARD * cards)
+
+void check_for_same(CARD * cards, int size)
 {/* Debugging */
-  int i,j,size;
-  size = 7;
-  for(i = 1; i < size; i++)
-    for(j = 0; j < size; j++)
-      if((cards[i].rank == cards[j].rank) && (cards[i].suit == cards[j].suit))
+  int i,j;
+  for(i = 0; i < size; i++)
+    for(j = i+1; j < size; j++)
+      if((cards[i].rank == cards[j].rank))
 	{
 	  printc(cards[i]);
 	  printc(cards[j]);
@@ -533,10 +539,11 @@ void check_for_same(CARD * cards)
 	}
 }
 
-void big_test()
+void big_test_seven()
 {
-  int one, two, three, four, five, six, seven, count;
+  int one, two, three, four, five, six, seven, count, sumer;
   int freqs[9];
+  int sums[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int z;
   for(z = 0; z < 9; z++)
     freqs[z] = 0;
@@ -599,22 +606,73 @@ void big_test()
 		      /* 	      printb(&plyr.bin); */
 		      /* 	    } */
 		      /* 	} */
+		      /* if(rank == 5) */
+		      /* 	{ */
+		      /* 	  if(test_for_sf(&plyr.bin) == TRUE) */
+		      /* 	    { */
+		      /* 	      printf("IMPOSTER2!!\n"); */
+		      /* 	      printh(plyr.hand,7); */
+		      /* 	      printb(&plyr.bin); */
+		      /* 	    } */
+		      /* 	} */
+		      /* 	  int j; */
+		      /* 	  for(j = 0; j < 4; j++) */
+		      /* 	    { */
+		      /* 	      check_for_s(plyr.bin.F.b[j], plyr.bin.F.b_count[j]); */
+		      /* 	      check_for_s(plyr.bin.SF.b[j], plyr.bin.SF.b_count[j]); */
+		      /* 	    }} */
 		      if(rank == 5)
 		      	{
-		      	  if(test_for_sf(&plyr.bin) == TRUE)
-		      	    {
-		      	      printf("IMPOSTER2!!\n");
-		      	      printh(plyr.hand,7);
-		      	      printb(&plyr.bin);
-		      	    }
-		      	}
-		      
+			  int x, rnk;
+			  PLAYER xs;
+			  init_bin(&xs.bin);
+			  for(x = 0; x < 4; x++)
+			    {
+			      if(plyr.bin.F.b_count[x] == 5)
+				{
+				  rnk = sum_of_distances(plyr.bin.F.b[x], 5);
+				  /* rnk = rank_hand(plyr.bin.F.b[x], &xs.bin, 5); */
+				  /* check_for_same(plyr.bin.F.b[x], 5); */
+				  if(rnk == 4)
+				    {
+				      printf("Problem Hand: "); printh(plyr.bin.F.b[x], 5);
+				    }
+
+				}
+			    }
+			}			 
+
+		      	  /* int x,r; */
+		      	  /* for(x = 0; x < 4; x++) */
+		      	  /*   { */
+		      	  /*     if(plyr.bin.F.b_count[x] == 5) */
+		      	  /* 	{ */
+		      	  /* 	  r = rank_hand(plyr.bin.F.b[x], &plyr.bin, 5); */
+		      	  /* 	  if(r != 5) */
+		      	  /* 	    { */
+		      	  /* 	      printf("IMPOSTER2!!\n"); */
+		      	  /* 	      printh(plyr.hand,7); */
+		      	  /* 	      printb(&plyr.bin); */
+		      	  /* 	    } */
+		      	  /* 	} */
+		      	  /*   } */
+
+		      /* sumer= sum_of_distances(plyr.hand, 7); */
+
+		      /* sums[sumer]++; */
+		      /* if(sumer == 1) */
+		      /* 	printh(plyr.hand, 7); */
+
 		      freqs[rank]++;
 
 		  reset_bin(&plyr.bin);
 		    /* } */
 		}
-		
+  /* for(z = 0; z < 52; z++) */
+  /*   { */
+  /*     printf("Sum_%d: %d\n", z, sums[z]); */
+  /*   } */
+  /* printf("Done with Sums\n"); */
   long total = 0;
   for(z = 0; z < 9; z++)
     {
@@ -625,30 +683,11 @@ void big_test()
   printf("Total Number of Hands: %d\n", total);
 }
 
-char card_ok(int rank, int suit)
+void big_test_five()
 {
-  /* char suits[MAX_NUM_SUITS] = "shdc"; */
-  CARD temp;
-  temp.rank = rank;
-  temp.suit = suit;
-  if(
-     (rank == 0 && suit == 0)
-     || (rank == 4 && suit == 0)
-     || (rank == 7 && suit == 0)
-     || (rank == 9 && suit == 0)
-     || (rank == 12 && suit == 0))
-    {
-      /* printf("Card: "); printc(temp); printf(" Is not ok.\n"); */
-      return FALSE;
-    }
-  else{return TRUE;}
-
-}
-void test_SF()
-{
-
-  int one, two, three, four, five, six, seven, count;
+  int one, two, three, four, five, six, seven, count, sumer;
   int freqs[9];
+  int sums[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int z;
   for(z = 0; z < 9; z++)
     freqs[z] = 0;
@@ -663,39 +702,34 @@ void test_SF()
   test_hand = malloc(14 * sizeof(char));
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
-      /* for(three = two+1; three < size; three++) */
-      {
-	char ok = card_ok(one%13, one%4);
-	char ok2 = card_ok(two%13, two%4);
-	/* char ok3 = card_ok(three%13, three%4); */
-	if(ok == TRUE && ok2 == TRUE) /* && ok3 == TRUE) */
-	  {
-	    sprintf(test_hand, "As2s6s9sJs%c%c%c%c"
-		    ,ranks[one % 13]
-		    ,suits[one % 4]
-		    ,ranks[two % 13]
-		    ,suits[two % 4]);
+      for(three = two+1; three < size; three++)
+      	for(four = three+1; four < size; four++)
+      	  for(five = four+1; five < size; five++)
+		{
+		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c"
+		      	      ,ranks[one % 13]
+		      	      ,suits[one % 4]
+		      	      ,ranks[two % 13]
+		      	      ,suits[two % 4]
+		      	      ,ranks[three % 13]
+		      	      ,suits[three % 4]
+		      	      ,ranks[four % 13]
+		      	      ,suits[four % 4]
+		      	      ,ranks[five % 13]
+		      	      ,suits[five % 4]);
 
-	    hnd = tconvert(test_hand, 7);
-	    /* sort_hand(hnd, 7); */
-	    /* printh(hnd, 7); */
-	    for(i = 0; i < 7; i++){
-	      plyr.hand[i] = hnd[i];
-	    }
-	    /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
-	    free(hnd);
-	    rank = rank_hand(plyr.hand, &plyr.bin, 7);
-	    if(rank > 5)
-	      {
-	    	printh(plyr.hand,7);
-	    	printb(&plyr.bin);
-	      }
-	    freqs[rank]++;
+		      hnd = tconvert(test_hand, 5);
+		      for(i = 0; i < 5; i++){
+			plyr.hand[i] = hnd[i];
+		      }
+		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
+		      free(hnd);
+		      rank = rank_hand(plyr.hand, &plyr.bin, 5);
+		      freqs[rank]++;
 
-	    reset_bin(&plyr.bin);
-	  }
-      }
-		
+		  reset_bin(&plyr.bin);
+		    /* } */
+		}
   long total = 0;
   for(z = 0; z < 9; z++)
     {
@@ -704,9 +738,204 @@ void test_SF()
     
     }
   printf("Total Number of Hands: %d\n", total);
-
-  
 }
+
+void big_test_2()
+{
+  const char* deck[52] = {"As","Ks","Qs","Js","Ts","9s","8s","7s","6s","5s","4s","3s","2s"
+		    ,"Ac","Kc","Qc","Jc","Tc","9c","8c","7c","6c","5c","4c","3c","2c"
+		    ,"Ah","Kh","Qh","Jh","Th","9h","8h","7h","6h","5h","4h","3h","2h"
+		    ,"Ad","Kd","Qd","Jd","Td","9d","8d","7d","6d","5d","4d","3d","2d"};
+
+  int one, two, three, four, five, six, seven, count=0, summer, size=52, i, rnk, z, index;
+  int freqs[9];
+  char hand[14];
+  CARD *hnd;
+  PLAYER p;
+  strcpy(hand, "");
+  hnd = malloc(7 * sizeof(CARD));
+  init_bin(&p.bin);
+  for(z = 0; z < 9; z++)
+    freqs[z] = 0;
+
+  for(one = 0; one < size; one++){
+    /* printf("one: %d\n ", one); */
+    for(i = 0; i < 14; i++)
+      hand[i] = '\0';
+    strcat(hand, deck[one]);
+    for(two = one+1; two < size; two++){
+      for(i = 2; i < 14; i++)
+	hand[i] = '\0';
+      strcat(hand, deck[two]);
+      for(three = two+1; three < size; three++){
+	for(i = 4; i < 14; i++)
+	  hand[i] = '\0';
+
+	strcat(hand, deck[three]);
+      	for(four = three+1; four < size; four++){
+	  for(i = 6; i < 14; i++)
+	    hand[i] = '\0';
+
+	  strcat(hand, deck[four]);
+      	  for(five = four+1; five < size; five++){
+	    for(i = 8; i < 14; i++)
+	      hand[i] = '\0';
+
+	    strcat(hand, deck[five]);
+      	    for(six = five+1; six < size; six++){
+	      for(i = 10; i < 14; i++)
+		hand[i] = '\0';
+
+	      strcat(hand, deck[six]);
+      	      for(seven = six+1; seven < size; seven++)
+		{
+
+		  for(i = 12; i < 14; i++)
+		    hand[i] = '\0';
+
+		  strcat(hand, deck[seven]);
+		  /* printf("Hand is: %s\n", hand); */
+		  hnd = tconvert(hand, 7);
+		  for(z = 0; z < 7; z++)
+		    p.hand[z] = hnd[z];
+		  free(hnd);
+		  rnk = rank_hand(hnd, &p.bin, 7);
+		  index = 0;
+		  for(; index < 4; index++)
+		    {
+		      if(p.bin.SF.b_count[index] > 4 && rnk == 5)
+			{
+			  printh(p.hand, 7);
+			  printb(&p.bin);
+			}
+		    }
+		  freqs[rnk]++;
+		  /* printf("Hand is: %s\twith rank: %d\n", hand, rnk); */
+		  reset_bin(&p.bin);
+		  count++;
+		}
+	    }
+	  }
+	}
+      }
+    }
+  }
+  summer = 0;
+  for(z = 0; z < 9; z++)
+    {
+      printf("%s\t%d\n", hands[z], freqs[z]);
+      summer += freqs[z];
+    }
+
+  printf("Count is: %d\n", count);
+  printf("Sum is: %d\n", summer);
+
+}
+
+void all_sf_combos()
+{
+  const int s_ranks[4] = {0, 13, 26, 39}; /* starting ranks for Straights (indexes for deck below) */
+  const char* deck[52] = {"As","Ks","Qs","Js","Ts","9s","8s","7s","6s","5s","4s","3s","2s"
+		    ,"Ac","Kc","Qc","Jc","Tc","9c","8c","7c","6c","5c","4c","3c","2c"
+		    ,"Ah","Kh","Qh","Jh","Th","9h","8h","7h","6h","5h","4h","3h","2h"
+		    ,"Ad","Kd","Qd","Jd","Td","9d","8d","7d","6d","5d","4d","3d","2d"};
+  char used[52];
+
+  PLAYER player;
+
+  char hand[14];
+  CARD *hnd;
+  int i, j, k, l, m, n, p, rnk, count=0;
+  for(p = 0; p < 52; p++)
+    used[p] = FALSE;
+
+  strcpy(hand, "");
+  hnd = malloc(7 *sizeof(CARD));
+  init_bin(&player.bin);
+  for (i =0; i < 4; i++)
+    {
+      j = 0;
+      /* there are 10 unique ranks for a Straight */
+      while(j < 10)
+	{
+	  for(k = 0; k < 5; k++)
+	    {
+	      if(j != 0)
+		{/* have to choose from remaining 47 cards EXCEPT j+1 since that will change the rank of the hand */
+		  used[s_ranks[i]+j-1]=TRUE;
+		}
+
+	      if(j == 9 && k == 4)
+		{
+		  strcat(hand, deck[s_ranks[i]]);
+		  used[s_ranks[i]] = TRUE;
+		}
+	      else
+		{
+		  strcat(hand, deck[s_ranks[i]+j+k]);
+		  used[s_ranks[i]+j+k] = TRUE;
+		}
+	    }
+
+	  /*can choose from any of the remaining 47 cards*/
+	  for(m = 0; m < 52; m++)
+	    for(n = m+1; n < 52; n++)
+	      {
+		if(used[n] == FALSE && used[m] == FALSE)
+		  {
+		    strcat(hand, deck[m]);
+		    strcat(hand, deck[n]);
+		    hnd = tconvert(hand, 7);
+		    rnk = rank_hand(hnd, &player.bin, 7);
+		    /* printf("Hand: %s\n", hand); */
+		    /* printh(hnd, 7); */
+		    if(rnk != 8)
+		      {
+			printf("Imposter! "); printh(hnd, 7);
+		      }
+
+		    for(p = 10; p < 14; p++)
+		      hand[p] = '\0';
+		    count++;
+		  }
+		
+	      }
+
+
+
+	  /* reset */
+	  strcpy(hand, "");
+	  for(p = 0; p < 52; p++)
+	    used[p] = FALSE;
+	  j++;
+	}
+    }
+  printf("Count is: %d\n", count);
+}
+
+void TestDistance()
+{
+  int i, j, k, l;
+  CARD c, c2;
+  for(k = 0; k < 4; k++)
+    for(l = 0; l < 13; l++)
+      {
+	for(i = 0; i < 4; i++)
+	  for(j = 0; j < 13; j++)
+	    {
+	      if(((j == 0 || j==12) && (l==0 || l==12) || ((j == 3 || j==12) && (l==3 || l==12))))
+		{
+		  c.rank = j;
+		  c.suit = i;
+		  c2.rank = l;
+		  c2.suit = k;
+		  printf("The Distance Between "); printc(c); printf(" And "); printc(c2); printf(" is: %d\n", distance(c, c2));
+		}
+	    }
+      }
+
+}
+
 void ttest()
 {/* this is the main function for test cases */
 
@@ -756,8 +985,12 @@ void ttest()
     exit(EXIT_FAILURE);
   }
   
-  printf("Tests Passed.\n");
+  /* printf("Tests Passed.\n"); */
   /* test_SF(); */
-  printf("Running Big Test...\n");
-  big_test();
+  /* printf("Running Big Test...\n"); */
+  /* big_test_five(); */
+  /* big_test_seven(); */
+  /* TestDistance(); */
+  all_sf_combos();
+  big_test_2();
 }

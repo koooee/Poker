@@ -137,6 +137,7 @@ void *clearbin(CARD **hand, int *count, int max)
   free(*hand);
   *count = 0;
   return malloc(max * sizeof(CARD));
+  
 }
 
 
@@ -203,9 +204,9 @@ void printb(BIN *bin)
   for(i = 0; i < MAX_NUM_SUITS; i++)
     {
       printf("\t%c: ", suits[i]);
-      for(j = 0; j < bin->SF.b_count[i]; j++)
+      for(j = 0; j < bin->F.b_count[i]; j++)
 	{
-	  printc(bin->SF.b[i][j]);
+	  printc(bin->F.b[i][j]);
 	}
       printf("\n");
     }

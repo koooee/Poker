@@ -1,7 +1,7 @@
 /*
 Brain.c
 The purpose of Brain.c is to give the players intelligence/functionality.  Player.c will include a Brain.c which contains functions that will be able to answer common Player questions when analyzing their poker hand
-such as... What is My current hand? What Am I drawing to? How many outs do I have? It will also contain various helperfunctions for
+such as... What is My current hand? What Am I drawing to? How many outs do I have? It will also contain various helper functions that you would consider part of someones 'brain'
 Programmer: Nick Kolegraff
 Date: 5/18/2011
 */
@@ -35,24 +35,50 @@ void sort_hand(CARD *hand, int hand_size)
 	  }
       }
 }
-char check_for_s(CARD *hand, int len)
-{/* the sum of the differences should be length of the hand - 1...assuming only the cards that make the hand are in the hand */
-  int i, total;
+int sum_of_distances(CARD *hand, int len)
+{
+  int i, total=0;
   for(i = 0; i < len-1; i++)
     {
       total += distance(hand[i], hand[i+1]);
     }
-  if(total == 4)
+  return total;
+}
+
+char Contains(CARD *hand, CARD c, int size)
+{
+  int i;
+  for(i = 0; i < size; i++)
     {
-      return TRUE;
+      if(hand[i].rank == c.rank && hand[i].suit == c.suit)
+	return TRUE;
     }
+  return FALSE;
+}
+
+char check_for_s(CARD *hand, int len)
+{/* the sum of the differences should be length of the hand - 1...assuming only the cards that make the hand are in the hand */
+  int i, total = 0;
+  for(i = 0; i < len-1; i++)
+    {
+      total += distance(hand[i], hand[i+1]);
+    }
+  if((total == 4 && len == 5) || (total >= 15 && len == 5))
+    {
+      printf("Total: %d\n", total);
+      printh(hand,len);
+
+      return TRUE;
+      
+    }
+  return FALSE;
 }
 int distance(CARD c, CARD c2)
 {
   if((c.rank == 12 || c2.rank == 12) && (c.rank == 3 || c2.rank == 3))
     return 1;
-  else
-    return abs(c.rank - c2.rank);
+    
+  return abs(c.rank - c2.rank);
 }
 
 int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
@@ -101,7 +127,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	      if(current_count > 0)
 		last = bin->SF.b[c2.suit][current_count - 1];
 	      if(distance(last, c2) == 1)
-		{/* check the last card in the SF bin and Current card are worthy of SF bin */
+		{/* check if the last card in the SF bin and Current card are worthy of SF bin */
 
 		  if(bin->is_full[8] == FALSE && current_count > 0)
 		    {
@@ -113,11 +139,11 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		}
 	      else
 		{/* clear the bin because we have ruined any chance of a straight flush */
-		  bin->SF.b[c2.suit] = clearbin(&bin->SF.b[c2.suit], &bin->SF.b_count[c2.suit], bin->SF.b_max);
+		    bin->SF.b[c2.suit] = clearbin(&bin->SF.b[c2.suit], &bin->SF.b_count[c2.suit], bin->SF.b_max);
 		}
 	    }
 	  if(i == size_of_hand-1)
-	    {/* special case for the last cards */
+	    {/* special case for the last cards: since aces are high and low, also could have SF with Pair of aces..etc */
 	      	  int current_count = bin->SF.b_count[c2.suit];
 		  CARD last;
 		  if(current_count > 0)
@@ -130,7 +156,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 			  if(bin->SF.b_count[c2.suit] >= 5)
 			    bin->is_full[8] = TRUE;
 			}
-
+				      
 		      if(last.rank == 0 && hand[0].rank == 12)
 			{/*last card in bin is a two...need to check for an Ace in the front to make the wheel*/
 			  int cnt = 0;
@@ -157,7 +183,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 
 	      /* Regardless, we add cards to the Flush bin */
 	      Add(c, &bin->F.b[c.suit], bin->F.b_max, &bin->F.b_count[c.suit], bin, 5);
-	      if(bin->F.b_count[c.suit] < bin->F.b_max)
+	      if(bin->F.b_count[c2.suit] < bin->F.b_max)
 		{/* we can add second card */
 		  Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin, 5);
 		  if(bin->F.b_count[c2.suit] == 5)
