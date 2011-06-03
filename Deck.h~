@@ -1,0 +1,23 @@
+/*
+Deck.h
+-------
+The purpose of Deck.h is to hold the data structures we will use for simulating poker games.  There is no functionality in this file and there should never be. Does a deck shuffle itself?
+-------
+Programmer: Nick Kolegraff
+Date: 5/18/2011
+*/
+
+/* Change these for other variations of poker that may require something different */
+#DEFINE MAX_DECK_SIZE 52
+#DEFINE MAX_NUM_SUITS 4
+#DEFINE MAX_NUM_RANKS 13
+
+typedef struct card {
+  int rank;
+  int suit;
+} CARD;
+
+char suits[MAX_NUM_SUITS] = "shdc";
+char ranks[MAX_NUM_RANKS] = "A234567689TJQK";
+
+CARD deck[MAX_DECK_SIZE];

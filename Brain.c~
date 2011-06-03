@@ -1,0 +1,7 @@
+/*
+Brain.c
+The purpose of Brain.c is to give the players intelligence.  Player.c will include a Brain.h which contains function headers that will be able to answer common Player questions when analyzing their poker hand
+such as... What is My current hand? What Am I drawing to? How many outs do I have?
+Programmer: Nick Kolegraff
+Date: 5/18/2011
+*/

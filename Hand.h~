@@ -1,0 +1,5 @@
+
+
+#define MAX_HAND_SIZE 7
+
+CARD deck[MAX_DECK_SIZE];

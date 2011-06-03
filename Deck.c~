@@ -1,0 +1,10 @@
+#include "Deck.h"
+
+void Append(CARD c, CARD *d)
+{
+  
+}
+
+CARD *Draw(void)
+{
+}

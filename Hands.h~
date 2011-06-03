@@ -1,0 +1,18 @@
+/*
+Hands.h
+This contains some data structures that will compose the different hands for the BINS struct in Bins.h
+I'm not really sure the best way to go about this bue this seemed SOMEWHAT logical
+*/
+
+/* Multi Bin */
+/* This bin is for special cases ie. Straight flush and Flush because we need to keep track of each suit */
+typedef MULTI_BIN {
+  CARD f[5][5];
+  CARD *f_free[5];
+  int f_max;
+  int f_count[5];
+} MULTI_BIN;
+
+
+
+ 
