@@ -9,10 +9,10 @@ I'm not really sure the best way to go about this bue this seemed SOMEWHAT logic
 /* Naming Convention: b - buffer */
 
 typedef struct MULTI_BIN {
-  CARD b[4][5]; /* This will always need to be a 4 by 5 */
-  CARD *b_free[5]; /* Next free space in mb multi array */
+  CARD b[MAX_NUM_SUITS][5]; 
+  CARD *b_free[MAX_NUM_SUITS]; /* Next free space in mb multi array */
   int b_max; /* Max size of the bin */
-  int b_count[5]; /* Current count of the elements in the bin */
+  int b_count[MAX_NUM_SUITS]; /* Current count of the elements in the bin */
 } MULTI_BIN;
 
 /* Strandard Bin */

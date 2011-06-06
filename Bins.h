@@ -36,14 +36,15 @@ typedef struct BINS {
   MULTI_BIN SF;
 
   /* be used to flag the max hand.  If the bin is full, then the player has that hand */
-  char is_bin_full[MAX_HAND_RANKS];
+  char is_full[MAX_HAND_RANKS];
   char drawing[MAX_HAND_RANKS]; /* M - Made hand; D - 1 card to hand; Z - greater than 1 card away */
   
 } BIN;
 
-void Init_Bin(BIN *bin)
+void init_bin(BIN *bin)
 {
   int card_size = sizeof(CARD);
+  int i;
 
   bin->P.b = malloc(MAX_SIZE_P * card_size);
   bin->P.b_free = &bin->P.b[0];
@@ -55,7 +56,65 @@ void Init_Bin(BIN *bin)
   bin->TP.b_max = MAX_SIZE_TP;
   bin->TP.b_count = 0;
 
+  bin->TK.b = malloc(MAX_SIZE_TK * card_size);
+  bin->TK.b_free = &bin->TK.b[0];
+  bin->TK.b_max = MAX_SIZE_TK;
+  bin->TK.b_count = 0;
 
+  bin->S.b = malloc(MAX_SIZE_S * card_size);
+  bin->S.b_free = &bin->S.b[0];
+  bin->S.b_max = MAX_SIZE_S;
+  bin->S.b_count = 0;
+
+  bin->FH.b = malloc(MAX_SIZE_FH * card_size);
+  bin->FH.b_free = &bin->FH.b[0];
+  bin->FH.b_max = MAX_SIZE_FH;
+  bin->FH.b_count = 0;
+
+  bin->FK.b = malloc(MAX_SIZE_FK * card_size);
+  bin->FK.b_free = &bin->FK.b[0];
+  bin->FK.b_max = MAX_SIZE_FK;
+  bin->FK.b_count = 0;
+
+  bin->F.b_max = 5;
+  bin->SF.b_max = 5;
+
+  for(i = 0; i < MAX_NUM_SUITS; i++)
+    {
+      bin->F.b_free[i] = &bin->F.b[i][0];
+      bin->F.b_count[i] = 0;
+      bin->SF.b_free[i] = &bin->SF.b[i][0];
+      bin->SF.b_count[i] = 0;      
+    }
+  for(i = 0; i < MAX_HAND_RANKS; i++)
+    {
+      bin->is_full[i] = FALSE;
+      bin->drawing[i] = 'Z';
+    }
+}
+
+void clearbin(CARD *b, CARD *free, int *count)
+{
+  int i;
+  CARD empty;
+  for(i = 0; i < *count; i++)
+    {
+      b[i] = empty;
+    }
+  *free = b[0];
+  *count = 0;
+  
+}
+
+
+void reset_bin(BIN *bin)
+{
+  free(bin->FK.b);
+  free(bin->FH.b);
+  free(bin->S.b);
+  free(bin->TK.b);
+  free(bin->TP.b);
+  free(bin->P.b); 
 }
 
 void Add(CARD c, CARD **free, int max, int *count)
