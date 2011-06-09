@@ -47,43 +47,44 @@ void init_bin(BIN *bin)
   int i;
 
   bin->P.b = malloc(MAX_SIZE_P * card_size);
-  bin->P.b_free = &bin->P.b[0];
   bin->P.b_max = MAX_SIZE_P;
   bin->P.b_count = 0;
 
   bin->TP.b = malloc(MAX_SIZE_TP * card_size);
-  bin->TP.b_free = &bin->TP.b[0];
   bin->TP.b_max = MAX_SIZE_TP;
   bin->TP.b_count = 0;
 
   bin->TK.b = malloc(MAX_SIZE_TK * card_size);
-  bin->TK.b_free = &bin->TK.b[0];
   bin->TK.b_max = MAX_SIZE_TK;
   bin->TK.b_count = 0;
 
   bin->S.b = malloc(MAX_SIZE_S * card_size);
-  bin->S.b_free = &bin->S.b[0];
   bin->S.b_max = MAX_SIZE_S;
   bin->S.b_count = 0;
 
   bin->FH.b = malloc(MAX_SIZE_FH * card_size);
-  bin->FH.b_free = &bin->FH.b[0];
   bin->FH.b_max = MAX_SIZE_FH;
   bin->FH.b_count = 0;
 
   bin->FK.b = malloc(MAX_SIZE_FK * card_size);
-  bin->FK.b_free = &bin->FK.b[0];
   bin->FK.b_max = MAX_SIZE_FK;
   bin->FK.b_count = 0;
 
   bin->F.b_max = 5;
   bin->SF.b_max = 5;
+  /* TODO: Enhancement */
+  /* We should dynamically malloc in the Add function (Below)...thus, only using memory when needed...but, this 
+     might have an effect on preformance since we would be calling malloc frequently..and I am very concerned
+     about runtime preformance
+  */
+  bin->F.b_count = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
+  bin->SF.b_count = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
 
   for(i = 0; i < MAX_NUM_SUITS; i++)
     {
-      bin->F.b_free[i] = &bin->F.b[i][0];
+      bin->F.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
+      bin->SF.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
       bin->F.b_count[i] = 0;
-      bin->SF.b_free[i] = &bin->SF.b[i][0];
       bin->SF.b_count[i] = 0;      
     }
   for(i = 0; i < MAX_HAND_RANKS; i++)
@@ -106,29 +107,75 @@ void clearbin(CARD *b, CARD *free, int *count)
   
 }
 
-
 void reset_bin(BIN *bin)
 {
-  free(bin->FK.b);
-  free(bin->FH.b);
-  free(bin->S.b);
-  free(bin->TK.b);
-  free(bin->TP.b);
-  free(bin->P.b); 
+  CARD blank;
+  int i;
+  bin->HC = blank;
+  bin->P.b_count = 0;
+  bin->TP.b_count = 0;
+  bin->TK.b_count = 0;
+  bin->S.b_count = 0;
+  bin->FH.b_count = 0;
+  bin->FK.b_count = 0;
+  
+  for(i = 0; i < MAX_NUM_SUITS; i++) {
+    bin->SF.b_count[i] = 0;
+    bin->F.b_count[i] = 0;
+    }
+  
+  for(i = 0; i < MAX_HAND_RANKS; i++) {
+    bin->is_full[i] = FALSE;
+    bin->drawing[i] = NOTHING;
+  }
 }
 
-void Add(CARD c, CARD **free, int max, int *count)
+void free_bins(BIN *bin)
+{
+  int i,j;
+  /* Free Standard Bins */
+  free(bin->FK.b);
+  bin->FK.b = NULL;
+  free(bin->FH.b);
+  bin->FH.b = NULL;
+  free(bin->S.b);
+  bin->S.b = NULL;
+  free(bin->TK.b);
+  bin->TK.b = NULL;
+  free(bin->TP.b);
+  bin->TP.b = NULL;
+  free(bin->P.b); 
+  bin->P.b = NULL;
+
+  /* Free Multi Bins */
+
+  free(bin->F.b_count);
+  free(bin->SF.b_count);
+  for(i = 0; i < MAX_NUM_SUITS; i++)
+    {
+      free(bin->F.b[i]);
+      bin->F.b[i] = NULL;
+
+      free(bin->SF.b[i]);
+      bin->SF.b[i] = NULL;
+    }
+}
+
+void Add(CARD c, CARD **hand, int max, int *count)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
   if(*count == max)
     {
       printf("Your bin is full.\n");
       exit(EXIT_FAILURE);
     }
-  else
-    {
-      **free = c;
-      ++*free;
-      ++*count;
+  else {
+    printf("COUNT: %d\n", (*count)++);
+    printf("Adding Card: ");
+    printc(c);
+    printf("\n");
+    *hand[(*count)++] = c;
+
+
     }
   
 }
@@ -142,5 +189,28 @@ void Remove(CARD **free, int *count)
       --*free;
       --*count;  
     }
+}
+
+void printb(BIN *bin)
+{/* Print Bin */
+  int i;
+
+  printf("High Card: ");
+  printc(bin->HC);
+  printf("\n");
+
+  printf("Pair: ");
+  for(i = 0; i < bin->P.b_count; i++)
+    {
+      printc(bin->P.b[i]);
+    }
+  printf("\n");
+
+  printf("Two Pair: ");
+  for(i = 0; i < bin->TP.b_count; i++)
+    {
+      printc(bin->TP.b[i]);
+    }
+  printf("\n");
 }
 

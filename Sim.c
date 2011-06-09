@@ -24,16 +24,6 @@ int main(int argc, char *argv[])
   seed = atoi(argv[1]);
   /* Debugging -- Delete Section when done */
   /* Debugging Init the hand as a straight */
-    char *hands[] = {
-      "High Card",
-      "Pair",
-      "Two Pair",
-      "Three Kind",
-      "Straight",
-      "Flush",
-      "Full House",
-      "Four Kind",
-      "Straight Flush"};
     ttest();
 }
 

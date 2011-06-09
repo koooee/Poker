@@ -91,21 +91,22 @@ int thc()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 8; i++)
     {
-      init_bin(&p.bin);
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
 	}
       Sort_Hand(p.hand, s[i]);
+      printf("Ranking Hand: %d\n", i);
       Rank_Hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 0)
 	{
 	  printf("High Card failed on hand: %d\nExpecting rank of 0 got %d\n", i+1, bestfull(p.bin.is_full));
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
  
@@ -134,10 +135,10 @@ int tp()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 11; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
@@ -149,6 +150,7 @@ int tp()
 	  printf("Pair Failed on hand: %d\n", i+1);
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
@@ -175,21 +177,24 @@ int ttp()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 9; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
 	}
       Sort_Hand(p.hand, s[i]);
       Rank_Hand(p.hand, &p.bin, s[i]);
-      if(bestfull(p.bin.is_full) != 2)
+      int rank = bestfull(p.bin.is_full);
+      if(rank != 2)
 	{
 	  printf("Two Pair Failed on hand: %d\n", i+1);
+	  printf("With a rank of %d\n", rank);
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
@@ -217,10 +222,10 @@ int ttk()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 10; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
@@ -232,6 +237,7 @@ int ttk()
 	  printf("Three of a Kind Failed on hand: %d\n", i+1);
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
@@ -258,10 +264,10 @@ int tfk()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 9; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
@@ -273,6 +279,7 @@ int tfk()
 	  printf("Four of a Kind Failed on hand: %d\n", i+1);
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
@@ -300,10 +307,10 @@ int tf()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 8; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
@@ -316,6 +323,7 @@ int tf()
 	  printf("with a rank of: %d\n", bestfull(p.bin.is_full));
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
@@ -339,10 +347,10 @@ int tsf()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 5; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
@@ -355,6 +363,7 @@ int tsf()
 	  printf("with a rank of: %d\n", bestfull(p.bin.is_full));
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
@@ -379,10 +388,10 @@ int ts()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 5; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
@@ -395,6 +404,7 @@ int ts()
 	  printf("with a rank of: %d\n", bestfull(p.bin.is_full));
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
@@ -419,10 +429,10 @@ int tfh()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-
+  init_bin(&p.bin);
   for(i = 0; i < 6; i++)
     {
-      init_bin(&p.bin);
+
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
@@ -435,13 +445,14 @@ int tfh()
 	  printf("with a rank of: %d\n", bestfull(p.bin.is_full));
 	  return 0;
 	}
+      reset_bin(&p.bin);
     }
   return 1;
   
 }
 
-void ttest()
-{/* this is the main function for test cases */
+void big_test()
+{
   int one, two, three, four, five, count;
   int freqs[9];
   int z;
@@ -453,13 +464,16 @@ void ttest()
   char *test_hand;
   CARD *hnd;
   PLAYER plyr;
+
   /* initialize cards array */
+  test_hand = malloc(10 * sizeof(char));
   for(one = 0; one < size; one++)
     for(two = 0; two < size; two++)
       for(three = 0; three < size; three++)
   	for(four = 0; four < size; four++)
   	  for(five = 0; five < size; five++)
 	    {
+	      
 	      if(
 		 one != two && one != three && one != four && one != five
 		 && two != three && two != four && two != five
@@ -467,7 +481,6 @@ void ttest()
 		 && four != five
 		 )
 		{
-		  test_hand = malloc(10 * sizeof(char));
 		  sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c"
 		  	  ,ranks[one % 13]
 		  	  ,suits[one % 4]
@@ -483,7 +496,12 @@ void ttest()
 		  for(i = 0; i < 5; i++){
 		    plyr.hand[i] = hnd[i];
 		  }
-		  init_bin(&plyr.bin);
+		  free(hnd);
+
+		  /* printf("Player Address: %x\n", plyr); */
+		  /* printf("Player Hand Address: %x\n", plyr.hand); */
+		  /* printf("Player Bin Address: %x\n", plyr.bin); */
+
 		  rank = Rank_Hand(plyr.hand, &plyr.bin, 5);
 		  if(rank > 7)
 		    {
@@ -491,13 +509,16 @@ void ttest()
 		      freqs[rank]++;
 		      printf("Frequency: %d\n", freqs[rank]);
 		    }
-		  free(test_hand);
-		  reset_bin(&plyr.bin);
 		}
+	      reset_bin(&plyr.bin);
 	    }
 	    
   for(z = 0; z < 9; z++)
     printf("Freq %d %d\n", z, freqs[z]);
+}
+
+void ttest()
+{/* this is the main function for test cases */
 
   int hc = thc();
   if(hc == 0){
