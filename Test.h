@@ -74,9 +74,9 @@ int bestfull(char *f)
 int thc()
 {/* Test High Card, 0 - Failure; 1 - Success */
   int i,j;
-  int s[8] = {7,7,7,6,5,4,3,2};
+  int card_lengths[8] = {7,7,7,6,5,4,3,2};
   PLAYER p;
-  CARD *h[8] = {
+  CARD *high_cards[8] = {
     tconvert("AsTcJh9d2c8h5c", 7)
     ,tconvert("KsQhJdAc4h7d3c", 7)
     ,tconvert("9hTd3s6cKhQs2d", 7)
@@ -87,22 +87,54 @@ int thc()
     ,tconvert("9hTd", 2)
   };
 
+CARD *non_high_cards[8] = {
+    tconvert("AsAcJh9d2c8h5c", 7)
+    ,tconvert("QsQhQdAc4h7d3c", 7)
+    ,tconvert("2s3s4s5sAs6s7d", 7)
+    ,tconvert("8s6s2s7s7dTd", 6)
+    ,tconvert("2d3d4d5d6d", 5)
+    ,tconvert("9h3d3s6c", 4)
+    ,tconvert("9h9d3s", 3)
+    ,tconvert("ThTd", 2)
+  };
+
   /*
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
   init_bin(&p.bin);
+
+  /* These cases should equal the high card rank */
   for(i = 0; i < 8; i++)
     {
-      for(j = 0; j < s[i]; j++)
+      for(j = 0; j < card_lengths[i]; j++)
 	{
-	  p.hand[j] = h[i][j];
+	  p.hand[j] = high_cards[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
-      if(bestfull(p.bin.is_full) != 0)
+      Sort_Hand(p.hand, card_lengths[i]);
+      Rank_Hand(p.hand, &p.bin, card_lengths[i]);
+      int rank = bestfull(p.bin.is_full);
+      if(rank != 0)
 	{
-	  printf("High Card failed on hand: %d\nExpecting rank of 0 got %d\n", i+1, bestfull(p.bin.is_full));
+	  printf("High Card failed on hand: %d\nExpecting rank of 0 got %d\n", i+1, rank);
+	  return 0;
+	}
+      reset_bin(&p.bin);
+    }
+
+  /* These cases SHOULD NOT equal high card */
+  for(i = 0; i < 8; i++)
+    {
+      for(j =0; j < card_lengths[i]; j++)
+	{
+	  p.hand[j] = non_high_cards[i][j];
+	}
+      Sort_Hand(p.hand, card_lengths[i]);
+      Rank_Hand(p.hand, &p.bin, card_lengths[i]);
+      int rank = bestfull(p.bin.is_full);
+      if(rank == 0)
+	{
+	  printf("High Card FAILED on hand: %d\nExpecting rank NOT equal to 0 and got %d\n", i+1, rank);
 	  return 0;
 	}
       reset_bin(&p.bin);
@@ -333,13 +365,12 @@ int tsf()
   int s[5] = {7,7,7,6,5};
   PLAYER p;
   CARD *h[5] = {
+    /* Pretty Standard Cases */
     tconvert("AsKsQsJsTs5c8d", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
     ,tconvert("4d5d6d7d8d", 5)
-
-
   };
 
   /*
@@ -466,7 +497,6 @@ void big_test()
 
   init_bin(&plyr.bin);
   test_hand = malloc(10 * sizeof(char));
-
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
       for(three = two+1; three < size; three++)
