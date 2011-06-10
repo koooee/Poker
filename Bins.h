@@ -41,6 +41,21 @@ typedef struct BINS {
   
 } BIN;
 
+void Add(CARD c, CARD **hand, int max, int *count)
+{/* Yes, I know, this interface seems a bit retarded.  FIXME */
+  if(*count == max)
+    {
+      printf("Your bin is full.\n");
+      exit(EXIT_FAILURE);
+    }
+  else 
+    {
+      *hand + (*count)++;
+      **hand = c;
+    }
+  
+}
+
 void init_bin(BIN *bin)
 {
   int card_size = sizeof(CARD);
@@ -107,6 +122,7 @@ void clearbin(CARD *b, CARD *free, int *count)
   
 }
 
+
 void reset_bin(BIN *bin)
 {
   CARD blank;
@@ -161,25 +177,6 @@ void free_bins(BIN *bin)
     }
 }
 
-void Add(CARD c, CARD **hand, int max, int *count)
-{/* Yes, I know, this interface seems a bit retarded.  FIXME */
-  if(*count == max)
-    {
-      printf("Your bin is full.\n");
-      exit(EXIT_FAILURE);
-    }
-  else {
-    printf("COUNT: %d\n", (*count)++);
-    printf("Adding Card: ");
-    printc(c);
-    printf("\n");
-    *hand[(*count)++] = c;
-
-
-    }
-  
-}
-
 void Remove(CARD **free, int *count)
 {
   if(*count != 0)
@@ -212,5 +209,13 @@ void printb(BIN *bin)
       printc(bin->TP.b[i]);
     }
   printf("\n");
+
+  printf("Straight: ");
+  for(i = 0; i < bin->S.b_count; i++)
+    {
+      printc(bin->S.b[i]);
+    }
+  printf("\n");
+
 }
 

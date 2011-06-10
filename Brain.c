@@ -82,11 +82,6 @@ int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
     {
       CARD c = hand[i];
       CARD c2 = hand[i+1];
-      printf("I: %d\n", i);
-      printf("Cards: ");
-      printc(c);
-      printc(c2);
-      printf("\n");
 
       /* 
 	 Flushes:
@@ -97,9 +92,6 @@ int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
 	{
 	  if(i % 2 == 0)
 	    {/* add on the evens otherwise we would count every card twice */
-	      printf("Adding Card: ");
-	      printc(c);
-	      printf("\n");
 	      Add(c, &bin->F.b[c.suit], bin->F.b_max, &bin->F.b_count[c.suit]);
 	      if(bin->F.b_count[c.suit] < bin->F.b_max)
 		{/* we can add second card */

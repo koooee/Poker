@@ -99,7 +99,6 @@ int thc()
 	  p.hand[j] = h[i][j];
 	}
       Sort_Hand(p.hand, s[i]);
-      printf("Ranking Hand: %d\n", i);
       Rank_Hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 0)
 	{
@@ -465,8 +464,9 @@ void big_test()
   CARD *hnd;
   PLAYER plyr;
 
-  /* initialize cards array */
+  init_bin(&plyr.bin);
   test_hand = malloc(10 * sizeof(char));
+
   for(one = 0; one < size; one++)
     for(two = 0; two < size; two++)
       for(three = 0; three < size; three++)
@@ -496,19 +496,14 @@ void big_test()
 		  for(i = 0; i < 5; i++){
 		    plyr.hand[i] = hnd[i];
 		  }
+		  /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 		  free(hnd);
-
 		  /* printf("Player Address: %x\n", plyr); */
 		  /* printf("Player Hand Address: %x\n", plyr.hand); */
 		  /* printf("Player Bin Address: %x\n", plyr.bin); */
 
 		  rank = Rank_Hand(plyr.hand, &plyr.bin, 5);
-		  if(rank > 7)
-		    {
-		      printf("Rank: %d\n", rank);
-		      freqs[rank]++;
-		      printf("Frequency: %d\n", freqs[rank]);
-		    }
+		  freqs[rank]++;
 		}
 	      reset_bin(&plyr.bin);
 	    }
@@ -567,4 +562,7 @@ void ttest()
   }
 
   printf("Tests Passed.\n");
+  printf("Running Big Test...\n");
+  big_test();
+  
 }
