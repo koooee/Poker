@@ -362,15 +362,17 @@ int tf()
 int tsf()
 {
   int i,j;
-  int s[5] = {7,7,7,6,5};
+  int s[6] = {7,7,7,6,5,7};
   PLAYER p;
-  CARD *h[5] = {
+  CARD *h[6] = {
     /* Pretty Standard Cases */
     tconvert("AsKsQsJsTs5c8d", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
     ,tconvert("4d5d6d7d8d", 5)
+    /*Special Cases: like TP & SF */
+    ,tconvert("TsJsQsKsAsKdAd", 7)
   };
 
   /*
@@ -378,7 +380,7 @@ int tsf()
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
   init_bin(&p.bin);
-  for(i = 0; i < 5; i++)
+  for(i = 0; i < 6; i++)
     {
 
       for(j = 0; j < s[i]; j++)
@@ -597,7 +599,7 @@ void ttest()
   }
 
   printf("Tests Passed.\n");
-  printf("Running Big Test...\n");
-  big_test();
+  /* printf("Running Big Test...\n"); */
+  /* big_test(); */
   
 }
