@@ -111,8 +111,7 @@ CARD *non_high_cards[8] = {
 	{
 	  p.hand[j] = high_cards[i][j];
 	}
-      Sort_Hand(p.hand, card_lengths[i]);
-      Rank_Hand(p.hand, &p.bin, card_lengths[i]);
+      rank_hand(p.hand, &p.bin, card_lengths[i]);
       int rank = bestfull(p.bin.is_full);
       if(rank != 0)
 	{
@@ -129,8 +128,7 @@ CARD *non_high_cards[8] = {
 	{
 	  p.hand[j] = non_high_cards[i][j];
 	}
-      Sort_Hand(p.hand, card_lengths[i]);
-      Rank_Hand(p.hand, &p.bin, card_lengths[i]);
+      rank_hand(p.hand, &p.bin, card_lengths[i]);
       int rank = bestfull(p.bin.is_full);
       if(rank == 0)
 	{
@@ -174,8 +172,7 @@ int tp()
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 1)
 	{
 	  printf("Pair Failed on hand: %d\n", i+1);
@@ -216,8 +213,7 @@ int ttp()
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       int rank = bestfull(p.bin.is_full);
       if(rank != 2)
 	{
@@ -261,8 +257,7 @@ int ttk()
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 3)
 	{
 	  printf("Three of a Kind Failed on hand: %d\n", i+1);
@@ -303,8 +298,7 @@ int tfk()
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 7)
 	{
 	  printf("Four of a Kind Failed on hand: %d\n", i+1);
@@ -346,8 +340,7 @@ int tf()
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 5)
 	{
 	  printf("Flush Failed on hand: %d\n", i+1);
@@ -362,17 +355,20 @@ int tf()
 int tsf()
 {
   int i,j;
-  int s[6] = {7,7,7,6,5,7};
+  int s[8] = {7,7,7,6,5,5,5,7};
   PLAYER p;
-  CARD *h[6] = {
+  CARD *h[8] = {
     /* Pretty Standard Cases */
     tconvert("AsKsQsJsTs5c8d", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
     ,tconvert("4d5d6d7d8d", 5)
+    ,tconvert("TsJsQsKsAs", 5)
+    ,tconvert("2d3d4d5dAd", 5)
     /*Special Cases: like TP & SF */
     ,tconvert("TsJsQsKsAsKdAd", 7)
+
   };
 
   /*
@@ -380,15 +376,14 @@ int tsf()
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
   init_bin(&p.bin);
-  for(i = 0; i < 6; i++)
+  for(i = 0; i < 8; i++)
     {
 
       for(j = 0; j < s[i]; j++)
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 8)
 	{
 	  printf("Straight Flush Failed on hand: %d\n", i+1);
@@ -428,8 +423,7 @@ int ts()
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 4)
 	{
 	  printf("Straight Failed on hand: %d\n", i+1);
@@ -469,8 +463,7 @@ int tfh()
 	{
 	  p.hand[j] = h[i][j];
 	}
-      Sort_Hand(p.hand, s[i]);
-      Rank_Hand(p.hand, &p.bin, s[i]);
+      rank_hand(p.hand, &p.bin, s[i]);
       if(bestfull(p.bin.is_full) != 6)
 	{
 	  printf("Full House Failed on hand: %d\n", i+1);
@@ -485,7 +478,7 @@ int tfh()
 
 void big_test()
 {
-  int one, two, three, four, five, count;
+  int one, two, three, four, five, six, seven, count;
   int freqs[9];
   int z;
   for(z = 0; z < 9; z++)
@@ -504,41 +497,42 @@ void big_test()
       for(three = two+1; three < size; three++)
   	for(four = three+1; four < size; four++)
   	  for(five = four+1; five < size; five++)
-	    {
-	      
-	      if(
-		 one != two && one != three && one != four && one != five
-		 && two != three && two != four && two != five
-		 && three != four && three != five
-		 && four != five
-		 )
+	    for(six = five+1; six < size; six++)
+	      for(seven = six+1; seven < size; seven++)
 		{
-		  sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c"
-		  	  ,ranks[one % 13]
-		  	  ,suits[one % 4]
-		  	  ,ranks[two % 13]
-		  	  ,suits[two % 4]
-		  	  ,ranks[three % 13]
-		  	  ,suits[three % 4]
-		  	  ,ranks[four % 13]
-		  	  ,suits[four % 4]
-		  	  ,ranks[five % 13]
-		  	  ,suits[five % 4]);
-		  hnd = tconvert(test_hand, 5);
-		  for(i = 0; i < 5; i++){
-		    plyr.hand[i] = hnd[i];
-		  }
-		  /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
-		  free(hnd);
-		  /* printf("Player Address: %x\n", plyr); */
-		  /* printf("Player Hand Address: %x\n", plyr.hand); */
-		  /* printf("Player Bin Address: %x\n", plyr.bin); */
+		  if(
+		     one != two && one != three && one != four && one != five
+		     && two != three && two != four && two != five
+		     && three != four && three != five
+		     && four != five
+		     )
+		    {
+		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c"
+			      ,ranks[one % 13]
+			      ,suits[one % 4]
+			      ,ranks[two % 13]
+			      ,suits[two % 4]
+			      ,ranks[three % 13]
+			      ,suits[three % 4]
+			      ,ranks[four % 13]
+			      ,suits[four % 4]
+			      ,ranks[five % 13]
+			      ,suits[five % 4]);
+		      hnd = tconvert(test_hand, 5);
+		      for(i = 0; i < 5; i++){
+			plyr.hand[i] = hnd[i];
+		      }
+		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
+		      free(hnd);
+		      /* printf("Player Address: %x\n", plyr); */
+		      /* printf("Player Hand Address: %x\n", plyr.hand); */
+		      /* printf("Player Bin Address: %x\n", plyr.bin); */
 
-		  rank = Rank_Hand(plyr.hand, &plyr.bin, 5);
-		  freqs[rank]++;
+		      rank = rank_hand(plyr.hand, &plyr.bin, 5);
+		      freqs[rank]++;
+		    }
+		  reset_bin(&plyr.bin);
 		}
-	      reset_bin(&plyr.bin);
-	    }
   long total = 0;
   for(z = 0; z < 9; z++)
     {

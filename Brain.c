@@ -13,14 +13,14 @@ Date: 5/18/2011
 #define GUNSHOT 'G'
 #define OPENENDED 'O'
 
-void Swap(CARD *c, CARD *c2)
+void swap(CARD *c, CARD *c2)
 {/* Helper for SortHand function */
   CARD temp;
   temp = *c;
   *c = *c2;
   *c2 = temp;
 }
-void Sort_Hand(CARD *hand, int hand_size)
+void sort_hand(CARD *hand, int hand_size)
 {
   /* bubble sort */ 
   /* should probably make this faster...but, N is going to be very limited. */
@@ -30,24 +30,24 @@ void Sort_Hand(CARD *hand, int hand_size)
       {
 	if(hand[i].rank < hand[j].rank)
 	  {
-	    Swap(&hand[i], &hand[j]);
+	    swap(&hand[i], &hand[j]);
 	  }
       }
 }
 
-char Gunshot(CARD *hand)
+char gunshot(CARD *hand)
 {/* Check if our straights are gunshot or openended; G - Gunshot; O - Openened */
 
   /* TODO: wtrie this function */
   return 'G';
 }
 
-void Drawing_To(BIN *bin)
+void drawing_to(BIN *bin)
 {/* check which hands we are one card away from */
   
 }
 
-char Player_Card_Makes_Hand(CARD *hand, int hand_len)
+char player_card_makes_hand(CARD *hand, int hand_len)
 {/* Is the players card included in the hand? if not, then the hand is on the board */
   int i;
   for(i = 0; i < hand_len; i++)
@@ -58,12 +58,12 @@ char Player_Card_Makes_Hand(CARD *hand, int hand_len)
   return FALSE;
 }
 
-int Distance(CARD c, CARD c2)
+int distance(CARD c, CARD c2)
 {
   return abs(c.rank - c2.rank);
 }
 
-int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
+int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 {/* Rank the hand while keeping State in the BINS */
   /* hand size must be at least 2 */
   if(size_of_hand < 2)
@@ -72,7 +72,7 @@ int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
       exit(EXIT_FAILURE);
     }
 
-  Sort_Hand(hand, size_of_hand);
+  sort_hand(hand, size_of_hand);
   int i;
 
   bin->HC = hand[0]; /* this will always be the case since we are sorting */
@@ -118,8 +118,8 @@ int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
 	    }
 	}
 
-      int distance = Distance(hand[i], hand[i+1]);
-      if(distance == 0)
+      int delta = distance(hand[i], hand[i+1]);
+      if(delta == 0)
 	{/* Cards Match */
 
 	  /* Fill Coresponding Bins */
@@ -191,7 +191,7 @@ int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
 	    }
 	  
 	}
-      if(distance == 1)
+      if(delta == 1)
 	{/* Cards differ by one */
 
 	  /* Fill Coresponding Bins */
@@ -237,12 +237,13 @@ int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
 		
 	    }
 	}
-      if(distance > 1)
+      if(delta > 1)
 	{/* any potential straight is ruined, clear the straight bin */
 	  clearbin(bin->S.b, bin->S.b, &bin->S.b_count);
 	}
 
     }
+
   /* Special Case for the Full House */
   /* If we have two pair and three of a kind bins full...we have a full house */
   if(bin->is_full[2] == TRUE && bin->is_full[3] == TRUE)
@@ -260,6 +261,31 @@ int Rank_Hand(CARD *hand, BIN *bin, int size_of_hand)
 	      Add(bin->TP.b[t+1], &bin->FH.b, bin->FH.b_max, &bin->FH.b_count);
 	      bin->is_full[6] = TRUE;
 	      break;
+	    }
+	}
+    }
+
+  /* Special Case for Straights and Straight Flushes */
+  CARD temp;
+  CARD temp2;
+  temp = hand[0];
+  temp2 = hand[size_of_hand - 1];
+  if(temp.rank - temp2.rank == -13)
+    {/* Ace is in the front Two is in the back */
+      if(bin->S.b[0].rank == 5)
+	{/* Highest Card in the Straight bin HAS to be 5 */
+	  Add(temp2, &bin->S.b, bin->S.b_max, &bin->S.b_count);
+	}
+      if(temp.suit == temp2.suit)
+	{
+	  int index;
+	  index = 0;
+	  for(index = 0; index < MAX_NUM_SUITS; index++)
+	    {
+	      if(bin->SF.b[index][0].rank == 5)
+		{/* Highest Card in SF bin HAS to be 5 */
+		  Add(temp2, &bin->SF.b[index], bin->SF.b_max, &bin->SF.b_count[index]);
+		}
 	    }
 	}
     }
