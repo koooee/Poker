@@ -468,10 +468,10 @@ void big_test()
   test_hand = malloc(10 * sizeof(char));
 
   for(one = 0; one < size; one++)
-    for(two = 0; two < size; two++)
-      for(three = 0; three < size; three++)
-  	for(four = 0; four < size; four++)
-  	  for(five = 0; five < size; five++)
+    for(two = one+1; two < size; two++)
+      for(three = two+1; three < size; three++)
+  	for(four = three+1; four < size; four++)
+  	  for(five = four+1; five < size; five++)
 	    {
 	      
 	      if(
@@ -507,9 +507,14 @@ void big_test()
 		}
 	      reset_bin(&plyr.bin);
 	    }
-	    
+  long total = 0;
   for(z = 0; z < 9; z++)
-    printf("Freq %d %d\n", z, freqs[z]);
+    {
+      printf("Freq %d %d\n", z, freqs[z]);
+      total += freqs[z];
+    
+    }
+  printf("Total Number of Hands: %d\n", total);
 }
 
 void ttest()
