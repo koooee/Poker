@@ -50,8 +50,9 @@ void Add(CARD c, CARD **hand, int max, int *count)
     }
   else 
     {
-      *hand + (*count)++;
-      **hand = c;
+      CARD *t;
+      t = *hand + (*count)++;
+      *t = c;
     }
   
 }

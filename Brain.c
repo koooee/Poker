@@ -118,6 +118,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    }
 	}
 
+
       int delta = distance(hand[i], hand[i+1]);
       if(delta == 0)
 	{/* Cards Match */
@@ -198,7 +199,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	  
 	  /* Straight Flush and Straight*/
 	  if(bin->is_full[8] == FALSE)
-	    {
+	    {  /* SF special Case */
 	      if(c.suit == c2.suit)
 		{/* if the suits match add them to the bin */
 		  if(bin->SF.b_count[c.suit] <= 0)
@@ -274,15 +275,17 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
   /* Special Case for Straights */
   if(bin->is_full[4] == FALSE && bin->S.b_count > 0 && d == 12)
     {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
-      if(bin->S.b[0].rank == 5)
-	{/* Highest Card in the Straight bin HAS to be 5 */
-	  Add(temp2, &bin->S.b, bin->S.b_max, &bin->S.b_count);
+      if(bin->S.b[0].rank == 3)
+	{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
+	  Add(temp, &bin->S.b, bin->S.b_max, &bin->S.b_count);
 	  if(bin->S.b_count == 5)
 	    {
 	      bin->is_full[4] = TRUE;
 	    }
 	}
     }
+
+
 
   /* Special Case for Straight Flushes: Ace in the Front 2 in the Back*/
       int index;
@@ -292,9 +295,9 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    {/* if the bin isn't full and has something in it and first and last card are Ace and Two */
 	      if(temp.suit == temp2.suit)
 		{/* suits must match since SF */
-		  if(bin->SF.b[index][0].rank == 5)
+		  if(bin->SF.b[index][0].rank == 3)
 		    {/* Highest Card in SF bin HAS to be 5 */
-		      Add(temp2, &bin->SF.b[index], bin->SF.b_max, &bin->SF.b_count[index]);
+		      Add(temp, &bin->SF.b[index], bin->SF.b_max, &bin->SF.b_count[index]);
 		      if(bin->SF.b_count[index] == 5)
 			{
 			  bin->is_full[8] = TRUE;
