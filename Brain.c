@@ -88,6 +88,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	 regardless, we add every card to the flush bin.  it is a multi array where matching suits
 	 get added to their own row
       */
+
       if(bin->is_full[5] == FALSE)
 	{
 	  if(i % 2 == 0)
@@ -118,14 +119,12 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    }
 	}
 
-
       int delta = distance(hand[i], hand[i+1]);
       if(delta == 0)
 	{/* Cards Match */
 
 	  /* Fill Coresponding Bins */
 	  
-
 	  /* Fill the pair bin and mark it as full */
 	  if(bin->is_full[1] == FALSE) {
 	    Add(c, &bin->P.b, bin->P.b_max, &bin->P.b_count);
@@ -236,7 +235,8 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	      }
 		
 	    }
-	}
+	}/* END IF delta == 1 */
+
       if(delta > 1 && delta < 12)
 	{/* any potential straight is ruined, clear the straight bin */
 	  bin->S.b = clearbin(&bin->S.b, &bin->S.b_count, bin->S.b_max);
@@ -244,7 +244,8 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 
     } /*END for(i = 0; i < size_of_hand; i++)
 
-  /* Special Case for the Full House */
+/* Final Checks for made hands */
+  /*Case for Full House */
   /* If we have two pair and three of a kind bins full...we have a full house */
   if(bin->is_full[2] == TRUE && bin->is_full[3] == TRUE)
     {
@@ -272,7 +273,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
   temp2 = hand[size_of_hand - 1];
   int d = distance(temp, temp2);
 
-  /* Special Case for Straights */
+  /* Special Case for Straights: Ace in the front 2 in the back */
   if(bin->is_full[4] == FALSE && bin->S.b_count > 0 && d == 12)
     {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
       if(bin->S.b[0].rank == 3)
@@ -284,8 +285,6 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    }
 	}
     }
-
-
 
   /* Special Case for Straight Flushes: Ace in the Front 2 in the Back*/
       int index;
