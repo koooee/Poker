@@ -20,15 +20,4 @@ typedef struct player {
 /* TODO: Player Init function */
 /* Each player should get their own hand and BINS */
 
-/*Debugging PrintHand*/
-void PrintHand(CARD *h, int hand_size)
-{/* Debugging */
-
-  int i; 
-  for(i =0; i < hand_size; i++)
-    {
-      printf("%c%c  ", ranks[h[i].rank], suits[h[i].suit]);
-    }
-  printf("\n");
-}
 

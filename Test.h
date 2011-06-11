@@ -384,6 +384,7 @@ int tsf()
 	  p.hand[j] = h[i][j];
 	}
       rank_hand(p.hand, &p.bin, s[i]);
+      printb(&p.bin);
       if(bestfull(p.bin.is_full) != 8)
 	{
 	  printf("Straight Flush Failed on hand: %d\n", i+1);

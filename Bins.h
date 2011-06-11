@@ -56,6 +56,17 @@ void Add(CARD c, CARD **hand, int max, int *count)
   
 }
 
+void print_hand(CARD *h, int hand_size)
+{/* Debugging */
+
+  int i; 
+  for(i =0; i < hand_size; i++)
+    {
+      printf("%c%c  ", ranks[h[i].rank], suits[h[i].suit]);
+    }
+  printf("\n");
+}
+
 void init_bin(BIN *bin)
 {
   int card_size = sizeof(CARD);
@@ -109,16 +120,11 @@ void init_bin(BIN *bin)
     }
 }
 
-void clearbin(CARD *b, CARD *free, int *count)
-{
-  int i;
-  CARD empty;
-  for(i = 0; i < *count; i++)
-    {
-      b[i] = empty;
-    }
-  *free = b[0];
+void *clearbin(CARD **hand, int *count, int max)
+{/* free the bin and return a fresh new pointer */
+  free(*hand);
   *count = 0;
+  return malloc(max * sizeof(CARD));
   
 }
 
@@ -190,8 +196,10 @@ void Remove(CARD **free, int *count)
 
 void printb(BIN *bin)
 {/* Print Bin */
-  int i;
-
+  int i,j;
+  printf("\n******************************\n");
+  printf("*        BINS                *\n");
+  printf("******************************\n");
   printf("High Card: ");
   printc(bin->HC);
   printf("\n");
@@ -210,12 +218,25 @@ void printb(BIN *bin)
     }
   printf("\n");
 
+
+  printf("Straight Flush:\n");
+  for(i = 0; i < MAX_NUM_SUITS; i++)
+    {
+      printf("\t%c: ", suits[i]);
+      for(j = 0; j < bin->SF.b_count[i]; j++)
+	{
+	  printc(bin->SF.b[i][j]);
+	}
+      printf("\n");
+    }
+
   printf("Straight: ");
   for(i = 0; i < bin->S.b_count; i++)
     {
       printc(bin->S.b[i]);
     }
   printf("\n");
+printf("******************************\n\n");
 
 }
 
