@@ -35,29 +35,6 @@ void sort_hand(CARD *hand, int hand_size)
       }
 }
 
-char gunshot(CARD *hand)
-{/* Check if our straights are gunshot or openended; G - Gunshot; O - Openened */
-
-  /* TODO: wtrie this function */
-  return 'G';
-}
-
-void drawing_to(BIN *bin)
-{/* check which hands we are one card away from */
-  
-}
-
-char player_card_makes_hand(CARD *hand, int hand_len)
-{/* Is the players card included in the hand? if not, then the hand is on the board */
-  int i;
-  for(i = 0; i < hand_len; i++)
-    {
-      if(hand[i].whos_card == 'P')
-	return TRUE;
-    }
-  return FALSE;
-}
-
 int distance(CARD c, CARD c2)
 {
   return abs(c.rank - c2.rank);
@@ -125,6 +102,26 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 
 	  /* Fill Coresponding Bins */
 	  
+	  /* Special Case For SF */
+
+	  /*
+	    Since we are NOT ranking by suit you could have matching cards and one of them could be seperating
+	     the potential SF  
+	       Example: As Ac Ks  OR  As Ac Ad Ks
+	     we want to make sure these cases are not over looked
+	  */
+	  if(bin->is_full[8] == FALSE)
+	    {
+	      if(i >= 0 && i < size_of_hand - 3)
+		{/* make sure we have room for the next statement */
+		  if(distance(hand[i], hand[i +2]) == 1 && hand[i].suit == hand[i+2].suit)
+		    {/* we have a winner (we dont need to check i+1 cuz that will get resolved in another case) */
+		      Add(hand[i], &bin->SF.b[hand[i].suit], bin->SF.b_max, &bin->SF.b_count[hand[i].suit]);
+		      if(bin->SF.b_count[hand[i].suit] == 5)
+			bin->is_full[8] = TRUE;
+		    }
+	    }	  
+
 	  /* Fill the pair bin and mark it as full */
 	  if(bin->is_full[1] == FALSE) {
 	    Add(c, &bin->P.b, bin->P.b_max, &bin->P.b_count);
@@ -198,23 +195,40 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	  
 	  /* Straight Flush and Straight*/
 	  if(bin->is_full[8] == FALSE)
-	    {  /* SF special Case */
+	    { 
+	      CARD last_in_bin;
 	      if(c.suit == c2.suit)
 		{/* if the suits match add them to the bin */
 		  if(bin->SF.b_count[c.suit] <= 0)
 		    {/* we do this otherwise we would be adding the same card twice */
-		      Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
-		      Add(c2, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+		      if(bin->SF.b_count[c.suit] < 5){
+			last_in_bin = bin->SF.b[c.suit][bin->SF.b_count[c.suit] - 1];
+			if(!(last_in_bin.rank == c.rank && last_in_bin.suit == c.suit)){
+			  Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+			}
+		      }
+		      if(bin->SF.b_count[c2.suit] < 5){
+			  last_in_bin = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] - 1];
+			  if(!(last_in_bin.rank == c2.rank && last_in_bin.suit == c2.suit)){
+			    Add(c2, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+			  }
+		      }
+		      }
 		    }
 		  else
 		    {/* Should only need to add i+1 here (which is c2) */
-		      Add(c2, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+		      if(bin->SF.b_count[c2.suit] < 5){
+			last_in_bin = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] - 1];
+			if(!(last_in_bin.rank == c2.rank && last_in_bin.suit == c2.suit)){
+			  Add(c2, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+			}
+		      }
 		    }
 		  if(bin->SF.b_count[c2.suit] == 5){
 		    bin->is_full[8] = TRUE;
 		  }
 		}
-	    }
+	    } /* END if(bin->is_full[8] == FALSE)
 
 	  /* Straights */
 	  if(bin->is_full[4] == FALSE)

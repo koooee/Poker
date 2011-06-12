@@ -45,6 +45,7 @@ void Add(CARD c, CARD **hand, int max, int *count)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
   if(*count == max)
     {
+      printf("Tried to Add: "); printc(c); printf("\n");
       printf("Your bin is full.\n");
       exit(EXIT_FAILURE);
     }
@@ -57,7 +58,7 @@ void Add(CARD c, CARD **hand, int max, int *count)
   
 }
 
-void print_hand(CARD *h, int hand_size)
+void printh(CARD *h, int hand_size)
 {/* Debugging */
 
   int i; 

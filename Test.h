@@ -367,9 +367,10 @@ int tsf()
     ,tconvert("TsJsQsKsAs", 5)
     ,tconvert("2d3d4d5dAd", 5)
     /*Special Cases */
-    ,tconvert("TsJsQsKsAsKdAd", 7) /* P and SF */
-    ,tconvert("TsTcThJsQsKsAs",7) /*TK and SF */
+    ,tconvert("TsJsQs9cAsKsAd", 7) /* P and SF */
     ,tconvert("TsTcJsJcQsKsAs",7) /* TP and SF */
+    ,tconvert("TsTcThJsQsKsAs",7) /*TK and SF */
+
 
   };
 
@@ -389,7 +390,9 @@ int tsf()
       if(bestfull(p.bin.is_full) != 8)
 	{
 	  printf("Straight Flush Failed on hand: %d\n", i+1);
-	  printf("with a rank of: %d\n", bestfull(p.bin.is_full));
+	  printh(p.hand, s[i]);
+	  printf("With a rank of: %d\n", bestfull(p.bin.is_full));
+	  printb(&p.bin);
 	  return 0;
 	}
       reset_bin(&p.bin);
@@ -541,12 +544,15 @@ void big_test()
 			      ,ranks[seven % 13]
 			      ,suits[seven % 4]);
 		      hnd = tconvert(test_hand, 7);
+		      /* sort_hand(hnd, 7); */
+		      /* printh(hnd, 7); */
 		      for(i = 0; i < 7; i++){
 			plyr.hand[i] = hnd[i];
 		      }
 		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 		      free(hnd);
 		      rank = rank_hand(plyr.hand, &plyr.bin, 7);
+		      /* printb(&plyr.bin); */
 		      freqs[rank]++;
 		    }
 		  reset_bin(&plyr.bin);
@@ -561,65 +567,120 @@ void big_test()
   printf("Total Number of Hands: %d\n", total);
 }
 
+void custom_sf_test()
+{
+  char r,s,r2,s2, *cards[52];
+  char *test_hand;
+  CARD *hnd;
+  PLAYER plyr;
+  int i, j,k,rank;
+  init_bin(&plyr.bin);
+  test_hand = malloc(14 * sizeof(char));
+  for(i = 0; i < 52; i++)
+    for(j = i+1; j < 52; j++)
+      {
+	 r = ranks[i%13];
+	 r2 = ranks[j%13];
+	 s = suits[i%4];
+	 s2 = suits[i%4];
+	 if(!(
+	      (r == 'A' && s == 's')
+	      || (r == 'K' && s == 's')
+	      || (r == 'Q' && s == 's')
+	      || (r == 'J' && s == 's')
+	      || (r == 'T' && s == 's')
+	      || (r2 == 'A' && s2 == 's')
+	      || (r2 == 'K' && s2 == 's')
+	      || (r2 == 'Q' && s2 == 's')
+	      || (r2 == 'J' && s2 == 's')
+	      || (r2 == 'T' && s2 == 's')) && (i != j)
+	    ){
+	  
+	   sprintf(test_hand, "AsKsJsQsTs%c%c%c%c"
+		   ,r
+		   ,s
+		   ,r2
+		   ,s2);
+	   hnd = tconvert(test_hand, 7);
+	   sort_hand(hnd, 7);
+	   printh(hnd, 7);
+
+	   for(k = 0; k < 7; k++){
+	     plyr.hand[k] = hnd[k];
+	   }
+	   /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
+	   free(hnd);
+	   rank = rank_hand(plyr.hand, &plyr.bin, 7);
+	   /* printb(&plyr.bin); */
+	   if(rank != 8)
+	     {
+	       printf("SF FAILED!!\n");
+	       printh(plyr.hand, 7);
+	       printb(&plyr.bin);
+	     }
+	 }
+	 reset_bin(&plyr.bin);
+      }
+}
 void ttest()
 {/* this is the main function for test cases */
+  custom_sf_test();
+  int hc = thc();
+  if(hc == 0){
+    printf("High Card Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  printf("Running Big Test...\n");
-  big_test();
+  int p = tp();
+  if(p == 0){
+    printf("Pair Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  /* int hc = thc(); */
-  /* if(hc == 0){ */
-  /*   printf("High Card Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  int tp = ttp();
+  if(tp == 0){
+    printf("Two Pair Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  /* int p = tp(); */
-  /* if(p == 0){ */
-  /*   printf("Pair Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  int tk = ttk();
+  if(tk == 0){
+    printf("Three of a Kind Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  /* int tp = ttp(); */
-  /* if(tp == 0){ */
-  /*   printf("Two Pair Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  int s = ts();
+  if(s == 0){
+    printf("Straight Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  /* int tk = ttk(); */
-  /* if(tk == 0){ */
-  /*   printf("Three of a Kind Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  int f = tf();
+  if(f == 0){
+    printf("Flush Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  /* int s = ts(); */
-  /* if(s == 0){ */
-  /*   printf("Straight Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  int fh = tfh();
+  if(fh == 0){
+    printf("Full House Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  /* int f = tf(); */
-  /* if(f == 0){ */
-  /*   printf("Flush Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  int fk = tfk();
+  if(tk == 0){
+    printf("Four of a Kind Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int sf = tsf();
+  if(sf == 0){
+    printf("Straight Flush Failed\n");
+    exit(EXIT_FAILURE);
+  }
 
-  /* int fh = tfh(); */
-  /* if(fh == 0){ */
-  /*   printf("Full House Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  printf("Tests Passed.\n");
 
-  /* int fk = tfk(); */
-  /* if(tk == 0){ */
-  /*   printf("Four of a Kind Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
-  /* int sf = tsf(); */
-  /* if(sf == 0){ */
-  /*   printf("Straight Flush Failed\n"); */
-  /*   exit(EXIT_FAILURE); */
-  /* } */
+  /* printf("Running Big Test...\n"); */
+  /* big_test(); */
 
-  /* printf("Tests Passed.\n"); */
-  
 }
