@@ -122,6 +122,13 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 			  if(bin->SF.b_count[hand[i].suit] == 5)
 			    bin->is_full[8] = TRUE;
 			}
+		      else if(distance(hand[i], hand[i+2]) == 1 && hand[i].suit == hand[i+2].suit)
+			{/* Check Two ahead for this case: As Ad Ks Kd */
+			  Add(hand[i], &bin->SF.b[hand[i].suit], bin->SF.b_max, &bin->SF.b_count[hand[i].suit]);
+			  if(bin->SF.b_count[hand[i].suit] == 5)
+			    bin->is_full[8] = TRUE;
+			}
+			  
 		    }
 		}
 	      if(i >= 1 && i < size_of_hand)
@@ -130,6 +137,12 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		    {
 		      if(distance(hand[i-1], c2) == 1 && hand[i-1].suit == c2.suit)
 			{/* this will solve a specific case....for instance: As Ks Qs Jc Js Tc Ts */
+
+			  /* make this check since previous iteration could have added the same card */
+			  CARD last = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] - 1];
+			  if(!(last.rank == hand[i-1].rank && last.suit == hand[i-1].suit))
+			    Add(hand[i-1], &bin->SF.b[hand[i-1].suit], bin->SF.b_max, &bin->SF.b_count[hand[i-1].suit]);
+
 			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
 			  if(bin->SF.b_count[c2.suit] == 5)
 			    bin->is_full[8] = TRUE;

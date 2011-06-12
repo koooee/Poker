@@ -57,7 +57,7 @@ void Add(CARD c, CARD **hand, int max, int *count)
   if(*count == max)
     {
       printh(*hand, max);
-      printf("Your bin is full.\n");
+      printf("Your bin is full. Tried to add: "); printc(c); printf("\n");
       exit(EXIT_FAILURE);
     }
   else 

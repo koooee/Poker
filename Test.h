@@ -379,7 +379,7 @@ int tsf()
      TODO: the cases above are only testing rankings that ARE high cards...we also want to make sure we are not
      ranking other hands like Pair, Two Pair etc.. as High Card.
   */
-  init_bin(&p.bin);
+ init_bin(&p.bin);
   for(i = 0; i < 10; i++)
     {
 
@@ -495,6 +495,65 @@ void check_for_same(CARD * cards)
 	  printf("\nFAIL!!! Matchnig Cards!!!\n");
 	  exit(EXIT_FAILURE);
 	}
+}
+
+void test_sf()
+{
+  int one, two, count;
+  int z;
+  count = 0;
+  int size = 52, i, rank;
+  char *cards[52];
+  char *test_hand;
+  CARD *hnd;
+  PLAYER plyr;
+
+  init_bin(&plyr.bin);
+  test_hand = malloc(14 * sizeof(char));
+  for(one = 0; one < size; one++)
+    for(two = one+1; two < size; two++)
+      {
+	char r, r2, s, s2;
+	r = ranks[one % 13];
+	r2 = ranks[two %13];
+	s = suits[one % 4];
+	s2 = suits[two % 4];
+	if(
+	   !((r == 'A' && s =='s')
+	   || (r == 'K' && s == 's')
+	   || (r == 'Q' && s == 's')
+	   || (r == 'J' && s == 's')
+	   || (r == 'T' && s == 's')
+	   || (r2 == 'A' && s2 == 's')
+	   || (r2 == 'K' && s2 == 's')
+	   || (r2 == 'Q' && s2 == 's')
+	   || (r2 == 'J' && s2 == 's')
+	    || (r2 == 'T' && s2 == 's')))
+	  {
+
+	    sprintf(test_hand, "AsKsQsJsTs%c%c%c%c",r,s,r2,s2);
+
+	    hnd = tconvert(test_hand, 7);
+	    for(i = 0; i < 7; i++){
+	      plyr.hand[i] = hnd[i];
+	    }
+	    /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
+	    free(hnd);
+	    sort_hand(hnd, 7);
+	    printh(hnd, 7);
+	    rank = rank_hand(plyr.hand, &plyr.bin, 7);
+	    if(rank != 8)
+	      {
+		printf("SF Failed.\n");
+		printh(plyr.hand, 7);
+		printb(&plyr.bin);
+	      }
+	    reset_bin(&plyr.bin);
+	  }
+      }
+
+
+  
 }
 void big_test()
 {
@@ -617,6 +676,8 @@ void ttest()
   }
 
   printf("Tests Passed.\n");
-  printf("Running Big Test...\n");
-  big_test();
+  
+  test_sf();
+  /* printf("Running Big Test...\n"); */
+  /* big_test(); */
 }
