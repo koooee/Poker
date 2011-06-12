@@ -41,10 +41,22 @@ typedef struct BINS {
   
 } BIN;
 
+void printh(CARD *h, int hand_size)
+{/* Debugging */
+
+  int i; 
+  for(i =0; i < hand_size; i++)
+    {
+      printf("%c%c  ", ranks[h[i].rank], suits[h[i].suit]);
+    }
+  printf("\n");
+}
+
 void Add(CARD c, CARD **hand, int max, int *count)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
   if(*count == max)
     {
+      printh(*hand, max);
       printf("Your bin is full.\n");
       exit(EXIT_FAILURE);
     }
@@ -57,16 +69,6 @@ void Add(CARD c, CARD **hand, int max, int *count)
   
 }
 
-void print_hand(CARD *h, int hand_size)
-{/* Debugging */
-
-  int i; 
-  for(i =0; i < hand_size; i++)
-    {
-      printf("%c%c  ", ranks[h[i].rank], suits[h[i].suit]);
-    }
-  printf("\n");
-}
 
 void init_bin(BIN *bin)
 {

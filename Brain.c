@@ -35,29 +35,6 @@ void sort_hand(CARD *hand, int hand_size)
       }
 }
 
-char gunshot(CARD *hand)
-{/* Check if our straights are gunshot or openended; G - Gunshot; O - Openened */
-
-  /* TODO: wtrie this function */
-  return 'G';
-}
-
-void drawing_to(BIN *bin)
-{/* check which hands we are one card away from */
-  
-}
-
-char player_card_makes_hand(CARD *hand, int hand_len)
-{/* Is the players card included in the hand? if not, then the hand is on the board */
-  int i;
-  for(i = 0; i < hand_len; i++)
-    {
-      if(hand[i].whos_card == 'P')
-	return TRUE;
-    }
-  return FALSE;
-}
-
 int distance(CARD c, CARD c2)
 {
   return abs(c.rank - c2.rank);
@@ -124,31 +101,58 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	{/* Cards Match */
 
 	  /* Fill Coresponding Bins */
-<<<<<<< HEAD
-	  
-=======
 
 	  /*
 	    Since we are NOT ranking by suit you could have matching cards and one of them could be seperating
 	    the potential SF  
 	    Example: As Ac Ks  OR  As Ac Ad Ks
 	    we want to make sure these cases are not over looked
+	    TODO: this needs to be solved more elegantly. 
 	  */
 	  if(bin->is_full[8] == FALSE)
 	    {
-	      if(i >= 0 && i < size_of_hand - 3)
+	      /* Special Cases for TP and SF */
+	      if(i >= 0 && i < size_of_hand - 4)
 		{/* make sure we have room for the next statement */
-		  if(distance(hand[i], hand[i +2]) == 1 && hand[i].suit == hand[i+2].suit)
-		    {/* we have a winner (we dont need to check i+1 cuz that will get resolved in another case) */
-		      Add(hand[i], &bin->SF.b[hand[i].suit], bin->SF.b_max, &bin->SF.b_count[hand[i].suit]);
-		      if(bin->SF.b_count[hand[i].suit] == 5)
-			bin->is_full[8] = TRUE;
+		  if(bin->is_full[8] == FALSE)
+		    {
+		      if(distance(hand[i], hand[i+3]) == 1 && hand[i].suit == hand[i+3].suit)
+			{/* this will solve a couple specific cases...for instance:  As Ad Kd Ks Qs Js Ts */
+			  Add(hand[i], &bin->SF.b[hand[i].suit], bin->SF.b_max, &bin->SF.b_count[hand[i].suit]);
+			  if(bin->SF.b_count[hand[i].suit] == 5)
+			    bin->is_full[8] = TRUE;
+			}
 		    }
-		}	  
+		}
+	      if(i >= 1 && i < size_of_hand)
+		{/* again, make sure we have space for next statement */
+		  if(bin->is_full[8] == FALSE)
+		    {
+		      if(distance(hand[i-1], c2) == 1 && hand[i-1].suit == c2.suit)
+			{/* this will solve a specific case....for instance: As Ks Qs Jc Js Tc Ts */
+			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
+			  if(bin->SF.b_count[c2.suit] == 5)
+			    bin->is_full[8] = TRUE;
+			}
+		    }		  
+		}
+	      /* END Special Cases for TP and SF */
+
+	      /* Special Cases for TK and SF */
+	      if(i >= 2 && i < size_of_hand-1)
+		{/* checking for space */
+		  if(bin->is_full[8] == FALSE)
+		    {
+		      if(distance(c2, hand[i-2]) == 1 && c2.suit == hand[i-2].suit)
+			{/* this will solve this case: As Ks Qs Js Tc Th Ts */
+			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
+			  if(bin->SF.b_count[c2.suit] == 5)
+			    bin->is_full[8] = TRUE;
+			}
+		    }
+		}
 	    }
 
-
->>>>>>> 724720a9c147316df39bb5464e88198d46785eb2
 	  /* Fill the pair bin and mark it as full */
 	  if(bin->is_full[1] == FALSE) {
 	    Add(c, &bin->P.b, bin->P.b_max, &bin->P.b_count);
@@ -231,8 +235,26 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		      Add(c2, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
 		    }
 		  else
-		    {/* Should only need to add i+1 here (which is c2) */
-		      Add(c2, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+		    {/* make sure the cards differ by one and suits match with the last card currently in the bin, if so, add them. */
+		      CARD last_in_bin; 
+		      if(bin->is_full[8] == FALSE)
+			{
+			  last_in_bin = bin->SF.b[c.suit][bin->SF.b_count[c.suit] -1];
+			  if(distance(c, last_in_bin) == 1 && last_in_bin.suit == c.suit)
+			    Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+			  if(bin->SF.b_count[c2.suit] == 5)
+			    bin->is_full[8] = TRUE;
+			}
+
+		      if(bin->is_full[8] == FALSE)
+			{
+			  last_in_bin = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] -1];
+			  if(distance(last_in_bin, c2) == 1 && last_in_bin.suit == c2.suit)
+			    Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
+			  if(bin->SF.b_count[c2.suit] == 5)
+			    bin->is_full[8] = TRUE;
+			}
+		      
 		    }
 		  if(bin->SF.b_count[c2.suit] == 5){
 		    bin->is_full[8] = TRUE;
