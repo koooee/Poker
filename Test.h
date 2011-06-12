@@ -525,6 +525,7 @@ void big_test()
 		     && six != seven
 		     )
 		    {
+<<<<<<< HEAD
 		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c"
 			      ,ranks[one % 13]
 			      ,suits[one % 4]
@@ -540,6 +541,24 @@ void big_test()
 			      ,suits[six % 4]
 			      ,ranks[seven % 13]
 			      ,suits[seven % 4]);
+=======
+		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c"
+		      	      ,ranks[one % 13]
+		      	      ,suits[one % 4]
+		      	      ,ranks[two % 13]
+		      	      ,suits[two % 4]
+		      	      ,ranks[three % 13]
+		      	      ,suits[three % 4]
+		      	      ,ranks[four % 13]
+		      	      ,suits[four % 4]
+		      	      ,ranks[five % 13]
+		      	      ,suits[five % 4]
+			      ,ranks[six % 13]
+		      	      ,suits[six % 4]
+		      	      ,ranks[seven % 13]
+		      	      ,suits[seven % 4]);
+			      
+>>>>>>> 724720a9c147316df39bb5464e88198d46785eb2
 		      hnd = tconvert(test_hand, 7);
 		      for(i = 0; i < 7; i++){
 			plyr.hand[i] = hnd[i];
@@ -564,9 +583,58 @@ void big_test()
 void ttest()
 {/* this is the main function for test cases */
 
+
+  int hc = thc();
+  if(hc == 0){
+    printf("High Card Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int p = tp();
+  if(p == 0){
+    printf("Pair Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int tp = ttp();
+  if(tp == 0){
+    printf("Two Pair Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int tk = ttk();
+  if(tk == 0){
+    printf("Three of a Kind Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int fk = tfk();
+  if(tk == 0){
+    printf("Four of a Kind Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int f = tf();
+  if(f == 0){
+    printf("Flush Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int sf = tsf();
+  if(sf == 0){
+    printf("Straight Flush Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int s = ts();
+  if(sf == 0){
+    printf("Straight Failed\n");
+    exit(EXIT_FAILURE);
+  }
+  int fh = tfh();
+  if(sf == 0){
+    printf("Full House Failed\n");
+    exit(EXIT_FAILURE);
+  }
+
+  printf("Tests Passed.\n");
   printf("Running Big Test...\n");
   big_test();
 
+<<<<<<< HEAD
   /* int hc = thc(); */
   /* if(hc == 0){ */
   /*   printf("High Card Failed\n"); */
@@ -621,5 +689,7 @@ void ttest()
   /* } */
 
   /* printf("Tests Passed.\n"); */
+=======
+>>>>>>> 724720a9c147316df39bb5464e88198d46785eb2
   
 }

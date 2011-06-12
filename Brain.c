@@ -124,7 +124,31 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	{/* Cards Match */
 
 	  /* Fill Coresponding Bins */
+<<<<<<< HEAD
 	  
+=======
+
+	  /*
+	    Since we are NOT ranking by suit you could have matching cards and one of them could be seperating
+	    the potential SF  
+	    Example: As Ac Ks  OR  As Ac Ad Ks
+	    we want to make sure these cases are not over looked
+	  */
+	  if(bin->is_full[8] == FALSE)
+	    {
+	      if(i >= 0 && i < size_of_hand - 3)
+		{/* make sure we have room for the next statement */
+		  if(distance(hand[i], hand[i +2]) == 1 && hand[i].suit == hand[i+2].suit)
+		    {/* we have a winner (we dont need to check i+1 cuz that will get resolved in another case) */
+		      Add(hand[i], &bin->SF.b[hand[i].suit], bin->SF.b_max, &bin->SF.b_count[hand[i].suit]);
+		      if(bin->SF.b_count[hand[i].suit] == 5)
+			bin->is_full[8] = TRUE;
+		    }
+		}	  
+	    }
+
+
+>>>>>>> 724720a9c147316df39bb5464e88198d46785eb2
 	  /* Fill the pair bin and mark it as full */
 	  if(bin->is_full[1] == FALSE) {
 	    Add(c, &bin->P.b, bin->P.b_max, &bin->P.b_count);
