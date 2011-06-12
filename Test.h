@@ -496,44 +496,47 @@ void big_test()
   PLAYER plyr;
 
   init_bin(&plyr.bin);
-  test_hand = malloc(10 * sizeof(char));
+  test_hand = malloc(14 * sizeof(char));
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
       for(three = two+1; three < size; three++)
   	for(four = three+1; four < size; four++)
   	  for(five = four+1; five < size; five++)
-	    //	    for(six = five+1; six < size; six++)
-	    //for(seven = six+1; seven < size; seven++)
+	    for(six = five+1; six < size; six++)
+	      for(seven = six+1; seven < size; seven++)
 		{
 		  if(
-		     one != two && one != three && one != four && one != five
-		     && two != three && two != four && two != five
-		     && three != four && three != five
-		     && four != five
+		     one != two && one != three && one != four && one != five && one != six && one != seven
+		     && two != three && two != four && two != five && two != six && two != seven
+		     && three != four && three != five && three != six && three != seven
+		     && four != five && four != six && four != seven
+		     && five != six && five != seven
+		     && six != seven
 		     )
 		    {
 		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c"
-			      ,ranks[one % 13]
-			      ,suits[one % 4]
-			      ,ranks[two % 13]
-			      ,suits[two % 4]
-			      ,ranks[three % 13]
-			      ,suits[three % 4]
-			      ,ranks[four % 13]
-			      ,suits[four % 4]
-			      ,ranks[five % 13]
-			      ,suits[five % 4]);
-		      hnd = tconvert(test_hand, 5);
-		      for(i = 0; i < 5; i++){
+		      	      ,ranks[one % 13]
+		      	      ,suits[one % 4]
+		      	      ,ranks[two % 13]
+		      	      ,suits[two % 4]
+		      	      ,ranks[three % 13]
+		      	      ,suits[three % 4]
+		      	      ,ranks[four % 13]
+		      	      ,suits[four % 4]
+		      	      ,ranks[five % 13]
+		      	      ,suits[five % 4]
+			      ,ranks[six % 13]
+		      	      ,suits[six % 4]
+		      	      ,ranks[seven % 13]
+		      	      ,suits[seven % 4]);
+			      
+		      hnd = tconvert(test_hand, 7);
+		      for(i = 0; i < 7; i++){
 			plyr.hand[i] = hnd[i];
 		      }
 		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 		      free(hnd);
-		      /* printf("Player Address: %x\n", plyr); */
-		      /* printf("Player Hand Address: %x\n", plyr.hand); */
-		      /* printf("Player Bin Address: %x\n", plyr.bin); */
-
-		      rank = rank_hand(plyr.hand, &plyr.bin, 5);
+		      rank = rank_hand(plyr.hand, &plyr.bin, 7);
 		      freqs[rank]++;
 		    }
 		  reset_bin(&plyr.bin);

@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
   PLAYER p;
   int i, seed;
   CARD *h;
-  seed = atoi(argv[1]);
   /* Debugging -- Delete Section when done */
   /* Debugging Init the hand as a straight */
     ttest();
