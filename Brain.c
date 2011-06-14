@@ -109,6 +109,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    we want to make sure these cases are not over looked
 	    TODO: this needs to be solved more elegantly. 
 	  */
+	  CARD last;
 	  if(bin->is_full[8] == FALSE)
 	    {
 	      /* Special Cases for TP and SF */
@@ -116,21 +117,26 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		{/* make sure we have room for the next statement */
 		  if(bin->is_full[8] == FALSE)
 		    {
-		      if(distance(hand[i], hand[i+3]) == 1 && hand[i].suit == hand[i+3].suit)
+		      if(distance(c, hand[i+3]) == 1 && c.suit == hand[i+3].suit)
 			{/* this will solve a couple specific cases...for instance:  As Ad Kd Ks Qs Js Ts */
-			  Add(hand[i], &bin->SF.b[hand[i].suit], bin->SF.b_max, &bin->SF.b_count[hand[i].suit]);
-			  if(bin->SF.b_count[hand[i].suit] == 5)
+	 		  last = bin->SF.b[c.suit][bin->SF.b_count[c.suit] - 1];
+			  if(!(last.rank == c.rank && last.suit == c.suit))
+			    Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+			  if(bin->SF.b_count[c.suit] == 5)
 			    bin->is_full[8] = TRUE;
 			}
-		      else if(distance(hand[i], hand[i+2]) == 1 && hand[i].suit == hand[i+2].suit)
+		      else if(distance(c, hand[i+2]) == 1 && c.suit == hand[i+2].suit)
 			{/* Check Two ahead for this case: As Ad Ks Kd */
-			  Add(hand[i], &bin->SF.b[hand[i].suit], bin->SF.b_max, &bin->SF.b_count[hand[i].suit]);
-			  if(bin->SF.b_count[hand[i].suit] == 5)
+	 		  last = bin->SF.b[c.suit][bin->SF.b_count[c.suit] - 1];
+			  if(!(last.rank == c.rank && last.suit == hand[i-1].suit))
+			    Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+			  if(bin->SF.b_count[c.suit] == 5)
 			    bin->is_full[8] = TRUE;
 			}
 			  
 		    }
 		}
+
 	      if(i >= 1 && i < size_of_hand)
 		{/* again, make sure we have space for next statement */
 		  if(bin->is_full[8] == FALSE)
@@ -139,15 +145,34 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 			{/* this will solve a specific case....for instance: As Ks Qs Jc Js Tc Ts */
 
 			  /* make this check since previous iteration could have added the same card */
-			  CARD last = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] - 1];
+	 		  last = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] - 1];
 			  if(!(last.rank == hand[i-1].rank && last.suit == hand[i-1].suit))
 			    Add(hand[i-1], &bin->SF.b[hand[i-1].suit], bin->SF.b_max, &bin->SF.b_count[hand[i-1].suit]);
 
-			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
+			  if(bin->SF.b_count[c2.suit] == 5)
+			    bin->is_full[8] = TRUE;
+
+
+			  last = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] - 1];
+			  if(!(last.rank == c2.rank && last.suit == c2.suit))
+			    Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
 			  if(bin->SF.b_count[c2.suit] == 5)
 			    bin->is_full[8] = TRUE;
 			}
+
 		    }		  
+		  if(i >=2 && i < size_of_hand)
+		    {
+		      if(distance(c, hand[i-2]) == 1 && c.suit == hand[i-2].suit)
+			{
+			  last = bin->SF.b[c.suit][bin->SF.b_count[c.suit] - 1];
+			  if(!(last.rank == hand[i-2].rank && last.suit == hand[i-2].suit))
+			    Add(hand[i-2], &bin->SF.b[hand[i-2].suit], bin->SF.b_max, &bin->SF.b_count[hand[i-2].suit]);
+
+			  if(bin->SF.b_count[c.suit] == 5)
+			    bin->is_full[8] = TRUE;
+			}
+		    }
 		}
 	      /* END Special Cases for TP and SF */
 
@@ -158,7 +183,9 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		    {
 		      if(distance(c2, hand[i-2]) == 1 && c2.suit == hand[i-2].suit)
 			{/* this will solve this case: As Ks Qs Js Tc Th Ts */
-			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
+			  last = bin->SF.b[c2.suit][bin->SF.b_count[c2.suit] - 1];
+			  if(!(last.rank == c2.rank && last.suit == c2.suit))
+			    Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
 			  if(bin->SF.b_count[c2.suit] == 5)
 			    bin->is_full[8] = TRUE;
 			}
@@ -253,8 +280,10 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		      if(bin->is_full[8] == FALSE)
 			{
 			  last_in_bin = bin->SF.b[c.suit][bin->SF.b_count[c.suit] -1];
-			  if(distance(c, last_in_bin) == 1 && last_in_bin.suit == c.suit)
+			  if(distance(c, last_in_bin) == 1 && last_in_bin.suit == c.suit){
 			    Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+			    /* printf("Added2%d: ",i); printc(c); printf("\n"); */
+			  }
 			  if(bin->SF.b_count[c2.suit] == 5)
 			    bin->is_full[8] = TRUE;
 			}

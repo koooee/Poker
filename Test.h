@@ -356,7 +356,7 @@ int tf()
 }
 int tsf()
 {
-  int i,j;
+  int i,j, count;
   int s[10] = {7,7,7,6,5,5,5,7,7,7};
   PLAYER p;
   CARD *h[10] = {
@@ -547,12 +547,13 @@ void test_sf()
 		printf("SF Failed.\n");
 		printh(plyr.hand, 7);
 		printb(&plyr.bin);
+		count++;
 	      }
 	    reset_bin(&plyr.bin);
 	  }
       }
 
-
+  printf("Total # Failed Hands: %d\n", count);
   
 }
 void big_test()
