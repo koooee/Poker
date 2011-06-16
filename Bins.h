@@ -106,8 +106,8 @@ void init_bin(BIN *bin)
      might have an effect on preformance since we would be calling malloc frequently..and I am very concerned
      about runtime preformance
   */
-  bin->F.b_count = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
-  bin->SF.b_count = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
+  bin->F.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD));
+  bin->SF.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD));
 
   for(i = 0; i < MAX_NUM_SUITS; i++)
     {

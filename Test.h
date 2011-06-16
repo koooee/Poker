@@ -111,7 +111,9 @@ CARD *non_high_cards[8] = {
 	{
 	  p.hand[j] = high_cards[i][j];
 	}
+      printf("Ranking Hand...\n");
       rank_hand(p.hand, &p.bin, card_lengths[i]);
+      printf("Hand Ranked.\n");
       int rank = bestfull(p.bin.is_full);
       if(rank != 0)
 	{
@@ -569,50 +571,49 @@ void big_test()
 void ttest()
 {/* this is the main function for test cases */
 
-
-  int hc = thc();
-  if(hc == 0){
-    printf("High Card Failed\n");
-    exit(EXIT_FAILURE);
-  }
-  int p = tp();
-  if(p == 0){
-    printf("Pair Failed\n");
-    exit(EXIT_FAILURE);
-  }
-  int tp = ttp();
-  if(tp == 0){
-    printf("Two Pair Failed\n");
-    exit(EXIT_FAILURE);
-  }
-  int tk = ttk();
-  if(tk == 0){
-    printf("Three of a Kind Failed\n");
-    exit(EXIT_FAILURE);
-  }
-  int fk = tfk();
-  if(tk == 0){
-    printf("Four of a Kind Failed\n");
-    exit(EXIT_FAILURE);
-  }
-  int f = tf();
-  if(f == 0){
-    printf("Flush Failed\n");
-    exit(EXIT_FAILURE);
-  }
+  /* int hc = thc(); */
+  /* if(hc == 0){ */
+  /*   printf("High Card Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
+  /* int p = tp(); */
+  /* if(p == 0){ */
+  /*   printf("Pair Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
+  /* int tp = ttp(); */
+  /* if(tp == 0){ */
+  /*   printf("Two Pair Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
+  /* int tk = ttk(); */
+  /* if(tk == 0){ */
+  /*   printf("Three of a Kind Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
+  /* int fk = tfk(); */
+  /* if(tk == 0){ */
+  /*   printf("Four of a Kind Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
+  /* int f = tf(); */
+  /* if(f == 0){ */
+  /*   printf("Flush Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
+  /* int s = ts(); */
+  /* if(sf == 0){ */
+  /*   printf("Straight Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
+  /* int fh = tfh(); */
+  /* if(sf == 0){ */
+  /*   printf("Full House Failed\n"); */
+  /*   exit(EXIT_FAILURE); */
+  /* } */
   int sf = tsf();
   if(sf == 0){
     printf("Straight Flush Failed\n");
-    exit(EXIT_FAILURE);
-  }
-  int s = ts();
-  if(sf == 0){
-    printf("Straight Failed\n");
-    exit(EXIT_FAILURE);
-  }
-  int fh = tfh();
-  if(sf == 0){
-    printf("Full House Failed\n");
     exit(EXIT_FAILURE);
   }
 

@@ -48,7 +48,6 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
       printf("Hand size must be >= 2 to rank\n");
       exit(EXIT_FAILURE);
     }
-
   sort_hand(hand, size_of_hand);
   int i;
 
@@ -74,24 +73,25 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	{
 	  if(i % 2 == 0)
 	    {/* add on the evens otherwise we would count every card twice */
+
 	      if(bin->is_full[8] == FALSE)
 		{
 		  if(bin->SF.b_count[c.suit] == 0 && distance(c,c2) == 1 && c.suit == c2.suit)
 		    {/* if there are no cards in the bin and conditions match for SF, add both to bin */
 		      Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
-		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
+		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
 		    }
-		  else 
+		  else
 		    {
 		      
-		      if( distance(*bin->SF.b[bin->SF.b_count[c.suit] - 1], c) == 1)
-			{/* check the last card in the SF bin and Current card are worthy of SF bin*/
-			  Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit]);
-			  if(bin->SF.b_count[c.suit] == 5)
-			    {
-			      bin->is_full[8] = TRUE;
-			    }
-			}
+		      if( distance(bin->SF.b[bin->SF.b_count[c2.suit] - 1], c2) == 1)
+		  	{/* check the last card in the SF bin and Current card are worthy of SF bin*/
+		  	  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
+		  	  if(bin->SF.b_count[c2.suit] == 5)
+		  	    {
+		  	      bin->is_full[8] = TRUE;
+		  	    }
+		  	}
 		    }
 		}
 	      /* Regardless, we add cards to the Flush bin */
@@ -109,27 +109,27 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    {/* check for the last card */
 	      if(i == size_of_hand-2)
 		{
-		  Add(hand[i+1], &bin->F.b[hand[i+1].suit], bin->F.b_max, &bin->F.b_count[hand[i+1].suit]);
-		  CARD last = *bin->SF.b[bin->SF.b_count[hand[i+1].suit] - 1];
-		  if(distance(last, hand[i+1]) == 1)
+		  Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit]);
+		  CARD last = *bin->SF.b[bin->SF.b_count[c2.suit] - 1];
+		  if(distance(last, c2) == 1)
 		    {/* Check for SF bin conditions */
-		      Add(hand[i+1], &bin->SF.b[hand[i+1].suit], bin->SF.b_max, &bin->SF.b_count[hand[i+1].suit]);
-		      if(bin->SF.b_count[hand[i+1].suit] == 5)
-			bin->is_full[8] = TRUE;
+		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit]);
+		      if(bin->SF.b_count[c2.suit] == 5)
+		  	bin->is_full[8] = TRUE;
 		    }
 		  if(last.rank = 0 && hand[0].rank == 12)
 		    {/* last card in bin is a two...need to check for an Ace in the front to make the wheel */
 		      int cnt = 0;
 		      while(hand[cnt].rank == 12)
-			{/* do this since we could have multiple aces to check the suit for */
-			  if(hand[cnt].suit == last.suit)
-			    {
-			      Add(hand[cnt], &bin->SF.b[hand[cnt].suit], bin->SF.b_max, &bin->SF.b_count[hand[cnt].suit]);
-			      if(bin->SF.b_count[hand[cnt].suit] == 5)
-				bin->is_full[8] = TRUE;
-			    }
-			  cnt++;
-			}
+		  	{/* do this since we could have multiple aces to check the suit for */
+		  	  if(hand[cnt].suit == last.suit)
+		  	    {
+		  	      Add(hand[cnt], &bin->SF.b[hand[cnt].suit], bin->SF.b_max, &bin->SF.b_count[hand[cnt].suit]);
+		  	      if(bin->SF.b_count[hand[cnt].suit] == 5)
+		  		bin->is_full[8] = TRUE;
+		  	    }
+		  	  cnt++;
+		  	}
 		    }
 		}/* END if(i == size_of_hand-2) */
 	    }/* END else */
@@ -144,7 +144,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    }
 	}
 
-      int delta = distance(hand[i], hand[i+1]);
+      int delta = distance(c, c2);
       if(delta == 0)
 	{/* Cards Match */
 
