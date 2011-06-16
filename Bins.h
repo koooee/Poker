@@ -54,11 +54,13 @@ void printh(CARD *h, int hand_size)
 
 void Add(CARD c, CARD **hand, int max, int *count)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
+  /* TODO: Need to fix this....we shouldn't ignore trying to add cards to a full bin...means algo is off */
   if(*count == max)
     {
-      printh(*hand, max);
-      printf("Your bin is full.\n");
-      exit(EXIT_FAILURE);
+      return;
+      /* printh(*hand, max); */
+      /* printf("Your bin is full.\n"); */
+      /* exit(EXIT_FAILURE); */
     }
   else 
     {
