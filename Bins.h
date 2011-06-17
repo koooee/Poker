@@ -40,7 +40,7 @@ typedef struct BINS {
   char drawing[MAX_HAND_RANKS]; /* M - Made hand; D - 1 card to hand; Z - greater than 1 card away */
   
 } BIN;
-
+void printb(BIN *bin);
 void printh(CARD *h, int hand_size)
 {/* Debugging */
 
@@ -52,14 +52,16 @@ void printh(CARD *h, int hand_size)
   printf("\n");
 }
 
-void Add(CARD c, CARD **hand, int max, int *count)
+void Add(CARD c, CARD **hand, int max, int *count, BIN *b)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
   /* TODO: Need to fix this....we shouldn't ignore trying to add cards to a full bin...means algo is off */
   if(*count == max)
     {
-      return;
       /* printh(*hand, max); */
-      /* printf("Your bin is full.\n"); */
+      /* printf("Your bin is full. Tried to add: "); */
+      /* printc(c); */
+      /* printf(" With a bin count of %d\n", *count); */
+      /* printb(b); */
       /* exit(EXIT_FAILURE); */
     }
   else 

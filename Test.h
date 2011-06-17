@@ -546,6 +546,8 @@ void big_test()
 			      ,suits[seven % 4]);
 
 		      hnd = tconvert(test_hand, 7);
+		      /* sort_hand(hnd, 7); */
+		      /* printh(hnd, 7); */
 		      for(i = 0; i < 7; i++){
 			plyr.hand[i] = hnd[i];
 		      }
