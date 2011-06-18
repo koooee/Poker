@@ -72,37 +72,28 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
       /* Straight Flushes */
       if(bin->is_full[8] == FALSE)
 	{
-	  if(bin->SF.b_count[c.suit] == 0)
-	    {/* if there are no cards in the bin just add the first two cards */
-	      if(c.suit != c2.suit)
-		{/* only want to add if the suits are non-matching */
-		  Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit], bin);
-		  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin);
-		}
-	      else
-		{/* if the suits match, check that the distances match too. */
-		  if(distance(c, c2) == 1 || (c.rank == 12 && c2.rank == 3))
-		    {/* first two cards could differ by one, or be an ace and a five */
-		      Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit], bin);
-		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin);
-		    }
-		}
+	  if(bin->SF.b_count[c.suit] == 0) 
+	    {/* if it is the first card with that suit, we want it in the bin */
+	      Add(c, &bin->SF.b[c.suit], bin->SF.b_max, &bin->SF.b_count[c.suit], bin, 8);
 	    }
-	  else
-	    {
+	  if(bin->SF.b_count[c2.suit] == 0)
+	    Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin, 8);
+
+	  if(bin->SF.b_count[c.suit] > 0 && bin->SF.b_count[c2.suit] > 0)
+	    {/* we already have cards in the bins */
 	      int current_count = bin->SF.b_count[c2.suit];
 	      CARD last;
 	      if(current_count > 0)
 		last = bin->SF.b[c2.suit][current_count - 1];
 	      /* printf("Last1: "); printc(last); printf("\n"); */
-	      if(distance(last, c2) == 1)
-		{/* check the last card in the SF bin and Current card are worthy of SF bin*/
-		  /* printf("c2_1: "); printc(c2); printf(" hello\n"); */
+	      if(distance(last, c2) == 1 || (last.rank == 12 && c2.rank == 3))
+		{/* check the last card in the SF bin and Current card are worthy of SF bin
+		    rank of 12 and 3 are ok too, since that is Ace and 5 */
 		  if(bin->is_full[8] == FALSE && current_count > 0)
 		    {
-		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin);
-
-		      if(bin->SF.b_count[c2.suit] == 5)
+		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin, 8);
+		      
+		      if(bin->SF.b_count[c2.suit] >= 5)
 			bin->is_full[8] = TRUE;
 		    }
 		}
@@ -112,7 +103,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		}
 	    }
 	  if(i == size_of_hand-1)
-	    {
+	    {/* special case for the last cards */
 	      	  int current_count = bin->SF.b_count[c2.suit];
 		  CARD last;
 		  if(current_count > 0)
@@ -120,9 +111,9 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		      last = bin->SF.b[c2.suit][current_count - 1];
 
 		      if(distance(last, c2) == 1 && bin->is_full[8] == FALSE)
-			{/*Check for SF bin conditions*/
-			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin);
-			  if(bin->SF.b_count[c2.suit] == 5)
+			{/* Check for SF bin conditions */
+			  Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin, 8);
+			  if(bin->SF.b_count[c2.suit] >= 5)
 			    bin->is_full[8] = TRUE;
 			}
 
@@ -130,11 +121,11 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 			{/*last card in bin is a two...need to check for an Ace in the front to make the wheel*/
 			  int cnt = 0;
 			  while(hand[cnt].rank == 12)
-			    {/*do this since we could have multiple aces to check the suit for*/
+			    {/* do this since we could have multiple aces to check the suit for */
 			      if(hand[cnt].suit == last.suit && bin->is_full[8] == FALSE)
 				{
-				  Add(hand[cnt], &bin->SF.b[hand[cnt].suit], bin->SF.b_max, &bin->SF.b_count[hand[cnt].suit], bin);
-				  if(bin->SF.b_count[hand[cnt].suit] == 5)
+				  Add(hand[cnt], &bin->SF.b[hand[cnt].suit], bin->SF.b_max, &bin->SF.b_count[hand[cnt].suit], bin, 8);
+				  if(bin->SF.b_count[hand[cnt].suit] >= 5)
 				    bin->is_full[8] = TRUE;
 				}
 			      cnt++;
@@ -151,10 +142,10 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	    {/* add on the evens otherwise we would count every card twice */
 
 	      /* Regardless, we add cards to the Flush bin */
-	      Add(c, &bin->F.b[c.suit], bin->F.b_max, &bin->F.b_count[c.suit], bin);
+	      Add(c, &bin->F.b[c.suit], bin->F.b_max, &bin->F.b_count[c.suit], bin, 5);
 	      if(bin->F.b_count[c.suit] < bin->F.b_max)
 		{/* we can add second card */
-		  Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin);
+		  Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin, 5);
 		  if(bin->F.b_count[c2.suit] == 5)
 		    bin->is_full[5] = TRUE;
 		}
@@ -169,7 +160,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		{
 		  if(bin->is_full[5] == FALSE)
 		    {
-		      Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin);
+		      Add(c2, &bin->F.b[c2.suit], bin->F.b_max, &bin->F.b_count[c2.suit], bin, 5);
 		      if(bin->F.b_count[c2.suit] == 5)
 			bin->is_full[5] = TRUE;
 		    }
@@ -194,8 +185,8 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 
 	  /* Fill the pair bin and mark it as full */
 	  if(bin->is_full[1] == FALSE) {
-	    Add(c, &bin->P.b, bin->P.b_max, &bin->P.b_count, bin);
-	    Add(c2, &bin->P.b, bin->P.b_max, &bin->P.b_count, bin);
+	    Add(c, &bin->P.b, bin->P.b_max, &bin->P.b_count, bin, 1);
+	    Add(c2, &bin->P.b, bin->P.b_max, &bin->P.b_count, bin, 1);
 	    bin->is_full[1] = TRUE;
 	  }
 	  
@@ -207,15 +198,15 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		{/* There are already cards in the bin */
 		  if(c.rank != bin->TP.b[0].rank)
 		    {
-		      Add(c, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin);
-		      Add(c2, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin);
+		      Add(c, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin, 2);
+		      Add(c2, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin, 2);
 		      bin->is_full[2] = TRUE;
 		    }
 		}
 	      else
 		{/* These are the first cards in the bin */
-		  Add(c, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin);
-		  Add(c2, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin);
+		  Add(c, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin, 2);
+		  Add(c2, &bin->TP.b, bin->TP.b_max, &bin->TP.b_count, bin, 2);
 		}
 	    }	  
 
@@ -227,9 +218,9 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		{/* make sure we have enough space for i+2 */
 		  if(c.rank == hand[i+2].rank)
 		    {/* We have three of a kind */
-		      Add(c, &bin->TK.b, bin->TK.b_max, &bin->TK.b_count, bin);
-		      Add(c2, &bin->TK.b, bin->TK.b_max, &bin->TK.b_count, bin);
-		      Add(hand[i+2], &bin->TK.b, bin->TK.b_max, &bin->TK.b_count, bin);
+		      Add(c, &bin->TK.b, bin->TK.b_max, &bin->TK.b_count, bin, 3);
+		      Add(c2, &bin->TK.b, bin->TK.b_max, &bin->TK.b_count, bin, 3);
+		      Add(hand[i+2], &bin->TK.b, bin->TK.b_max, &bin->TK.b_count, bin, 3);
 		      bin->is_full[3] = TRUE;
 		    }
 		}
@@ -248,10 +239,10 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 		{/* make sure we have enough space */
 		  if(c.rank == hand[i+2].rank && c.rank == hand[i+3].rank)
 		    {
-		      Add(c, &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin);
-		      Add(c2, &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin);
-		      Add(hand[i+2], &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin);
-		      Add(hand[i+3], &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin);
+		      Add(c, &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin, 7);
+		      Add(c2, &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin, 7);
+		      Add(hand[i+2], &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin, 7);
+		      Add(hand[i+3], &bin->FK.b, bin->FK.b_max, &bin->FK.b_count, bin, 7);
 			  bin->is_full[7] = TRUE;
 		    }
 		}
@@ -270,15 +261,16 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	      /* Straights */
 	      if(bin->S.b_count <= 0)
 	  	{/* These are the first two cards in the bin */
-	  	  Add(c, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin);
-	  	  Add(c2, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin);
+	  	  Add(c, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
+	  	  Add(c2, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
 	  	}
 	      else
 	  	{/* Just add the second otherwise we will get dups */
-	  	  Add(c2, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin);
+	  	  Add(c2, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
+		  if(bin->S.b_count == 5){
+		    bin->is_full[4] = TRUE;
+
 	  	}
-	      if(bin->S.b_count == 5){
-	  	bin->is_full[4] = TRUE;
 	      }
 		
 	    }
@@ -299,14 +291,14 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
       int t;
       for(t = 0; t < 3; t++)
 	{ /* add all the three kind cards */
-	  Add(bin->TK.b[t], &bin->FH.b, bin->FH.b_max, &bin->FH.b_count, bin);
+	  Add(bin->TK.b[t], &bin->FH.b, bin->FH.b_max, &bin->FH.b_count, bin, 6);
 	}
       for(t = 0; t < 4; t++)
 	{/* check TP bin for the highest rank that doesnt match the TK bin */
 	  if(bin->TP.b[t].rank != bin->TK.b[0].rank)
 	    {/* This is our pair, since we are sorted the first cards will be the largest */
-	      Add(bin->TP.b[t], &bin->FH.b, bin->FH.b_max, &bin->FH.b_count, bin);
-	      Add(bin->TP.b[t+1], &bin->FH.b, bin->FH.b_max, &bin->FH.b_count, bin);
+	      Add(bin->TP.b[t], &bin->FH.b, bin->FH.b_max, &bin->FH.b_count, bin, 6);
+	      Add(bin->TP.b[t+1], &bin->FH.b, bin->FH.b_max, &bin->FH.b_count, bin, 6);
 	      bin->is_full[6] = TRUE;
 	      break;
 	    }
@@ -316,22 +308,51 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
   /* Some Vars for Special Cases */
   CARD temp;
   CARD temp2;
-  temp = hand[0];
+  int counter = 0;
+  temp = hand[counter];
   temp2 = hand[size_of_hand - 1];
   int d = distance(temp, temp2);
-
-  /* Special Case for Straights: Ace in the front 2 in the back */
-  if(bin->is_full[4] == FALSE && bin->S.b_count > 0 && d == 12)
-    {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
-      if(bin->S.b[0].rank == 3)
-	{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
-	  Add(temp, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin);
-	  if(bin->S.b_count == 5)
-	    {
-	      bin->is_full[4] = TRUE;
+  while(hand[counter].rank == 12 || hand[size_of_hand - (counter + 1)].rank == 0)
+    {/* we do this because you could have a pair of aces, or three, or four of them */
+      /* Special Case for Straights: Ace in the front 2 in the back */
+      if(bin->is_full[4] == FALSE && bin->S.b_count > 0 && d == 12)
+	{/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
+	  if(bin->S.b[0].rank == 3)
+	    {/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
+	      Add(temp, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
+	      if(bin->S.b_count == 5)
+		{
+		  bin->is_full[4] = TRUE;
+		}
 	    }
 	}
+
+      /* Same thing for SF: Ace in the front 2 in the back */
+      if(temp.suit == temp2.suit)
+	{
+	  if(bin->is_full[8] == FALSE && bin->SF.b_count[temp.suit] > 0 && d == 12)
+	    {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
+	      if(bin->SF.b[temp.suit][0].rank == 3)
+		{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
+		  Add(temp, &bin->SF.b[temp.suit], bin->SF.b_max, &bin->SF.b_count[temp.suit], bin, 8);
+		  if(bin->SF.b_count[temp.suit] >= 5)
+		    bin->is_full[8] = TRUE;
+		}
+	    }
+	}
+      temp = hand[++counter];
+      temp2 = hand[size_of_hand - (counter + 1)];
     }
+
+  /* FIXME */
+  /* this is just an unreal cheap fix....but, I wan't to see if it works */
+  int xy;
+  for(xy = 0; xy < 4; xy++){
+    if(bin->SF.b_count[xy] == 5){
+      bin->is_full[8] = TRUE;
+    }
+  }
+  /* END FIXME */
 
   int final_rank;
   for(final_rank = 8; final_rank >= 0; final_rank--)

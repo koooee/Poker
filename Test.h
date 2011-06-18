@@ -321,7 +321,7 @@ int tf()
     ,tconvert("As7c3sTs9sQsKs", 7)
     ,tconvert("As7s3sTs9sQsKs", 7)
     ,tconvert("As7c3sTs9sQhKs", 7)
-    ,tconvert("Ac7c3cTc9cQcKc", 7)
+    ,tconvert("AcAsKsQsQcJs2s", 7)
     ,tconvert("Ac7c3cTc9cQs", 6)
     ,tconvert("Ah7h3hTh9h", 5)
 
@@ -361,7 +361,7 @@ int tsf()
   PLAYER p;
   CARD *h[10] = {
     /* Pretty Standard Cases */
-    tconvert("AsKsQsJsTs5c8d", 7)
+    tconvert("AsKsQsJsTs4c5d", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
@@ -496,6 +496,7 @@ void check_for_same(CARD * cards)
 	  exit(EXIT_FAILURE);
 	}
 }
+
 void big_test()
 {
   int one, two, three, four, five, six, seven, count;
@@ -515,35 +516,34 @@ void big_test()
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
       for(three = two+1; three < size; three++)
-  	for(four = three+1; four < size; four++)
-  	  for(five = four+1; five < size; five++)
-	    for(six = five+1; six < size; six++)
-	      for(seven = six+1; seven < size; seven++)
+      	for(four = three+1; four < size; four++)
+      	  for(five = four+1; five < size; five++)
+      	    for(six = five+1; six < size; six++)
+      	      for(seven = six+1; seven < size; seven++)
 		{
-		  if(
-		     one != two && one != three && one != four && one != five && one != six && one != seven
-		     && two != three && two != four && two != five && two != six && two != seven
-		     && three != four && three != five && three != six && three != seven
-		     && four != five && four != six && four != seven
-		     && five != six && five != seven
-		     && six != seven
-		     )
-		    {
+		  /* if( */
+		  /*    one != two && one != three && one != four && one != five && one != six && one != seven */
+		  /*    && two != three && two != four && two != five && two != six && two != seven */
+		  /*    && three != four && three != five && three != six && three != seven */
+		  /*    && four != five && four != six && four != seven */
+		  /*    && five != six && five != seven */
+		  /*    && six != seven */
+		  /*    ) */
 		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c"
-			      ,ranks[one % 13]
-			      ,suits[one % 4]
-			      ,ranks[two % 13]
-			      ,suits[two % 4]
-			      ,ranks[three % 13]
-			      ,suits[three % 4]
-			      ,ranks[four % 13]
-			      ,suits[four % 4]
-			      ,ranks[five % 13]
-			      ,suits[five % 4]
-			      ,ranks[six % 13]
-			      ,suits[six % 4]
-			      ,ranks[seven % 13]
-			      ,suits[seven % 4]);
+		      	      ,ranks[one % 13]
+		      	      ,suits[one % 4]
+		      	      ,ranks[two % 13]
+		      	      ,suits[two % 4]
+		      	      ,ranks[three % 13]
+		      	      ,suits[three % 4]
+		      	      ,ranks[four % 13]
+		      	      ,suits[four % 4]
+		      	      ,ranks[five % 13]
+		      	      ,suits[five % 4]
+		      	      ,ranks[six % 13]
+		      	      ,suits[six % 4]
+		      	      ,ranks[seven % 13]
+		      	      ,suits[seven % 4]);
 
 		      hnd = tconvert(test_hand, 7);
 		      /* sort_hand(hnd, 7); */
@@ -554,10 +554,17 @@ void big_test()
 		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 		      free(hnd);
 		      rank = rank_hand(plyr.hand, &plyr.bin, 7);
+		      if(rank > 8)
+		      	{
+		      	  printh(plyr.hand,7);
+		      	  printb(&plyr.bin);
+		      	}
 		      freqs[rank]++;
-		    }
+
 		  reset_bin(&plyr.bin);
+		    /* } */
 		}
+		
   long total = 0;
   for(z = 0; z < 9; z++)
     {
@@ -568,6 +575,83 @@ void big_test()
   printf("Total Number of Hands: %d\n", total);
 }
 
+char card_ok(int rank, int suit)
+{
+  /* char suits[MAX_NUM_SUITS] = "shdc"; */
+  if(
+     (rank == 12 && suit == 0)
+     || (rank == 0 && suit == 0)
+     || (rank == 1 && suit == 0)
+     || (rank == 2 && suit == 0)
+     || (rank == 3 && suit == 0))
+    {
+      return FALSE;
+    }
+  else{return TRUE;}
+
+}
+
+void test_SF()
+{
+
+  int one, two, three, four, five, six, seven, count;
+  int freqs[9];
+  int z;
+  for(z = 0; z < 9; z++)
+    freqs[z] = 0;
+  count = 0;
+  int size = 52, i, rank;
+  char *cards[52];
+  char *test_hand;
+  CARD *hnd;
+  PLAYER plyr;
+
+  init_bin(&plyr.bin);
+  test_hand = malloc(14 * sizeof(char));
+  for(one = 0; one < size; one++)
+    for(two = one+1; two < size; two++)
+      {
+	char ok = card_ok(one%13, one%4);
+	char ok2 = card_ok(two%13, two%4);
+	if(ok == TRUE && ok2 == TRUE)
+	  {
+	    sprintf(test_hand, "As2s3s4s5sc%c%c%c%c"
+		    ,ranks[one % 13]
+		    ,suits[one % 4]
+		    ,ranks[two % 13]
+		    ,suits[two % 4]);
+
+	    hnd = tconvert(test_hand, 7);
+	    /* sort_hand(hnd, 7); */
+	    /* printh(hnd, 7); */
+	    for(i = 0; i < 7; i++){
+	      plyr.hand[i] = hnd[i];
+	    }
+	    /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
+	    free(hnd);
+	    rank = rank_hand(plyr.hand, &plyr.bin, 7);
+	    if(rank != 8)
+	      {
+		printh(plyr.hand,7);
+		printb(&plyr.bin);
+	      }
+	    freqs[rank]++;
+
+	    reset_bin(&plyr.bin);
+	  }
+      }
+		
+  long total = 0;
+  for(z = 0; z < 9; z++)
+    {
+      printf("Freq %d %d\n", z, freqs[z]);
+      total += freqs[z];
+    
+    }
+  printf("Total Number of Hands: %d\n", total);
+
+  
+}
 void ttest()
 {/* this is the main function for test cases */
 
@@ -616,8 +700,9 @@ void ttest()
     printf("Straight Flush Failed\n");
     exit(EXIT_FAILURE);
   }
-
+  
   printf("Tests Passed.\n");
+  /* test_SF(); */
   printf("Running Big Test...\n");
   big_test();
 }

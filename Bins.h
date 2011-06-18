@@ -52,10 +52,10 @@ void printh(CARD *h, int hand_size)
   printf("\n");
 }
 
-void Add(CARD c, CARD **hand, int max, int *count, BIN *b)
+void Add(CARD c, CARD **hand, int max, int *count, BIN *b, int hand_rank)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
-  /* TODO: Need to fix this....we shouldn't ignore trying to add cards to a full bin...means algo is off */
-  if(*count == max)
+
+  if(*count >= max)
     {
       /* printh(*hand, max); */
       /* printf("Your bin is full. Tried to add: "); */
@@ -63,12 +63,17 @@ void Add(CARD c, CARD **hand, int max, int *count, BIN *b)
       /* printf(" With a bin count of %d\n", *count); */
       /* printb(b); */
       /* exit(EXIT_FAILURE); */
+      b->is_full[hand_rank] = TRUE;
+      printf("BIN IS FULL!!\n");
+      printb(b);
     }
   else 
     {
       CARD *t;
       t = *hand + (*count)++;
       *t = c;
+      if(*count == max)
+      	b->is_full[hand_rank] = TRUE;
     }
   
 }
@@ -132,7 +137,6 @@ void *clearbin(CARD **hand, int *count, int max)
   free(*hand);
   *count = 0;
   return malloc(max * sizeof(CARD));
-  
 }
 
 
@@ -159,36 +163,6 @@ void reset_bin(BIN *bin)
   }
 }
 
-void free_bins(BIN *bin)
-{
-  int i,j;
-  /* Free Standard Bins */
-  free(bin->FK.b);
-  bin->FK.b = NULL;
-  free(bin->FH.b);
-  bin->FH.b = NULL;
-  free(bin->S.b);
-  bin->S.b = NULL;
-  free(bin->TK.b);
-  bin->TK.b = NULL;
-  free(bin->TP.b);
-  bin->TP.b = NULL;
-  free(bin->P.b); 
-  bin->P.b = NULL;
-
-  /* Free Multi Bins */
-
-  free(bin->F.b_count);
-  free(bin->SF.b_count);
-  for(i = 0; i < MAX_NUM_SUITS; i++)
-    {
-      free(bin->F.b[i]);
-      bin->F.b[i] = NULL;
-
-      free(bin->SF.b[i]);
-      bin->SF.b[i] = NULL;
-    }
-}
 
 void Remove(CARD **free, int *count)
 {
@@ -234,7 +208,7 @@ void printb(BIN *bin)
 	{
 	  printc(bin->SF.b[i][j]);
 	}
-      printf("\n");
+      printf("\tCount: %d\n", bin->SF.b_count[i]);
     }
 
   printf("Straight: ");
