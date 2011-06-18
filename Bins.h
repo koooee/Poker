@@ -64,8 +64,8 @@ void Add(CARD c, CARD **hand, int max, int *count, BIN *b, int hand_rank)
       /* printb(b); */
       /* exit(EXIT_FAILURE); */
       b->is_full[hand_rank] = TRUE;
-      printf("BIN IS FULL!!\n");
-      printb(b);
+      /* printf("BIN IS FULL!!\n"); */
+      /* printb(b); */
     }
   else 
     {

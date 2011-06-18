@@ -329,19 +329,23 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 
       /* Same thing for SF: Ace in the front 2 in the back */
       if(temp.suit == temp2.suit)
-	{
-	  if(bin->is_full[8] == FALSE && bin->SF.b_count[temp.suit] > 0 && d == 12)
-	    {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
-	      if(bin->SF.b[temp.suit][0].rank == 3)
-		{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
-		  Add(temp, &bin->SF.b[temp.suit], bin->SF.b_max, &bin->SF.b_count[temp.suit], bin, 8);
-		  if(bin->SF.b_count[temp.suit] >= 5)
-		    bin->is_full[8] = TRUE;
-		}
-	    }
-	}
+      	{
+      	  if(bin->is_full[8] == FALSE && bin->SF.b_count[temp.suit] > 0 && d == 12)
+      	    {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
+
+      	      if(bin->SF.b[temp.suit][0].rank == 3)
+      		{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
+      		  Add(temp, &bin->SF.b[temp.suit], bin->SF.b_max, &bin->SF.b_count[temp.suit], bin, 8);
+
+      		  if(bin->SF.b_count[temp.suit] >= 5)
+      		    bin->is_full[8] = TRUE;
+      		}
+      	    }
+      	}
       temp = hand[++counter];
       temp2 = hand[size_of_hand - (counter + 1)];
+      d = distance(temp,temp2);
+
     }
 
   /* FIXME */

@@ -361,7 +361,7 @@ int tsf()
   PLAYER p;
   CARD *h[10] = {
     /* Pretty Standard Cases */
-    tconvert("AsKsQsJsTs4c5d", 7)
+    tconvert("As2s3s4s5s9c7d", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
@@ -578,13 +578,17 @@ void big_test()
 char card_ok(int rank, int suit)
 {
   /* char suits[MAX_NUM_SUITS] = "shdc"; */
+  CARD temp;
+  temp.rank = rank;
+  temp.suit = suit;
   if(
-     (rank == 12 && suit == 0)
+     (rank == 3 && suit == 0)
      || (rank == 0 && suit == 0)
      || (rank == 1 && suit == 0)
-     || (rank == 2 && suit == 0)
-     || (rank == 3 && suit == 0))
+     || (rank == 2 && suit == 0))
+     /* || (rank == 3 && suit == 0)) */
     {
+      /* printf("Card: "); printc(temp); printf(" Is not ok.\n"); */
       return FALSE;
     }
   else{return TRUE;}
@@ -610,16 +614,20 @@ void test_SF()
   test_hand = malloc(14 * sizeof(char));
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
+      for(three = two+1; three < size; three++)
       {
 	char ok = card_ok(one%13, one%4);
 	char ok2 = card_ok(two%13, two%4);
-	if(ok == TRUE && ok2 == TRUE)
+	char ok3 = card_ok(three%13, three%4);
+	if(ok == TRUE && ok2 == TRUE && ok3 == TRUE)
 	  {
-	    sprintf(test_hand, "As2s3s4s5sc%c%c%c%c"
+	    sprintf(test_hand, "5s2s3s4s%c%c%c%c%c%c"
 		    ,ranks[one % 13]
 		    ,suits[one % 4]
 		    ,ranks[two % 13]
-		    ,suits[two % 4]);
+		    ,suits[two % 4]
+		    ,ranks[three % 13]
+		    ,suits[three % 4]);
 
 	    hnd = tconvert(test_hand, 7);
 	    /* sort_hand(hnd, 7); */
@@ -630,11 +638,11 @@ void test_SF()
 	    /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 	    free(hnd);
 	    rank = rank_hand(plyr.hand, &plyr.bin, 7);
-	    if(rank != 8)
-	      {
-		printh(plyr.hand,7);
-		printb(&plyr.bin);
-	      }
+	    /* if(rank == 8) */
+	    /*   { */
+	    /* 	printh(plyr.hand,7); */
+	    /* 	printb(&plyr.bin); */
+	    /*   } */
 	    freqs[rank]++;
 
 	    reset_bin(&plyr.bin);
