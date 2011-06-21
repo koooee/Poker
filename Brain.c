@@ -20,6 +20,7 @@ void swap(CARD *c, CARD *c2)
   *c = *c2;
   *c2 = temp;
 }
+
 void sort_hand(CARD *hand, int hand_size)
 {
   /* bubble sort */ 
@@ -34,10 +35,24 @@ void sort_hand(CARD *hand, int hand_size)
 	  }
       }
 }
-
+char check_for_s(CARD *hand, int len)
+{/* the sum of the differences should be length of the hand - 1...assuming only the cards that make the hand are in the hand */
+  int i, total;
+  for(i = 0; i < len-1; i++)
+    {
+      total += distance(hand[i], hand[i+1]);
+    }
+  if(total == 4)
+    {
+      return TRUE;
+    }
+}
 int distance(CARD c, CARD c2)
 {
-  return abs(c.rank - c2.rank);
+  if((c.rank == 12 || c2.rank == 12) && (c.rank == 3 || c2.rank == 3))
+    return 1;
+  else
+    return abs(c.rank - c2.rank);
 }
 
 int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
@@ -85,10 +100,9 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	      CARD last;
 	      if(current_count > 0)
 		last = bin->SF.b[c2.suit][current_count - 1];
-	      /* printf("Last1: "); printc(last); printf("\n"); */
-	      if(distance(last, c2) == 1 || (last.rank == 12 && c2.rank == 3))
-		{/* check the last card in the SF bin and Current card are worthy of SF bin
-		    rank of 12 and 3 are ok too, since that is Ace and 5 */
+	      if(distance(last, c2) == 1)
+		{/* check the last card in the SF bin and Current card are worthy of SF bin */
+
 		  if(bin->is_full[8] == FALSE && current_count > 0)
 		    {
 		      Add(c2, &bin->SF.b[c2.suit], bin->SF.b_max, &bin->SF.b_count[c2.suit], bin, 8);
@@ -309,54 +323,54 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
   CARD temp;
   CARD temp2;
   int counter = 0;
+  int counter2 = size_of_hand - 1;
   temp = hand[counter];
-  temp2 = hand[size_of_hand - 1];
+  temp2 = hand[counter2];
   int d = distance(temp, temp2);
-  while(hand[counter].rank == 12 || hand[size_of_hand - (counter + 1)].rank == 0)
+  /* FIXME: need to add this into a better place in the algo...this is a cheap fix */
+  while(hand[counter].rank == 12)
     {/* we do this because you could have a pair of aces, or three, or four of them */
       /* Special Case for Straights: Ace in the front 2 in the back */
-      if(bin->is_full[4] == FALSE && bin->S.b_count > 0 && d == 12)
-	{/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
-	  if(bin->S.b[0].rank == 3)
-	    {/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
-	      Add(temp, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
-	      if(bin->S.b_count == 5)
-		{
-		  bin->is_full[4] = TRUE;
+      counter2 = size_of_hand - 1;
+      while(hand[counter2].rank == 0)
+	{
+	  if(bin->is_full[4] == FALSE && bin->S.b_count > 0 && d == 12)
+	    {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
+	      if(bin->S.b[0].rank == 3)
+		{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
+		  Add(temp, &bin->S.b, bin->S.b_max, &bin->S.b_count, bin, 4);
+		  if(bin->S.b_count == 5)
+		    {
+		      bin->is_full[4] = TRUE;
+		    }
 		}
 	    }
+
+	  /* Same thing for SF */
+	  if(temp.suit == temp2.suit)
+	    {
+	      if(bin->is_full[8] == FALSE && bin->SF.b_count[temp.suit] > 0 && d == 12)
+		{/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
+
+		  if(bin->SF.b[temp.suit][0].rank == 3)
+		    {/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
+
+		      Add(temp, &bin->SF.b[temp.suit], bin->SF.b_max, &bin->SF.b_count[temp.suit], bin, 8);
+
+		      if(bin->SF.b_count[temp.suit] >= 5)
+			bin->is_full[8] = TRUE;
+		    }
+		}
+	    }
+
+	  temp2 = hand[--counter2];
+	  d = distance(temp,temp2);
+
 	}
-
-      /* Same thing for SF: Ace in the front 2 in the back */
-      if(temp.suit == temp2.suit)
-      	{
-      	  if(bin->is_full[8] == FALSE && bin->SF.b_count[temp.suit] > 0 && d == 12)
-      	    {/* if the bin isn't full AND has something in it and first and last card are Ace and Two */
-
-      	      if(bin->SF.b[temp.suit][0].rank == 3)
-      		{/* Highest Card in the Straight bin HAS to be 5...3 is 5 btw...rank starts at 0 which is 2 */
-      		  Add(temp, &bin->SF.b[temp.suit], bin->SF.b_max, &bin->SF.b_count[temp.suit], bin, 8);
-
-      		  if(bin->SF.b_count[temp.suit] >= 5)
-      		    bin->is_full[8] = TRUE;
-      		}
-      	    }
-      	}
       temp = hand[++counter];
-      temp2 = hand[size_of_hand - (counter + 1)];
       d = distance(temp,temp2);
-
     }
 
-  /* FIXME */
-  /* this is just an unreal cheap fix....but, I wan't to see if it works */
-  int xy;
-  for(xy = 0; xy < 4; xy++){
-    if(bin->SF.b_count[xy] == 5){
-      bin->is_full[8] = TRUE;
-    }
-  }
-  /* END FIXME */
 
   int final_rank;
   for(final_rank = 8; final_rank >= 0; final_rank--)

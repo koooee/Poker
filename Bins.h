@@ -181,24 +181,34 @@ void printb(BIN *bin)
   printf("\n******************************\n");
   printf("*        BINS                *\n");
   printf("******************************\n");
-  printf("High Card: ");
-  printc(bin->HC);
-  printf("\n");
+  /* printf("High Card: "); */
+  /* printc(bin->HC); */
+  /* printf("\n"); */
 
-  printf("Pair: ");
-  for(i = 0; i < bin->P.b_count; i++)
+  /* printf("Pair: "); */
+  /* for(i = 0; i < bin->P.b_count; i++) */
+  /*   { */
+  /*     printc(bin->P.b[i]); */
+  /*   } */
+  /* printf("\n"); */
+
+  /* printf("Two Pair: "); */
+  /* for(i = 0; i < bin->TP.b_count; i++) */
+  /*   { */
+  /*     printc(bin->TP.b[i]); */
+  /*   } */
+  /* printf("\n"); */
+
+  printf("Flush:\n");
+  for(i = 0; i < MAX_NUM_SUITS; i++)
     {
-      printc(bin->P.b[i]);
+      printf("\t%c: ", suits[i]);
+      for(j = 0; j < bin->SF.b_count[i]; j++)
+	{
+	  printc(bin->SF.b[i][j]);
+	}
+      printf("\n");
     }
-  printf("\n");
-
-  printf("Two Pair: ");
-  for(i = 0; i < bin->TP.b_count; i++)
-    {
-      printc(bin->TP.b[i]);
-    }
-  printf("\n");
-
 
   printf("Straight Flush:\n");
   for(i = 0; i < MAX_NUM_SUITS; i++)
@@ -208,15 +218,16 @@ void printb(BIN *bin)
 	{
 	  printc(bin->SF.b[i][j]);
 	}
-      printf("\tCount: %d\n", bin->SF.b_count[i]);
+      /* printf("\tCount: %d\n", bin->SF.b_count[i]); */
+      printf("\n");
     }
 
-  printf("Straight: ");
-  for(i = 0; i < bin->S.b_count; i++)
-    {
-      printc(bin->S.b[i]);
-    }
-  printf("\n");
+  /* printf("Straight: "); */
+  /* for(i = 0; i < bin->S.b_count; i++) */
+  /*   { */
+  /*     printc(bin->S.b[i]); */
+  /*   } */
+  /* printf("\n"); */
 printf("******************************\n\n");
 
 }

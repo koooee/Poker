@@ -70,6 +70,32 @@ int bestfull(char *f)
 	}
     }
 }
+char test_for_sf(BIN *bin)
+{
+  int i,j,is_one, total;
+  CARD c_one, c_two;
+  is_one = 0;
+  for(i = 0; i < 4; i++)
+    {
+      if(bin->SF.b_count[i] == 5)
+	{
+	  is_one++;
+	  sort_hand(bin->SF.b[i], 5);
+	  total = 0;
+	  for(j = 0; j < 4; j++)
+	    {
+	      c_one = bin->SF.b[i][j];
+	      c_two = bin->SF.b[i][j+1];
+	      total += distance(c_one, c_two);
+	      if(total == 4)
+		{
+		  return TRUE;
+		}
+	    }
+	}
+    }
+  return FALSE;
+}
 
 int thc()
 {/* Test High Card, 0 - Failure; 1 - Success */
@@ -361,7 +387,7 @@ int tsf()
   PLAYER p;
   CARD *h[10] = {
     /* Pretty Standard Cases */
-    tconvert("As2s3s4s5s9c7d", 7)
+    tconvert("AsAc3s4s5s2s2c", 7)
     ,tconvert("5cAsKsQsJsTs8d", 7)
     ,tconvert("5c8dAsKsQsJsTs", 7)
     ,tconvert("2s3s4s5s6sAs", 6)
@@ -396,6 +422,16 @@ int tsf()
 	  printb(&p.bin);
 	  return 0;
 	}
+      /* else */
+      /* 	{ */
+      /* 	  if(test_for_sf(&p.bin) == FALSE) */
+      /* 	    { */
+      /* 	      printf("IMPOSTER!\n"); */
+      /* 	      printh(p.hand, 7); */
+      /* 	      printb(&p.bin); */
+      /* 	      printf("\n"); */
+      /* 	    } */
+      /* 	} */
       reset_bin(&p.bin);
     }
   return 1;
@@ -554,11 +590,25 @@ void big_test()
 		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 		      free(hnd);
 		      rank = rank_hand(plyr.hand, &plyr.bin, 7);
-		      if(rank > 8)
+		      /* if(rank == 8) */
+		      /* 	{ */
+		      /* 	  if(test_for_sf(&plyr.bin) == FALSE) */
+		      /* 	    { */
+		      /* 	      printf("IMPOSTER!!\n"); */
+		      /* 	      printh(plyr.hand,7); */
+		      /* 	      printb(&plyr.bin); */
+		      /* 	    } */
+		      /* 	} */
+		      if(rank == 5)
 		      	{
-		      	  printh(plyr.hand,7);
-		      	  printb(&plyr.bin);
+		      	  if(test_for_sf(&plyr.bin) == TRUE)
+		      	    {
+		      	      printf("IMPOSTER2!!\n");
+		      	      printh(plyr.hand,7);
+		      	      printb(&plyr.bin);
+		      	    }
 		      	}
+		      
 		      freqs[rank]++;
 
 		  reset_bin(&plyr.bin);
@@ -582,11 +632,11 @@ char card_ok(int rank, int suit)
   temp.rank = rank;
   temp.suit = suit;
   if(
-     (rank == 3 && suit == 0)
-     || (rank == 0 && suit == 0)
-     || (rank == 1 && suit == 0)
-     || (rank == 2 && suit == 0))
-     /* || (rank == 3 && suit == 0)) */
+     (rank == 0 && suit == 0)
+     || (rank == 4 && suit == 0)
+     || (rank == 7 && suit == 0)
+     || (rank == 9 && suit == 0)
+     || (rank == 12 && suit == 0))
     {
       /* printf("Card: "); printc(temp); printf(" Is not ok.\n"); */
       return FALSE;
@@ -594,7 +644,6 @@ char card_ok(int rank, int suit)
   else{return TRUE;}
 
 }
-
 void test_SF()
 {
 
@@ -614,20 +663,18 @@ void test_SF()
   test_hand = malloc(14 * sizeof(char));
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
-      for(three = two+1; three < size; three++)
+      /* for(three = two+1; three < size; three++) */
       {
 	char ok = card_ok(one%13, one%4);
 	char ok2 = card_ok(two%13, two%4);
-	char ok3 = card_ok(three%13, three%4);
-	if(ok == TRUE && ok2 == TRUE && ok3 == TRUE)
+	/* char ok3 = card_ok(three%13, three%4); */
+	if(ok == TRUE && ok2 == TRUE) /* && ok3 == TRUE) */
 	  {
-	    sprintf(test_hand, "5s2s3s4s%c%c%c%c%c%c"
+	    sprintf(test_hand, "As2s6s9sJs%c%c%c%c"
 		    ,ranks[one % 13]
 		    ,suits[one % 4]
 		    ,ranks[two % 13]
-		    ,suits[two % 4]
-		    ,ranks[three % 13]
-		    ,suits[three % 4]);
+		    ,suits[two % 4]);
 
 	    hnd = tconvert(test_hand, 7);
 	    /* sort_hand(hnd, 7); */
@@ -638,11 +685,11 @@ void test_SF()
 	    /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 	    free(hnd);
 	    rank = rank_hand(plyr.hand, &plyr.bin, 7);
-	    /* if(rank == 8) */
-	    /*   { */
-	    /* 	printh(plyr.hand,7); */
-	    /* 	printb(&plyr.bin); */
-	    /*   } */
+	    if(rank > 5)
+	      {
+	    	printh(plyr.hand,7);
+	    	printb(&plyr.bin);
+	      }
 	    freqs[rank]++;
 
 	    reset_bin(&plyr.bin);
