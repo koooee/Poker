@@ -40,7 +40,7 @@ typedef struct BINS {
   char drawing[MAX_HAND_RANKS]; /* M - Made hand; D - 1 card to hand; Z - greater than 1 card away */
   
 } BIN;
-
+void printb(BIN *bin);
 void printh(CARD *h, int hand_size)
 {/* Debugging */
 
@@ -52,19 +52,28 @@ void printh(CARD *h, int hand_size)
   printf("\n");
 }
 
-void Add(CARD c, CARD **hand, int max, int *count)
+void Add(CARD c, CARD **hand, int max, int *count, BIN *b, int hand_rank)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
-  if(*count == max)
+
+  if(*count >= max)
     {
-      printh(*hand, max);
-      printf("Your bin is full.\n");
-      exit(EXIT_FAILURE);
+      /* printh(*hand, max); */
+      /* printf("Your bin is full. Tried to add: "); */
+      /* printc(c); */
+      /* printf(" With a bin count of %d\n", *count); */
+      /* printb(b); */
+      /* exit(EXIT_FAILURE); */
+      b->is_full[hand_rank] = TRUE;
+      /* printf("BIN IS FULL!!\n"); */
+      /* printb(b); */
     }
   else 
     {
       CARD *t;
       t = *hand + (*count)++;
       *t = c;
+      if(*count == max)
+      	b->is_full[hand_rank] = TRUE;
     }
   
 }
@@ -106,8 +115,8 @@ void init_bin(BIN *bin)
      might have an effect on preformance since we would be calling malloc frequently..and I am very concerned
      about runtime preformance
   */
-  bin->F.b_count = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
-  bin->SF.b_count = malloc(NUM_CARDS_TO_RANK * sizeof(CARD));
+  bin->F.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD));
+  bin->SF.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD));
 
   for(i = 0; i < MAX_NUM_SUITS; i++)
     {
@@ -155,36 +164,6 @@ void reset_bin(BIN *bin)
   }
 }
 
-void free_bins(BIN *bin)
-{
-  int i,j;
-  /* Free Standard Bins */
-  free(bin->FK.b);
-  bin->FK.b = NULL;
-  free(bin->FH.b);
-  bin->FH.b = NULL;
-  free(bin->S.b);
-  bin->S.b = NULL;
-  free(bin->TK.b);
-  bin->TK.b = NULL;
-  free(bin->TP.b);
-  bin->TP.b = NULL;
-  free(bin->P.b); 
-  bin->P.b = NULL;
-
-  /* Free Multi Bins */
-
-  free(bin->F.b_count);
-  free(bin->SF.b_count);
-  for(i = 0; i < MAX_NUM_SUITS; i++)
-    {
-      free(bin->F.b[i]);
-      bin->F.b[i] = NULL;
-
-      free(bin->SF.b[i]);
-      bin->SF.b[i] = NULL;
-    }
-}
 
 void Remove(CARD **free, int *count)
 {
@@ -203,24 +182,34 @@ void printb(BIN *bin)
   printf("\n******************************\n");
   printf("*        BINS                *\n");
   printf("******************************\n");
-  printf("High Card: ");
-  printc(bin->HC);
-  printf("\n");
+  /* printf("High Card: "); */
+  /* printc(bin->HC); */
+  /* printf("\n"); */
 
-  printf("Pair: ");
-  for(i = 0; i < bin->P.b_count; i++)
+  /* printf("Pair: "); */
+  /* for(i = 0; i < bin->P.b_count; i++) */
+  /*   { */
+  /*     printc(bin->P.b[i]); */
+  /*   } */
+  /* printf("\n"); */
+
+  /* printf("Two Pair: "); */
+  /* for(i = 0; i < bin->TP.b_count; i++) */
+  /*   { */
+  /*     printc(bin->TP.b[i]); */
+  /*   } */
+  /* printf("\n"); */
+
+  printf("Flush:\n");
+  for(i = 0; i < MAX_NUM_SUITS; i++)
     {
-      printc(bin->P.b[i]);
+      printf("\t%c: ", suits[i]);
+      for(j = 0; j < bin->F.b_count[i]; j++)
+	{
+	  printc(bin->F.b[i][j]);
+	}
+      printf("\n");
     }
-  printf("\n");
-
-  printf("Two Pair: ");
-  for(i = 0; i < bin->TP.b_count; i++)
-    {
-      printc(bin->TP.b[i]);
-    }
-  printf("\n");
-
 
   printf("Straight Flush:\n");
   for(i = 0; i < MAX_NUM_SUITS; i++)
@@ -230,15 +219,16 @@ void printb(BIN *bin)
 	{
 	  printc(bin->SF.b[i][j]);
 	}
+      /* printf("\tCount: %d\n", bin->SF.b_count[i]); */
       printf("\n");
     }
 
-  printf("Straight: ");
-  for(i = 0; i < bin->S.b_count; i++)
-    {
-      printc(bin->S.b[i]);
-    }
-  printf("\n");
+  /* printf("Straight: "); */
+  /* for(i = 0; i < bin->S.b_count; i++) */
+  /*   { */
+  /*     printc(bin->S.b[i]); */
+  /*   } */
+  /* printf("\n"); */
 printf("******************************\n\n");
 
 }

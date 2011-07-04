@@ -1,9 +1,0 @@
-#define MAX_NUM_SUITS 4
-#define MAX_NUM_RANKS 13
-
-
-typedef struct card {
-  int rank;
-  int suit;
-  char whos_card; /* 'P' - Player;  'D' - Dealer */
-} CARD;
