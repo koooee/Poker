@@ -137,7 +137,6 @@ void *clearbin(CARD **hand, int *count, int max)
   free(*hand);
   *count = 0;
   return malloc(max * sizeof(CARD));
-  
 }
 
 
