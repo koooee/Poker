@@ -93,7 +93,8 @@ void big_test_seven()
 		      /* Rank it. Count it. */
 		      rank = rank_hand(plyr.hand, &plyr.bin, 7);
 		      freqs[rank]++;
-		      
+		      /* Debugging */
+		      printb(&plyr.bin);
 		      /* Get ready for a new one */
 		      reset_bin(&plyr.bin);
 
