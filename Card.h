@@ -18,6 +18,9 @@ Date: 5/29/2011
 #define TRUE 1
 #define FALSE 0
 
+char ranks[] = "23456789TJQKA";
+char suits[] = "schd";
+
 typedef struct card {
   int rank;
   int suit;

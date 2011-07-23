@@ -51,27 +51,31 @@ typedef struct BINS {
 /*     } */
 /*   printf("\n"); */
 /* } */
-
-void Add(CARD c, CARD (*hand)[5], int max, int *count, BIN *b, int hand_rank)
+void AddMulti(CARD c, CARD hand[4][5], int max, int suit, int count[4], BIN *b, int hand_rank)
+{
+ if(*count >= max)
+    {
+      b->is_full[hand_rank] = TRUE;
+    }
+  else 
+    {
+      hand[suit][count[suit]++] = c;
+      if(count[suit] == max)
+      	b->is_full[hand_rank] = TRUE;
+    }
+ 
+}
+void Add(CARD c, CARD hand[5], int max, int *count, BIN *b, int hand_rank)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
 
   if(*count >= max)
     {
-      /* printh(*hand, max); */
-      /* printf("Your bin is full. Tried to add: "); */
-      /* printc(c); */
-      /* printf(" With a bin count of %d\n", *count); */
-      /* printb(b); */
-      /* exit(EXIT_FAILURE); */
       b->is_full[hand_rank] = TRUE;
-      /* printf("BIN IS FULL!!\n"); */
-      /* printb(b); */
     }
   else 
     {
-      CARD *t;
-      t = *hand + (*count)++;
-      *t = c;
+
+      hand[*count++] = c;
       if(*count == max)
       	b->is_full[hand_rank] = TRUE;
     }
@@ -117,13 +121,14 @@ void init_bin(BIN *bin)
   /* bin->F.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD)); */
   /* bin->SF.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD)); */
 
-  /* for(i = 0; i < MAX_NUM_SUITS; i++) */
-  /*   { */
-  /*     bin->F.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD)); */
-  /*     bin->SF.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD)); */
-  /*     bin->F.b_count[i] = 0; */
-  /*     bin->SF.b_count[i] = 0;       */
-  /*   } */
+  for(i = 0; i < MAX_NUM_SUITS; i++)
+    {
+      /* bin->F.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD)); */
+      /* bin->SF.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD)); */
+      bin->F.b_count[i] = 0;
+      bin->SF.b_count[i] = 0;
+    }
+
   for(i = 0; i < MAX_HAND_RANKS; i++)
     {
       bin->is_full[i] = FALSE;
@@ -138,30 +143,35 @@ void clearbin(int *count)
   *count = 0;
   /* return malloc(max * sizeof(CARD)); */
 }
+void clearmultibin(int count[4], int suit)
+{
+  count[suit] = 0;
+}
 
-
-/* void reset_bin(BIN *bin) */
-/* { */
-/*   CARD blank; */
-/*   int i; */
-/*   bin->HC = blank; */
-/*   bin->P.b_count = 0; */
-/*   bin->TP.b_count = 0; */
-/*   bin->TK.b_count = 0; */
-/*   bin->S.b_count = 0; */
-/*   bin->FH.b_count = 0; */
-/*   bin->FK.b_count = 0; */
+void reset_bin(BIN *bin)
+{
+  CARD blank;
+  blank.rank = -1;
+  blank.suit = -1;
+  int i;
+  bin->HC = blank;
+  bin->P.b_count = 0;
+  bin->TP.b_count = 0;
+  bin->TK.b_count = 0;
+  bin->S.b_count = 0;
+  bin->FH.b_count = 0;
+  bin->FK.b_count = 0;
   
-/*   for(i = 0; i < MAX_NUM_SUITS; i++) { */
-/*     bin->SF.b_count[i] = 0; */
-/*     bin->F.b_count[i] = 0; */
-/*     } */
+  for(i = 0; i < MAX_NUM_SUITS; i++) {
+    bin->SF.b_count[i] = 0;
+    bin->F.b_count[i] = 0;
+    }
   
-/*   for(i = 0; i < MAX_HAND_RANKS; i++) { */
-/*     bin->is_full[i] = FALSE; */
-/*     bin->drawing[i] = NOTHING; */
-/*   } */
-/* } */
+  for(i = 0; i < MAX_HAND_RANKS; i++) {
+    bin->is_full[i] = FALSE;
+    bin->drawing[i] = NOTHING;
+  }
+}
 
 
 /* void Remove(CARD **free, int *count) */
