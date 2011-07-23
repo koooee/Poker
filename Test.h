@@ -1023,7 +1023,7 @@ void ttest()
   /* test_SF(); */
   /* printf("Running Big Test...\n"); */
   /* big_test_five(); */
-  /* big_test_seven(); */
+  big_test_seven();
   /* TestDistance(); */
   /* all_sf_combos(); */
   /* big_test_2(); */
