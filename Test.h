@@ -85,6 +85,45 @@ char *tinvert(CARD *hand, int num_cards, char *result)
   return result;
 }
 
+char Contains(CARD *hand, CARD c, int size)
+{
+  int i;
+  for(i = 0; i < size; i++)
+    {
+      if(hand[i].rank == c.rank && hand[i].suit == c.suit)
+	return TRUE;
+    }
+  return FALSE;
+}
+
+int sum_of_distances(CARD *hand, int len)
+{
+  int i, total=0;
+  for(i = 0; i < len-1; i++)
+    {
+      total += distance(hand[i], hand[i+1]);
+    }
+  return total;
+}
+
+char check_for_s(CARD *hand, int len)
+{/* the sum of the differences should be length of the hand - 1...assuming only the cards that make the hand are in the hand */
+  int i, total = 0;
+  for(i = 0; i < len-1; i++)
+    {
+      total += distance(hand[i], hand[i+1]);
+    }
+  if((total == 4 && len == 5) || (total >= 15 && len == 5))
+    {
+      printf("Total: %d\n", total);
+      printh(hand,len);
+
+      return TRUE;
+      
+    }
+  return FALSE;
+}
+
 char test_for_sf(BIN *bin)
 {
   int i,j,is_one, total;
