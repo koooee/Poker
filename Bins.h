@@ -55,7 +55,6 @@ void printh(CARD *h, int hand_size)
 
 void AddMulti(CARD c, CARD hand[4][5], int max, int suit, int count[4], BIN *b, int hand_rank)
 {/*FIXME: this interface is retarded */
-  printf("Multi Add Count Now: %d\n", count[suit]);
  if(count[suit] >= max)
     {
       b->is_full[hand_rank] = TRUE;
@@ -63,26 +62,39 @@ void AddMulti(CARD c, CARD hand[4][5], int max, int suit, int count[4], BIN *b, 
   else 
     {
       hand[suit][count[suit]++] = c;
-      printf("Multi Add Count Later: %d\n", count[suit]);
       if(count[suit] == max)
       	b->is_full[hand_rank] = TRUE;
     }
  
 }
+/* void Add(CARD c, CARD **hand, int max, int *count, BIN *b, int hand_rank) */
+/* {/\* Yes, I know, this interface seems a bit retarded.  FIXME *\/ */
 
-void Add(CARD c, CARD *hand, int max, int *count, BIN *b, int hand_rank)
+/*   if(*count >= max) */
+/*     { */
+/*       b->is_full[hand_rank] = TRUE; */
+/*     } */
+/*   else  */
+/*     { */
+/*       CARD *t; */
+/*       t = *hand + (*count)++; */
+/*       *t = c; */
+/*       if(*count == max) */
+/*       	b->is_full[hand_rank] = TRUE; */
+/*     } */
+  
+/* } */
+
+void Add(CARD c, CARD hand[5], int max, int *count, BIN *b, int hand_rank)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
-  int my_count = *count;
-  printf("Add Count Now: %d\n", my_count);
-  if(my_count >= max)
+
+  if(*count >= max)
     {
       b->is_full[hand_rank] = TRUE;
     }
-  else 
+  else
     {
-      hand[my_count] = c;
-      *count++;
-      printf("Add Count Later: %d\n", *count);
+      hand[(*count)++] = c;
       if(*count == max)
       	b->is_full[hand_rank] = TRUE;
     }
