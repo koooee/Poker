@@ -18,8 +18,8 @@ Date: 5/29/2011
 #define TRUE 1
 #define FALSE 0
 
-char ranks[] = "23456789TJQKA";
-char suits[] = "schd";
+char ranks[MAX_NUM_RANKS] = "23456789TJQKA";
+char suits[MAX_NUM_SUITS] = "shdc";
 
 typedef struct card {
   int rank;
