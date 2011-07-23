@@ -108,7 +108,8 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 	      else
 		{/* clear the bin because we have ruined any chance of a straight flush */
 		    /* clearbin(&bin->SF.b_count[c2.suit]); */
-		  bin->SF.b_count[c2.suit] = 0;
+		  /* clear bin */
+		  clearmultibin(bin->SF.b, bin->SF.b_count, c2.suit);
 		}
 	    }
 	  if(i == size_of_hand-2)
@@ -263,8 +264,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 
       if(delta > 1 && delta < 12)
 	{/* any potential straight is ruined, clear the straight bin */
-	  /* clearbin(&bin->S.b_count); */
-	  bin->S.b_count = 0;
+	  clearbin(&bin->S.b_count);
 	}
 
     } /*END for(i = 0; i < size_of_hand; i++) */

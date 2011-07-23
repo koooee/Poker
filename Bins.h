@@ -52,7 +52,7 @@ typedef struct BINS {
 /*   printf("\n"); */
 /* } */
 void AddMulti(CARD c, CARD hand[4][5], int max, int suit, int count[4], BIN *b, int hand_rank)
-{
+{/*FIXME: this interface is retarded */
  if(*count >= max)
     {
       b->is_full[hand_rank] = TRUE;
@@ -74,7 +74,6 @@ void Add(CARD c, CARD hand[5], int max, int *count, BIN *b, int hand_rank)
     }
   else 
     {
-
       hand[*count++] = c;
       if(*count == max)
       	b->is_full[hand_rank] = TRUE;
@@ -143,10 +142,19 @@ void clearbin(int *count)
   *count = 0;
   /* return malloc(max * sizeof(CARD)); */
 }
-void clearmultibin(int count[4], int suit)
+void clearmultibin(CARD bin[4][5], int counts[4], int suit)
 {
-  count[suit] = 0;
+  int j;
+  counts[suit] = 0;
+  for(j = 0; j < 5; j++)
+    {
+      CARD junk;
+      junk.rank = -1;
+      junk.suit = -1;
+      bin[suit][j] = junk;
+    }
 }
+
 
 void reset_bin(BIN *bin)
 {
