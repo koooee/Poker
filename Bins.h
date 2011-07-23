@@ -41,16 +41,18 @@ typedef struct BINS {
   
 } BIN;
 void printb(BIN *bin);
-/* void printh(CARD *h, int hand_size) */
-/* {/\* Debugging *\/ */
 
-/*   int i;  */
-/*   for(i =0; i < hand_size; i++) */
-/*     { */
-/*       printf("%c%c  ", ranks[h[i].rank], suits[h[i].suit]); */
-/*     } */
-/*   printf("\n"); */
-/* } */
+void printh(CARD *h, int hand_size)
+{/* Debugging */
+
+  int i;
+  for(i =0; i < hand_size; i++)
+    {
+      printf("%c%c  ", ranks[h[i].rank], suits[h[i].suit]);
+    }
+  printf("\n");
+}
+
 void AddMulti(CARD c, CARD hand[4][5], int max, int suit, int count[4], BIN *b, int hand_rank)
 {/*FIXME: this interface is retarded */
  if(count[suit] >= max)
@@ -65,7 +67,8 @@ void AddMulti(CARD c, CARD hand[4][5], int max, int suit, int count[4], BIN *b, 
     }
  
 }
-void Add(CARD c, CARD hand[5], int max, int *count, BIN *b, int hand_rank)
+
+void Add(CARD c, CARD *hand, int max, int *count, BIN *b, int hand_rank)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
 
   if(*count >= max)
@@ -78,9 +81,7 @@ void Add(CARD c, CARD hand[5], int max, int *count, BIN *b, int hand_rank)
       if(*count == max)
       	b->is_full[hand_rank] = TRUE;
     }
-  
 }
-
 
 void init_bin(BIN *bin)
 {
@@ -101,6 +102,13 @@ void init_bin(BIN *bin)
   /* bin->S.b = malloc(MAX_SIZE_S * card_size); */
   bin->S.b_max = MAX_SIZE_S;
   bin->S.b_count = 0;
+  for(i = 0; i < MAX_SIZE_S; i++)
+    {
+      CARD junk;
+      junk.rank = -1;
+      junk.suit = -1;
+      bin->S.b[i] = junk;
+    }
 
   /* bin->FH.b = malloc(MAX_SIZE_FH * card_size); */
   bin->FH.b_max = MAX_SIZE_FH;

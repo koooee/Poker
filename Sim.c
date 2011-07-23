@@ -95,10 +95,10 @@ void big_test_seven()
 		      freqs[rank]++;
 
 		      /* Debugging */
-		      if(rank == 5)
-			{
-			  printb(&plyr.bin);
-			}
+		      /* if(rank == 5) */
+		      /* 	{ */
+		      /* 	  printb(&plyr.bin); */
+		      /* 	} */
 		      /* End Debugging */
 
 		      /* Get ready for a new one */
