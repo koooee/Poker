@@ -10,7 +10,7 @@ I'm not really sure the best way to go about this bue this seemed SOMEWHAT logic
 #define NUM_CARDS_TO_RANK 5
 
 typedef struct MULTI_BIN {
-  CARD b[MAX_NUM_SUITS][NUM_CARDS_TO_RANK]; /* This will always need to be a 4 by 5 */
+  CARD b[MAX_NUM_SUITS][NUM_CARDS_TO_RANK]; /* actual bin where cards are stored */
   int b_max; /* Max size of the bin */
   int b_count[MAX_NUM_SUITS]; /* Current count of the elements in the bin */
 } MULTI_BIN;
