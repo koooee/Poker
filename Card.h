@@ -26,3 +26,8 @@ typedef struct card {
   int suit;
   char whos_card;
 } CARD;
+
+void printc(CARD c)
+{/* print card */
+  printf("%c%c", ranks[c.rank], suits[c.suit]);
+}
