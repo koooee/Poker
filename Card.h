@@ -4,8 +4,8 @@ Programmer: Nick Kolegraff
 Date: 5/29/2011
 */
 
-#include "stdio.h"
-#include "stdlib.h"
+/* #include "stdio.h" */
+/* #include "stdlib.h" */
 
 #define MAX_NUM_SUITS 4
 #define MAX_NUM_RANKS 13
@@ -18,8 +18,8 @@ Date: 5/29/2011
 #define TRUE 1
 #define FALSE 0
 
-char ranks[MAX_NUM_RANKS] = "23456789TJQKA";
-char suits[MAX_NUM_SUITS] = "shdc";
+char ranks[MAX_NUM_RANKS+1] = "23456789TJQKA";
+char suits[MAX_NUM_SUITS+1] = "shdc";
 
 typedef struct card {
   int rank;
@@ -27,7 +27,7 @@ typedef struct card {
   char whos_card;
 } CARD;
 
-void printc(CARD c)
-{/* print card */
-  printf("%c%c", ranks[c.rank], suits[c.suit]);
-}
+/* void printc(CARD c) */
+/* {/\* print card *\/ */
+/*   printf("%c%c", ranks[c.rank], suits[c.suit]); */
+/* } */

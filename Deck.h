@@ -15,4 +15,4 @@ Date: 5/18/2011
 
 
 
-CARD deck[MAX_DECK_SIZE];
+/* CARD deck[MAX_DECK_SIZE]; */
