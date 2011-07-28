@@ -553,7 +553,7 @@ void check_for_same(CARD * cards, int size)
 
 void big_test_seven()
 {
-  int one, two, three, four, five, six, seven, count, sumer;
+  int one, two, three, four, five, six, seven, count, sumer, eight, nine;
   int freqs[9];
   int sums[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int z;
@@ -575,6 +575,8 @@ void big_test_seven()
       	  for(five = four+1; five < size; five++)
       	    for(six = five+1; six < size; six++)
       	      for(seven = six+1; seven < size; seven++)
+		for(eight = six+1; eight < size; eight++)
+		  for(nine = six+1; nine < size; nine++)
 		{
 		  /* if( */
 		  /*    one != two && one != three && one != four && one != five && one != six && one != seven */
@@ -1023,7 +1025,7 @@ void ttest()
   /* test_SF(); */
   /* printf("Running Big Test...\n"); */
   /* big_test_five(); */
-  /* big_test_seven(); */
+  big_test_seven();
   /* TestDistance(); */
   /* all_sf_combos(); */
   /* big_test_2(); */
