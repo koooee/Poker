@@ -971,6 +971,25 @@ void TestDistance()
 
 }
 
+void test_whos_card()
+{
+  PLAYER ply;
+  int i, rank;
+  CARD *hnd;
+  InitPlayer(&ply);
+  hnd = malloc(7 * sizeof(CARD));
+  hnd = tconvert("AsTcJh9d2c8h5c", 7);
+  for(i = 0; i < 7; i++)
+    {
+      ply.hand[i] = hnd[i];
+    }
+  ply.hand[0].whos_card = DEALERS;
+  rank = rank_hand(ply.hand, &ply.bin, 7);
+  printf("%c\n", BinContainsCard(&ply, rank, DEALERS));
+
+  
+}
+
 void ttest()
 {/* this is the main function for test cases */
 
@@ -1021,11 +1040,11 @@ void ttest()
   }
   
   printf("Tests Passed.\n");
-
+  test_whos_card();
   /* test_SF(); */
   /* printf("Running Big Test...\n"); */
   /* big_test_five(); */
-  big_test_seven();
+  /* big_test_seven(); */
   /* TestDistance(); */
   /* all_sf_combos(); */
   /* big_test_2(); */

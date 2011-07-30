@@ -24,7 +24,11 @@ Date: 5/18/2011
 typedef struct BINS {
   /* I toyed around with not doing it like this ie the 'free' concept.  But, decided to go with it.  I'm sure there is a better way to represent this type of structure...will give it some more thought. */
   /* New Comment 5/31/2011 This is kind of like anarchy. FIXME*/
-
+  
+  /* 7/30/2011 -- OMFG...this is so bad...never should have made seperate structs for each bin.
+     now i have to make a mapping functionc that maps ranks to bins because it is f-ing up the query functions
+     FML
+  */
   CARD HC; /* High Card */
   STD_BIN P;
   STD_BIN TP;
@@ -52,6 +56,43 @@ void printh(CARD *h, int hand_size)
   printf("\n");
 }
 
+/* (void *)GetBin(PLAYER *p, int hand_rank) */
+/* {// this function is a direct result of my stupidity.  See comments above in the struct. */
+/*   switch(hand_rank) */
+/*     { */
+/*     case 0: */
+/*       return (void *) p->bin.HC; */
+/*       break; */
+/*     case 1: */
+/*       return (void *) p->bin.P; */
+/*       break; */
+/*     case 2: */
+/*       return (void *) p->bin.TP; */
+/*       break; */
+/*     case 3: */
+/*       return (void *) p->bin.TK; */
+/*       break; */
+/*     case 4: */
+/*       return (void *) p->bin.S; */
+/*       break; */
+/*     case 5: */
+/*       return (void *) p->bin.F; */
+/*       break; */
+/*     case 6: */
+/*       return (void *) p->bin.FH; */
+/*       break; */
+/*     case 7: */
+/*       return (void *) p->bin.FK; */
+/*       break; */
+/*     case 9: */
+/*       return (void *) p->bin.SF; */
+/*       break; */
+/*     default: */
+/*       printf("Wrong Rank.  %d doesnt exist as a poker hand rank\n", hand_rank); */
+/*       exit(EXIT_FAILURE); */
+/*       break; */
+/*     } */
+/* } */
 void Add(CARD c, CARD **hand, int max, int *count, BIN *b, int hand_rank)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
 

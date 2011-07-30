@@ -13,7 +13,20 @@ typedef struct player {
 
 } PLAYER;
 
-/* TODO: Player Init function */
-/* Each player should get their own hand and BINS */
+void InitHand(PLAYER *p)
+{
+  int i;
+  for(i = 0; i < MAX_HAND_SIZE; i++)
+    {
+      CARD temp;
+      temp.rank = -1;
+      temp.suit = -1;
+      p->hand[i] = temp;
+    }
+}
 
-
+void InitPlayer(PLAYER *p)
+{
+  init_bin(&p->bin);
+  InitHand(p);
+}
