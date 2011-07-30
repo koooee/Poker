@@ -10,11 +10,7 @@ Date: 5/18/2011
 typedef struct player {
   CARD hand[MAX_HAND_SIZE];
   BIN bin;
-  int num_outs;
-  double best_drawing_hand;
-  double all_drawing_hands[9];
-  double current_best_hand;
-  /* TODO: There are many more attributes we will need for analyzing players current game status to make effective decisions */
+
 } PLAYER;
 
 /* TODO: Player Init function */
