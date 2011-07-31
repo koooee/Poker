@@ -15,6 +15,9 @@ Date: 5/29/2011
 #define DEALERS 'D'
 #define PLAYERS 'P'
 #define NO_ONES 'N'
+#define YCMH 1 // your card makes hand
+#define HPBB 2 // hand played by board
+#define NH   3 // hand isn't made or draw
 #define TRUE 1
 #define FALSE 0
 

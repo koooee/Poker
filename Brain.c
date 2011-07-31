@@ -41,12 +41,17 @@ void sort_hand(CARD *hand, int hand_size)
 	else ;
       }
 }
+
 int sum_of_distances(CARD *hand, int len)
 {
-  int i, total=0;
+  int i,d, total=0;
   for(i = 0; i < len-1; i++)
     {
-      total += distance(hand[i], hand[i+1]);
+      
+      d = distance(hand[i], hand[i+1]);
+      if(d == 0)
+	d = 100;
+      total += d;
     }
   return total;
 }
@@ -85,6 +90,20 @@ int distance(CARD c, CARD c2)
     return 1;
     
   return abs(c.rank - c2.rank);
+}
+
+int get_max_rank(BIN *bin)
+{
+  int final_rank;
+  for(final_rank = 8; final_rank >= 0; final_rank--)
+    {
+      if(bin->is_full[final_rank] == TRUE)
+	{
+	  return final_rank;
+	}
+    }
+  return -1;
+
 }
 
 int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
@@ -366,127 +385,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
       d = distance(temp,temp2);
     }
 
-
-  int final_rank;
-  for(final_rank = 8; final_rank >= 0; final_rank--)
-    {
-      if(bin->is_full[final_rank] == TRUE)
-	{
-	  return final_rank;
-	}
-    }
-  return -1;
+  return get_max_rank(bin);
 
 }
 
-// Function to Query the players bins and return an array of the 'state'
-// 'state' is defined as an abstraction of the current event -- ie, Drawing Hand, Made Hand.
-// the function will return a boolean array of four elements:
-//   0th index: made a hand with your card
-//   1th index: made a hand without your card
-//   2th index: drawing to a hand with your card
-//   3th index: drawing to a hand without your card
-// we define a drawing hand as one card to any Straight, Flush, or Straight Flush.
-// pretty crude at the moment but we will try and write it with enough abstraction to add in better functionality
-// as in drawing to a Straight with x outs to y hands
-
-// Helper for BinContainsCard function
-char isKey(CARD *hand, char key, int size)
-{
-  int i;
-  for(i = 0; i < size; i++)
-    {
-      if(hand[i].whos_card == key)
-	return TRUE;
-    }
-  return FALSE;
-}
-// Helper for QueryBinArray function
-char BinContainsCard (PLAYER *p, int hand_rank, char key)
-{// function returns true or false if it finds the key
-  switch(hand_rank)
-    {
-    case 0:
-      if(p->bin.HC.whos_card == key)
-    	return TRUE;
-      else
-    	return FALSE;
-      break;
-    case 1:
-      return isKey(p->bin.P.b, key, MAX_SIZE_P);
-      break;
-    case 2:
-      return isKey(p->bin.TP.b, key, MAX_SIZE_TP);
-      break;
-    case 3:
-      return isKey(p->bin.TK.b, key, MAX_SIZE_TK);
-      break;
-    case 4:
-      return isKey(p->bin.S.b, key, MAX_SIZE_S);
-      break;
-    case 5:
-      int i;
-      for(i = 0; i < MAX_NUM_SUITS; i++)
-    	{
-    	  if(isKey(p->bin.F.b[i], key, p->bin.F.b_count[i]) == TRUE)
-    	    return TRUE;
-    	}
-      return FALSE;
-      break;
-    case 6:
-      return isKey(p->bin.FH.b, key, MAX_SIZE_FH);
-      break;
-    case 7:
-      return isKey(p->bin.FK.b, key, MAX_SIZE_FK);
-      break;
-    case 8:
-      int i;
-      for(i = 0; i < MAX_NUM_SUITS; i++)
-    	{
-    	  if(isKey(p->bin.SF.b[i], key, p->SF.b_count[i]) == TRUE)
-    	    return TRUE;
-    	}
-      break;
-    default:
-      printf("Rank %d doesn't exist as a poker hand rank\n", hand_rank);
-      exit(EXIT_FAILURE);
-      break;
-    }
-}
-
-/* void QueryBinArray(PLAYER *p, (char *state)[4]) */
-/* {// TODO: add ability to distinguish between Gunshot and Openended draws */
-/*   // check if any bin is full */
-/*   // if the bin is full, check whos card */
-/*   // if the any bin is not full */
-/*   // check if it is drawing to anything */
-/*   // if it is: check whos card */
-/*   int i, j; */
-/*   for(i = 0; i < MAX_HAND_RANKS; i++) */
-/*     if(p->bin.is_full[i] == TRUE) */
-/*       {// we have a made hand */
-/* 	// now check whos_card */
-/* 	void *temp = GetBin(p, i); */
-/* 	for(j = 0; j < temp->b_count */
-/*       } */
-/* } */
-
-/* // Same a above function only returns number of outs to a drawing hand. */
-/* int QueryBinOuts(PLAYER *p) */
-/* { */
-/*   int outs; */
-/*   return outs; */
-/* } */
-
-/* int Winner(PLAYER *p, PLAYER *d) // p - player; d - dealer; */
-/* {// 0 is left as winner; 1 is right as winner */
-/*   return -1; */
-/* } */
-
-/* float Pays(PLAYER *p, PLAYER *d) */
-/* { */
-/*   // Does dealer qualify? */
-/*   float pay; */
-/*   pay = 0.0; */
-/*   return pay; */
-/* } */

@@ -575,8 +575,8 @@ void big_test_seven()
       	  for(five = four+1; five < size; five++)
       	    for(six = five+1; six < size; six++)
       	      for(seven = six+1; seven < size; seven++)
-		for(eight = six+1; eight < size; eight++)
-		  for(nine = six+1; nine < size; nine++)
+		/* for(eight = six+1; eight < size; eight++) */
+		/*   for(nine = six+1; nine < size; nine++) */
 		{
 		  /* if( */
 		  /*    one != two && one != three && one != four && one != five && one != six && one != seven */
@@ -974,18 +974,39 @@ void TestDistance()
 void test_whos_card()
 {
   PLAYER ply;
-  int i, rank;
+  int i, rank, hand_size;
   CARD *hnd;
+  char *state = (char *)malloc(2 * sizeof(char));
   InitPlayer(&ply);
-  hnd = malloc(7 * sizeof(CARD));
-  hnd = tconvert("AsTcJh9d2c8h5c", 7);
-  for(i = 0; i < 7; i++)
+  hand_size = 6;
+  hnd = malloc(hand_size * sizeof(CARD));
+  hnd = tconvert("AsAcAdAhJcKs", hand_size);
+  for(i = 0; i < hand_size; i++)
     {
       ply.hand[i] = hnd[i];
     }
-  ply.hand[0].whos_card = DEALERS;
-  rank = rank_hand(ply.hand, &ply.bin, 7);
-  printf("%c\n", BinContainsCard(&ply, rank, DEALERS));
+  ply.hand[0].whos_card = PLAYERS;
+  ply.hand[1].whos_card = PLAYERS;
+  rank = rank_hand(ply.hand, &ply.bin, hand_size);
+  printh(ply.hand, hand_size);
+  /* printf("%c, %c, %c, %c, %c, %c\n",  */
+  /* 	 ply.hand[0].whos_card */
+  /* 	 ,ply.hand[1].whos_card */
+  /* 	 ,ply.hand[2].whos_card */
+  /* 	 ,ply.hand[3].whos_card */
+  /* 	 ,ply.hand[4].whos_card */
+  /* 	 ,ply.hand[5].whos_card */
+  /* 	 ,ply.hand[6].whos_card); */
+
+
+  char *is_my_card;
+  /* char r = drawingto(ply.hand, PLAYERS, is_my_card, hand_size); */
+  /* printf("Drawing to %c\n", r); */
+  /* printf("is my card: %d\n", *is_my_card); */
+  /* printb(&ply.bin); */
+  QueryBinArray(&ply, state, is_my_card, PLAYERS, hand_size);
+  printf("state is: %d, %d\n", state[0], state[1]);
+  free(state);
 
   
 }

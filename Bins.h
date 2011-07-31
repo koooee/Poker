@@ -56,43 +56,6 @@ void printh(CARD *h, int hand_size)
   printf("\n");
 }
 
-/* (void *)GetBin(PLAYER *p, int hand_rank) */
-/* {// this function is a direct result of my stupidity.  See comments above in the struct. */
-/*   switch(hand_rank) */
-/*     { */
-/*     case 0: */
-/*       return (void *) p->bin.HC; */
-/*       break; */
-/*     case 1: */
-/*       return (void *) p->bin.P; */
-/*       break; */
-/*     case 2: */
-/*       return (void *) p->bin.TP; */
-/*       break; */
-/*     case 3: */
-/*       return (void *) p->bin.TK; */
-/*       break; */
-/*     case 4: */
-/*       return (void *) p->bin.S; */
-/*       break; */
-/*     case 5: */
-/*       return (void *) p->bin.F; */
-/*       break; */
-/*     case 6: */
-/*       return (void *) p->bin.FH; */
-/*       break; */
-/*     case 7: */
-/*       return (void *) p->bin.FK; */
-/*       break; */
-/*     case 9: */
-/*       return (void *) p->bin.SF; */
-/*       break; */
-/*     default: */
-/*       printf("Wrong Rank.  %d doesnt exist as a poker hand rank\n", hand_rank); */
-/*       exit(EXIT_FAILURE); */
-/*       break; */
-/*     } */
-/* } */
 void Add(CARD c, CARD **hand, int max, int *count, BIN *b, int hand_rank)
 {/* Yes, I know, this interface seems a bit retarded.  FIXME */
 
@@ -222,23 +185,37 @@ void printb(BIN *bin)
   printf("\n******************************\n");
   printf("*        BINS                *\n");
   printf("******************************\n");
-  /* printf("High Card: "); */
-  /* printc(bin->HC); */
-  /* printf("\n"); */
+  printf("High Card: ");
+  printc(bin->HC);
+  printf("\n");
 
-  /* printf("Pair: "); */
-  /* for(i = 0; i < bin->P.b_count; i++) */
-  /*   { */
-  /*     printc(bin->P.b[i]); */
-  /*   } */
-  /* printf("\n"); */
+  printf("Pair: ");
+  for(i = 0; i < bin->P.b_count; i++)
+    {
+      printc(bin->P.b[i]);
+    }
+  printf("\n");
 
-  /* printf("Two Pair: "); */
-  /* for(i = 0; i < bin->TP.b_count; i++) */
-  /*   { */
-  /*     printc(bin->TP.b[i]); */
-  /*   } */
-  /* printf("\n"); */
+  printf("Two Pair: ");
+  for(i = 0; i < bin->TP.b_count; i++)
+    {
+      printc(bin->TP.b[i]);
+    }
+  printf("\n");
+  
+  printf("Three of a Kind: ");
+  for(i = 0; i < bin->TK.b_count; i++)
+    {
+      printc(bin->TK.b[i]);
+    }
+  printf("\n");
+
+  printf("Straight: ");
+  for(i = 0; i < bin->S.b_count; i++)
+    {
+      printc(bin->S.b[i]);
+    }
+  printf("\n");
 
   printf("Flush:\n");
   for(i = 0; i < MAX_NUM_SUITS; i++)
@@ -250,6 +227,20 @@ void printb(BIN *bin)
 	}
       printf("\n");
     }
+
+  printf("Full House: ");
+  for(i = 0; i < bin->FH.b_count; i++)
+    {
+      printc(bin->FH.b[i]);
+    }
+  printf("\n");
+
+  printf("Four of a Kind: ");
+  for(i = 0; i < bin->FK.b_count; i++)
+    {
+      printc(bin->FK.b[i]);
+    }
+  printf("\n");
 
   printf("Straight Flush:\n");
   for(i = 0; i < MAX_NUM_SUITS; i++)
@@ -263,12 +254,6 @@ void printb(BIN *bin)
       printf("\n");
     }
 
-  /* printf("Straight: "); */
-  /* for(i = 0; i < bin->S.b_count; i++) */
-  /*   { */
-  /*     printc(bin->S.b[i]); */
-  /*   } */
-  /* printf("\n"); */
 printf("******************************\n\n");
 
 }
