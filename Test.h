@@ -554,7 +554,7 @@ void check_for_same(CARD * cards, int size)
 void big_test_seven()
 {
   int one, two, three, four, five, six, seven, count, sumer, eight, nine;
-  int freqs[9];
+  unsigned long freqs[9];
   int sums[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int z;
   for(z = 0; z < 9; z++)
@@ -564,10 +564,12 @@ void big_test_seven()
   char *cards[52];
   char *test_hand;
   CARD *hnd;
-  PLAYER plyr;
-
-  init_bin(&plyr.bin);
-  test_hand = malloc(14 * sizeof(char));
+  PLAYER plyr, d;
+  char *state = malloc(2 * sizeof(char));
+  char *is_my_card;
+  InitPlayer(&plyr);
+  InitPlayer(&d);
+  test_hand = malloc(18 * sizeof(char));
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
       for(three = two+1; three < size; three++)
@@ -575,8 +577,8 @@ void big_test_seven()
       	  for(five = four+1; five < size; five++)
       	    for(six = five+1; six < size; six++)
       	      for(seven = six+1; seven < size; seven++)
-		/* for(eight = six+1; eight < size; eight++) */
-		/*   for(nine = six+1; nine < size; nine++) */
+		for(eight = seven+1; eight < size; eight++)
+		  for(nine = eight+1; nine < size; nine++)
 		{
 		  /* if( */
 		  /*    one != two && one != three && one != four && one != five && one != six && one != seven */
@@ -586,7 +588,7 @@ void big_test_seven()
 		  /*    && five != six && five != seven */
 		  /*    && six != seven */
 		  /*    ) */
-		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c"
+		      sprintf(test_hand, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c"
 		      	      ,ranks[one % 13]
 		      	      ,suits[one % 4]
 		      	      ,ranks[two % 13]
@@ -600,93 +602,43 @@ void big_test_seven()
 		      	      ,ranks[six % 13]
 		      	      ,suits[six % 4]
 		      	      ,ranks[seven % 13]
-		      	      ,suits[seven % 4]);
-
-		      hnd = tconvert(test_hand, 7);
-		      /* sort_hand(hnd, 7); */
-		      /* printh(hnd, 7); */
-		      for(i = 0; i < 7; i++){
-			plyr.hand[i] = hnd[i];
-		      }
+		      	      ,suits[seven % 4]
+			      ,ranks[eight % 13]
+		      	      ,suits[eight % 4]
+			      ,ranks[nine % 13]
+		      	      ,suits[nine % 4]);
+		      hnd = tconvert(test_hand, 9);
+		      for(i = 0; i < 2; i++)
+			{// first two cards are players
+			  plyr.hand[i] = hnd[i];
+			  plyr.hand[i].whos_card = PLAYERS;
+			}
+		      for(i = 2; i < 4; i++)
+			{// next two are dealers
+			  d.hand[i-2] = hnd[i];
+			  d.hand[i-2].whos_card = DEALERS;
+			}
+		      
+		      for(i = 4; i < 9; i++)
+			{// next five are the board
+			  plyr.hand[i-2] = hnd[i];
+			  d.hand[i-2] = hnd[i];
+			  plyr.hand[i-2].whos_card = NO_ONES;
+			  d.hand[i-2].whos_card = NO_ONES;
+			}
 		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
 		      free(hnd);
-		      rank = rank_hand(plyr.hand, &plyr.bin, 7);
-		      /* if(rank == 8) */
-		      /* 	{ */
-		      /* 	  if(test_for_sf(&plyr.bin) == FALSE) */
-		      /* 	    { */
-		      /* 	      printf("IMPOSTER!!\n"); */
-		      /* 	      printh(plyr.hand,7); */
-		      /* 	      printb(&plyr.bin); */
-		      /* 	    } */
-		      /* 	} */
-		      /* if(rank == 5) */
-		      /* 	{ */
-		      /* 	  if(test_for_sf(&plyr.bin) == TRUE) */
-		      /* 	    { */
-		      /* 	      printf("IMPOSTER2!!\n"); */
-		      /* 	      printh(plyr.hand,7); */
-		      /* 	      printb(&plyr.bin); */
-		      /* 	    } */
-		      /* 	} */
-		      /* 	  int j; */
-		      /* 	  for(j = 0; j < 4; j++) */
-		      /* 	    { */
-		      /* 	      check_for_s(plyr.bin.F.b[j], plyr.bin.F.b_count[j]); */
-		      /* 	      check_for_s(plyr.bin.SF.b[j], plyr.bin.SF.b_count[j]); */
-		      /* 	    }} */
-		      if(rank == 5)
-		      	{
-			  int x, rnk;
-			  PLAYER xs;
-			  init_bin(&xs.bin);
-			  for(x = 0; x < 4; x++)
-			    {
-			      if(plyr.bin.F.b_count[x] == 5)
-				{
-				  rnk = sum_of_distances(plyr.bin.F.b[x], 5);
-				  /* rnk = rank_hand(plyr.bin.F.b[x], &xs.bin, 5); */
-				  /* check_for_same(plyr.bin.F.b[x], 5); */
-				  if(rnk == 4)
-				    {
-				      printf("Problem Hand: "); printh(plyr.bin.F.b[x], 5);
-				    }
+		      int p_size=7, d_size=7;
+		      int win = Winner(&plyr, &d, p_size, d_size);
+		      freqs[win]++;
+		      /* rank = rank_hand(plyr.hand, &plyr.bin, 7); */
+		      /* // this will count state frequencies */
+		      /* QueryBinArray(&plyr, state, is_my_card, PLAYERS, 7); */
+		      /* freqs[stateToIndex(state)]++; */
 
-				}
-			    }
-			}			 
-
-		      	  /* int x,r; */
-		      	  /* for(x = 0; x < 4; x++) */
-		      	  /*   { */
-		      	  /*     if(plyr.bin.F.b_count[x] == 5) */
-		      	  /* 	{ */
-		      	  /* 	  r = rank_hand(plyr.bin.F.b[x], &plyr.bin, 5); */
-		      	  /* 	  if(r != 5) */
-		      	  /* 	    { */
-		      	  /* 	      printf("IMPOSTER2!!\n"); */
-		      	  /* 	      printh(plyr.hand,7); */
-		      	  /* 	      printb(&plyr.bin); */
-		      	  /* 	    } */
-		      	  /* 	} */
-		      	  /*   } */
-
-		      /* sumer= sum_of_distances(plyr.hand, 7); */
-
-		      /* sums[sumer]++; */
-		      /* if(sumer == 1) */
-		      /* 	printh(plyr.hand, 7); */
-
-		      freqs[rank]++;
-
-		  reset_bin(&plyr.bin);
-		    /* } */
+		      reset_bin(&plyr.bin);
+		      reset_bin(&d.bin);
 		}
-  /* for(z = 0; z < 52; z++) */
-  /*   { */
-  /*     printf("Sum_%d: %d\n", z, sums[z]); */
-  /*   } */
-  /* printf("Done with Sums\n"); */
   long total = 0;
   for(z = 0; z < 9; z++)
     {
@@ -970,7 +922,6 @@ void TestDistance()
       }
 
 }
-
 void test_whos_card()
 {
   PLAYER ply;
@@ -978,34 +929,22 @@ void test_whos_card()
   CARD *hnd;
   char *state = (char *)malloc(2 * sizeof(char));
   InitPlayer(&ply);
-  hand_size = 6;
+  hand_size = 7;
   hnd = malloc(hand_size * sizeof(CARD));
-  hnd = tconvert("AsAcAdAhJcKs", hand_size);
+  hnd = tconvert("2d4s8s9sJsAdKc", hand_size);
   for(i = 0; i < hand_size; i++)
     {
       ply.hand[i] = hnd[i];
     }
   ply.hand[0].whos_card = PLAYERS;
-  ply.hand[1].whos_card = PLAYERS;
+  ply.hand[6].whos_card = PLAYERS;
   rank = rank_hand(ply.hand, &ply.bin, hand_size);
   printh(ply.hand, hand_size);
-  /* printf("%c, %c, %c, %c, %c, %c\n",  */
-  /* 	 ply.hand[0].whos_card */
-  /* 	 ,ply.hand[1].whos_card */
-  /* 	 ,ply.hand[2].whos_card */
-  /* 	 ,ply.hand[3].whos_card */
-  /* 	 ,ply.hand[4].whos_card */
-  /* 	 ,ply.hand[5].whos_card */
-  /* 	 ,ply.hand[6].whos_card); */
-
 
   char *is_my_card;
-  /* char r = drawingto(ply.hand, PLAYERS, is_my_card, hand_size); */
-  /* printf("Drawing to %c\n", r); */
-  /* printf("is my card: %d\n", *is_my_card); */
-  /* printb(&ply.bin); */
   QueryBinArray(&ply, state, is_my_card, PLAYERS, hand_size);
   printf("state is: %d, %d\n", state[0], state[1]);
+  printf("State index is: %d\n", stateToIndex(state));
   free(state);
 
   
@@ -1061,11 +1000,11 @@ void ttest()
   }
   
   printf("Tests Passed.\n");
-  test_whos_card();
+  /* test_whos_card(); */
   /* test_SF(); */
   /* printf("Running Big Test...\n"); */
   /* big_test_five(); */
-  /* big_test_seven(); */
+  big_test_seven();
   /* TestDistance(); */
   /* all_sf_combos(); */
   /* big_test_2(); */

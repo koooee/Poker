@@ -30,7 +30,29 @@ void InitPlayer(PLAYER *p)
   InitHand(p);
 }
 
-
+//Helper function to determine winner
+int stateToIndex(char *state)
+{
+  if(state[0] == 1 && state[1] == 1)
+    return 0;
+  if(state[0] == 1 && state[1] == 2)
+    return 1;
+  if(state[0] == 1 && state[1] == 3)
+    return 2;
+  if(state[0] == 2 && state[1] == 1)
+    return 3;
+  if(state[0] == 2 && state[1] == 2)
+    return 4;
+  if(state[0] == 2 && state[1] == 3)
+    return 5;
+  if(state[0] == 3 && state[1] == 1)
+    return 6;
+  if(state[0] == 3 && state[1] == 2)
+    return 7;
+  if(state[0] == 3 && state[1] == 3)
+    return 8;
+  return -1;
+}
 // Helper for BinContainsWhosCard function
 char isKey(CARD *hand, char key, int size)
 {
@@ -71,8 +93,9 @@ char BinContainsWhosCard (BIN *bin, int hand_rank, char key) /* Key is whos card
     case 5:
       for(i = 0; i < MAX_NUM_SUITS; i++)
     	{
-    	  if(isKey(bin->F.b[i], key, bin->F.b_count[i]) == TRUE)
-    	    t =  TRUE;
+	  if(bin->F.b_count[i] == 4)
+	    if(isKey(bin->F.b[i], key, bin->F.b_count[i]) == TRUE)
+	      t =  TRUE;
     	}
       break;
     case 6:
@@ -84,8 +107,9 @@ char BinContainsWhosCard (BIN *bin, int hand_rank, char key) /* Key is whos card
     case 8:
       for(i = 0; i < MAX_NUM_SUITS; i++)
     	{
-    	  if(isKey(bin->SF.b[i], key, bin->SF.b_count[i]) == TRUE)
-    	    t =  TRUE;
+	  if(bin->SF.b_count[i] == 4)
+	    if(isKey(bin->SF.b[i], key, bin->SF.b_count[i]) == TRUE)
+	      t =  TRUE;
     	}
       break;
     default:
@@ -94,6 +118,68 @@ char BinContainsWhosCard (BIN *bin, int hand_rank, char key) /* Key is whos card
       break;
     }
   return t;
+}
+
+CARD *GetBinByRank(PLAYER *p, int hand_rank, int *size)
+{// This function is a direct result of my stupidity.  See comments in Bins.h.
+  int i;
+  switch(hand_rank)
+    {
+    case 0:
+      *size = 1;
+      return &p->bin.HC;
+      break;
+    case 1:
+      *size = p->bin.P.b_max;
+      return p->bin.P.b;
+      break;
+    case 2:
+      *size = p->bin.TP.b_max;
+      return p->bin.TP.b;
+      break;
+    case 3:
+      *size = p->bin.TK.b_max;
+      return p->bin.TK.b;
+      break;
+    case 4:
+      *size = p->bin.S.b_max;
+      return p->bin.S.b;
+      break;
+    case 5:
+      for(i = 0; i < MAX_NUM_SUITS; i++)
+    	{
+	  if(p->bin.F.b_count[i] == 5) // yes we only return the full one since this is used in the Winner function
+	    {
+	      *size = p->bin.F.b_max;
+	      return p->bin.F.b[i];
+	    }
+    	}
+      break;
+    case 6:
+      *size = p->bin.FH.b_max;
+      return p->bin.FH.b;
+      break;
+    case 7:
+      *size = p->bin.FK.b_max;
+      return p->bin.FK.b;
+      break;
+    case 8:
+      for(i = 0; i < MAX_NUM_SUITS; i++)
+    	{
+	  if(p->bin.SF.b_count[i] == 5)
+	    {
+	      *size = p->bin.SF.b_max;
+	      return p->bin.SF.b[i];
+	    }
+    	}
+      break;
+    default:
+      printf("Rank %d doesn't exist as a poker hand rank\n", hand_rank);
+      exit(EXIT_FAILURE);
+      break;
+    }
+  *size = -1;
+  return NULL;
 }
 
 char drawingto(CARD *hand, char key, char *state, int len)
@@ -214,7 +300,7 @@ void QueryBinArray(PLAYER *p, char *state, char *match, char who_is_this, int si
   max_rank = get_max_rank(&p->bin);
   for(i = max_rank; i >= 0; i--)
     {
-    if(p->bin.is_full[i] == TRUE)
+    if(p->bin.is_full[i] == TRUE && i > 0)
       {// we have a made hand
 	// now check Does the highest ranking hand contain my card?
 	if(BinContainsWhosCard(&p->bin, i, who_is_this) == TRUE)
@@ -235,23 +321,9 @@ void QueryBinArray(PLAYER *p, char *state, char *match, char who_is_this, int si
 
   // check for a drawing hand
 
-  // check SF and F
+  // check Flush
   for(i = 0; i < MAX_NUM_SUITS; i++)
     {	  
-      /* if(p->bin.SF.b_count[i] == 4) */
-      /* 	{// check for your card */
-
-      /* 	  if(BinContainsWhosCard(&p->bin, 8, who_is_this) == TRUE) */
-      /* 	    { */
-      /* 	      state[1] = YCMH; */
-      /* 	      return; */
-      /* 	    } */
-      /* 	  else */
-      /* 	    { */
-      /* 	      state[1] = HPBB; */
-      /* 	      return; */
-      /* 	    } */
-      /* 	} */
       if(p->bin.F.b_count[i] == 4)
 	{
 	  if(BinContainsWhosCard(&p->bin, 5, who_is_this) == TRUE)
@@ -267,24 +339,10 @@ void QueryBinArray(PLAYER *p, char *state, char *match, char who_is_this, int si
 	}
     }
   
-  // check Straight
-  /* if(p->bin.S.b_count == 4) */
-  /*   { */
-  /*     if(BinContainsWhosCard(&p->bin, 4, who_is_this) == TRUE) */
-  /* 	{ */
-  /* 	  state[1] = YCMH; */
-  /* 	  return; */
-  /* 	} */
-  /*     else */
-  /* 	{ */
-  /* 	  state[1] = HPBB; */
-  /* 	  return; */
-  /* 	} */
-  /*   } */
-
   // Since my rank algo is flawed we need to check for drawing hands
   // as the state isn't kept quite correctly in the BINS data structure.
   // Would be a good thing to fix...
+  // Straight Flush and Straights will get checked in this function
 
   char draw;
   draw = drawingto(p->hand, who_is_this, state, size_of_hand);
@@ -298,8 +356,33 @@ int QueryBinOuts(PLAYER *p)
   return outs;
 }
 
-int Winner(PLAYER *p, PLAYER *d) // p - player; d - dealer;
-{// 0 is left as winner; 1 is right as winner
+int Winner(PLAYER *p, PLAYER *d, int p_size, int d_size) // p - player; d - dealer;
+{// 0 is left as winner; 1 is right as winner; 2 tie
+  int p_rank = rank_hand(p->hand, &p->bin, p_size);
+  int d_rank = rank_hand(d->hand, &d->bin, d_size);
+  int i;
+  if(p_rank > d_rank)
+    return 0;
+  if(d_rank > p_rank)
+    return 1;
+  if(p_rank == d_rank)
+    {
+      CARD *p_bin, *d_bin;
+      int *p_bin_size, *d_bin_size;
+      p_bin = GetBinByRank(p, p_rank, p_bin_size);
+      d_bin = GetBinByRank(d, d_rank, d_bin_size);
+      sort_hand(p_bin, *p_bin_size);
+      sort_hand(d_bin, *d_bin_size);
+      for(i = 0; i < *d_bin_size; i++)
+	{
+	  if(p_bin[i].rank > d_bin[i].rank)
+	    return 0;
+	  if(d_bin[i].rank > p_bin[i].rank)
+	    return 1;
+	}
+      // if we didn't return, we have a tie
+      return 2;
+    }
   return -1;
 }
 
