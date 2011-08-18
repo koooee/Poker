@@ -7,6 +7,7 @@ Date: 5/29/2011
 #include "stdio.h"
 #include "stdlib.h"
 
+#define MAX_CARDS_TO_RANK 5
 #define MAX_NUM_SUITS 4
 #define MAX_NUM_RANKS 13
 #define START_RANK 2 /* For looping */
@@ -14,7 +15,7 @@ Date: 5/29/2011
 #define EMPTY_CARD -1
 #define DEALERS 'D'
 #define PLAYERS 'P'
-#define NO_ONES 'N'
+#define BOARDS 'N'
 #define YCMH 1 // your card makes hand
 #define HPBB 2 // hand played by board
 #define NH   3 // hand isn't made or draw

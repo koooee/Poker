@@ -47,7 +47,7 @@ CARD tstoc(char r, char s)
   CARD c;
   c.rank = rank;
   c.suit = suit;
-  c.whos_card = NO_ONES;
+  c.whos_card = BOARDS;
   return c;
   
 }
@@ -542,7 +542,7 @@ void check_for_same(CARD * cards, int size)
   int i,j;
   for(i = 0; i < size; i++)
     for(j = i+1; j < size; j++)
-      if((cards[i].rank == cards[j].rank))
+      if(cards[i].rank == cards[j].rank && cards[i].suit == cards[j].suit)
 	{
 	  printc(cards[i]);
 	  printc(cards[j]);
@@ -551,9 +551,108 @@ void check_for_same(CARD * cards, int size)
 	}
 }
 
+void GenRandomHand(CARD *hand, int size, long seed)
+{/* user is required to know what they are doing with malloc and size they pass */
+  srand(seed);
+  CARD chosen[7];
+  int i,c,s, count, j;
+  for(i = 0; i < 7; i++){chosen[i].rank = -1; chosen[i].suit=-1;}
+  char contains;
+  count = 0;
+  while(count < size)
+    {
+      contains = FALSE;
+      c = rand() % 13;
+      s = rand() % 4;
+
+      for(j = 0; j < count; j++)
+	{
+	  if(chosen[j].rank == c && chosen[j].suit==s)
+	    contains=TRUE;
+	}
+      if(contains == FALSE)
+	{
+	  hand[count].rank = c;
+	  hand[count].suit = s;
+	  chosen[count] = hand[count];
+	  count++;
+	}
+
+    }
+}
+
+void RandomHands(int seed)
+{
+  int *p_rank, *d_rank;
+  int num_sims = 1000000;
+  int step = 100;
+  int p_size=7, d_size=7;
+  int i, j, z, win, count=0;
+  unsigned long freqs[3];
+  unsigned long rank_freqs[9];
+  for(i = 0; i < 9; i++){ rank_freqs[i] = 0; }
+  for(i =0; i < 3; i++) { freqs[i] = 0; }
+  PLAYER plyr, dlyr;
+  InitPlayer(&plyr);
+  InitPlayer(&dlyr);
+  p_rank = (int *)malloc(sizeof(int*));
+  d_rank = (int *)malloc(sizeof(int*));
+  printf("");
+  printf("Running Sim:\n");
+  for(i = 0; i < num_sims; i++)
+    {
+      if((i % (num_sims/step)) == 0) { printf("\r%d/%d", ++count,step); fflush(stdout);}
+      // Generate Two Random Hands
+      GenRandomHand(plyr.hand, 7, seed+i);
+      GenRandomHand(dlyr.hand, 7, seed+345+i);
+
+      check_for_same(plyr.hand, 7);
+      check_for_same(dlyr.hand, 7);
+      // some initialization
+      p_size = 7; 
+      d_size = 7;      
+      
+      // determine winner
+      win = Winner(&plyr, &dlyr, p_size, d_size, p_rank, d_rank);
+      if(win == 2)
+      	{
+      	  printf("TIE!!\n");
+      	  printf("p_rank: %d\t", *p_rank);
+      	  printh(plyr.hand, 7);
+      	  printf("d_rank: %d\t", *d_rank);
+      	  printh(dlyr.hand, 7);
+      	}
+      // Store it 
+      freqs[win]++;
+      rank_freqs[*p_rank]++;
+      rank_freqs[*d_rank]++;
+      reset_bin(&plyr.bin);
+      reset_bin(&dlyr.bin);
+    }
+  /* printf("\n"); */
+  // clean up
+  free(p_rank);
+  free(d_rank);
+
+  long total = 0;
+  for(z = 0; z < 9; z++)
+    {
+      printf("Hand Rank %d Freq %d\n",z, rank_freqs[z]);
+    }
+  
+  // Print it all out
+  for(z = 0; z < 3; z++)
+    {
+      printf("Num Wins for %d %d\n", z, freqs[z]);
+      total += freqs[z];
+	  
+    }
+  printf("Total Number of Hands: %d\n", total);
+}
+
 void big_test_seven()
 {
-  int one, two, three, four, five, six, seven, count, sumer, eight, nine;
+  int one, two, three, four, five, six, seven, count, sumer, eight, nine, cnt=0;
   unsigned long freqs[9];
   int sums[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int z;
@@ -563,13 +662,14 @@ void big_test_seven()
   int size = 52, i, rank;
   char *cards[52];
   char *test_hand;
-  CARD *hnd;
+  CARD *hnd, *dealers_hand;
   PLAYER plyr, d;
   char *state = malloc(2 * sizeof(char));
   char *is_my_card;
   InitPlayer(&plyr);
   InitPlayer(&d);
-  test_hand = malloc(18 * sizeof(char));
+  test_hand = malloc(14 * sizeof(char));
+  dealers_hand = malloc(14 * sizeof(char));
   for(one = 0; one < size; one++)
     for(two = one+1; two < size; two++)
       for(three = two+1; three < size; three++)
@@ -577,8 +677,8 @@ void big_test_seven()
       	  for(five = four+1; five < size; five++)
       	    for(six = five+1; six < size; six++)
       	      for(seven = six+1; seven < size; seven++)
-		for(eight = seven+1; eight < size; eight++)
-		  for(nine = eight+1; nine < size; nine++)
+		/* for(eight = seven+1; eight < size; eight++) */
+		/*   for(nine = eight+1; nine < size; nine++) */
 		{
 		  /* if( */
 		  /*    one != two && one != three && one != four && one != five && one != six && one != seven */
@@ -602,42 +702,59 @@ void big_test_seven()
 		      	      ,ranks[six % 13]
 		      	      ,suits[six % 4]
 		      	      ,ranks[seven % 13]
-		      	      ,suits[seven % 4]
-			      ,ranks[eight % 13]
-		      	      ,suits[eight % 4]
-			      ,ranks[nine % 13]
-		      	      ,suits[nine % 4]);
-		      hnd = tconvert(test_hand, 9);
-		      for(i = 0; i < 2; i++)
+		      	      ,suits[seven % 4]);
+			      /* ,ranks[eight % 13] */
+		      	      /* ,suits[eight % 4] */
+			      /* ,ranks[nine % 13] */
+		      	      /* ,suits[nine % 4]); */
+		      hnd = tconvert(test_hand, 7);
+		      dealers_hand = tconvert("AsAcAdAhKsQdJc", 7);
+		      for(i = 0; i < 7; i++)
 			{// first two cards are players
 			  plyr.hand[i] = hnd[i];
-			  plyr.hand[i].whos_card = PLAYERS;
+			  d.hand[i] = dealers_hand[i];
+			    if(i < 2){
+			      plyr.hand[i].whos_card = PLAYERS;
+			      d.hand[i].whos_card = DEALERS;
+			    }
+			    else{
+			      plyr.hand[i].whos_card = BOARDS;
+			      d.hand[i].whos_card = BOARDS;
+			    }
 			}
-		      for(i = 2; i < 4; i++)
-			{// next two are dealers
-			  d.hand[i-2] = hnd[i];
-			  d.hand[i-2].whos_card = DEALERS;
-			}
+
 		      
-		      for(i = 4; i < 9; i++)
-			{// next five are the board
-			  plyr.hand[i-2] = hnd[i];
-			  d.hand[i-2] = hnd[i];
-			  plyr.hand[i-2].whos_card = NO_ONES;
-			  d.hand[i-2].whos_card = NO_ONES;
-			}
+		      /* for(i = 2; i < 4; i++) */
+		      /* 	{// next two are dealers */
+		      /* 	  d.hand[i-2] = hnd[i]; */
+		      /* 	  d.hand[i-2].whos_card = DEALERS; */
+		      /* 	} */
+		      
+		      /* for(i = 4; i < 9; i++) */
+		      /* 	{// next five are the board */
+		      /* 	  plyr.hand[i-2] = hnd[i]; */
+		      /* 	  d.hand[i-2] = hnd[i]; */
+		      /* 	  plyr.hand[i-2].whos_card = BOARDS; */
+		      /* 	  d.hand[i-2].whos_card = BOARDS; */
+		      /* 	} */
 		      /* tconvert() above calls malloc...so if you don't do this...you will eat memory */
-		      free(hnd);
+		      free(hnd); free(dealers_hand);
 		      int p_size=7, d_size=7;
-		      int win = Winner(&plyr, &d, p_size, d_size);
+		      int *p_rank, *d_rank;
+		      p_rank = (int *)malloc(sizeof(int*));
+		      d_rank = (int *)malloc(sizeof(int*));
+		      int win = Winner(&plyr, &d, p_size, d_size, p_rank, d_rank);
+
 		      freqs[win]++;
 		      /* rank = rank_hand(plyr.hand, &plyr.bin, 7); */
 		      /* // this will count state frequencies */
 		      /* QueryBinArray(&plyr, state, is_my_card, PLAYERS, 7); */
 		      /* freqs[stateToIndex(state)]++; */
-
+		      free(p_rank);
+		      free(d_rank);
 		      reset_bin(&plyr.bin);
 		      reset_bin(&d.bin);
+
 		}
   long total = 0;
   for(z = 0; z < 9; z++)
@@ -950,7 +1067,7 @@ void test_whos_card()
   
 }
 
-void ttest()
+void ttest(int seed)
 {/* this is the main function for test cases */
 
   int hc = thc();
@@ -1000,11 +1117,12 @@ void ttest()
   }
   
   printf("Tests Passed.\n");
+  RandomHands(seed);
   /* test_whos_card(); */
   /* test_SF(); */
   /* printf("Running Big Test...\n"); */
   /* big_test_five(); */
-  big_test_seven();
+  /* big_test_seven(); */
   /* TestDistance(); */
   /* all_sf_combos(); */
   /* big_test_2(); */
