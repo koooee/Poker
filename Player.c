@@ -418,8 +418,7 @@ int Winner(PLAYER *p, PLAYER *d, int p_size, int d_size, int *p_rank, int *d_ran
           d_kickers[count++] = d->hand[i];
         }
       }
-      /* printf("Dealer Kickers%d: ",*d_bin_size);printh(d_kickers, d_num_kickers); */
-      /* printf("Player Kickers%d: ",*p_bin_size);printh(p_kickers, p_num_kickers); */
+
       /* sort the hands in the bin as a sanity check */
       /* they should already be sorted, but I can't gaurentee that */
       sort_hand(p_bin, *p_bin_size);
@@ -448,11 +447,11 @@ int Winner(PLAYER *p, PLAYER *d, int p_size, int d_size, int *p_rank, int *d_ran
       }
       /* this is the special case of a full house */
       if(*p_rank == 6){
+	
 	/* don't need to check d_rank here since they have to be equal */
-	p_bin = GetBinByRank(p, 4, p_bin_size);
-	d_bin = GetBinByRank(d, 4, d_bin_size);
-	printh(p_bin, *p_bin_size);
-	printh(d_bin, *d_bin_size);
+	p_bin = GetBinByRank(p, 3, p_bin_size);
+	d_bin = GetBinByRank(d, 3, d_bin_size);
+
 	if(p_bin[0].rank > d_bin[0].rank){
 	  free(p_bin_size);
 	  free(d_bin_size);
@@ -465,8 +464,8 @@ int Winner(PLAYER *p, PLAYER *d, int p_size, int d_size, int *p_rank, int *d_ran
 	}
 	else
 	  {/* they are equal, need to check two pair bins  */
-	    p_bin = GetBinByRank(p, 3, p_bin_size);
-	    d_bin = GetBinByRank(d, 3, d_bin_size);
+	    p_bin = GetBinByRank(p, 2, p_bin_size);
+	    d_bin = GetBinByRank(d, 2, d_bin_size);
 
 	    /* we want to make sure the ranks aren't equal to the TK */
 	    /* if so, proceed with finding the max rank */
@@ -503,7 +502,6 @@ int Winner(PLAYER *p, PLAYER *d, int p_size, int d_size, int *p_rank, int *d_ran
       // Random Comment: Shouldn't all this shit really be in functions?....anyone...anyone...buler...
 
       // If we get here they have the same ranks with the same cards...so we need to check the kickers
-      printf("MAX: %d\n", min(p_num_kickers, d_num_kickers));
       for(i = 0; i < min(p_num_kickers, d_num_kickers); i++)
 	{
 	  if(p_kickers[i].rank > d_kickers[i].rank)

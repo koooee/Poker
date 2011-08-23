@@ -597,11 +597,11 @@ void RandomHands(int seed)
   InitPlayer(&dlyr);
   p_rank = (int *)malloc(sizeof(int*));
   d_rank = (int *)malloc(sizeof(int*));
-  printf("");
   printf("Running Sim:\n");
   for(i = 0; i < num_sims; i++)
     {
       if((i % (num_sims/step)) == 0) { printf("\r%d/%d", ++count,step); fflush(stdout);}
+
       // Generate Two Random Hands
       GenRandomHand(plyr.hand, 7, seed+i);
       GenRandomHand(dlyr.hand, 7, seed+345+i);
@@ -614,14 +614,14 @@ void RandomHands(int seed)
       
       // determine winner
       win = Winner(&plyr, &dlyr, p_size, d_size, p_rank, d_rank);
-      if(win == 2)
-      	{
-      	  printf("TIE!!\n");
-      	  printf("p_rank: %d\t", *p_rank);
-      	  printh(plyr.hand, 7);
-      	  printf("d_rank: %d\t", *d_rank);
-      	  printh(dlyr.hand, 7);
-      	}
+      
+      /* if(win == 2) */
+      /* 	{ */
+      /* 	  printf("TIE!!\n"); */
+      /* 	  printh(plyr.hand, 7); */
+      /* 	  printh(dlyr.hand, 7); */
+      /* 	  printf("\n"); */
+      /* 	} */
       // Store it 
       freqs[win]++;
       rank_freqs[*p_rank]++;
@@ -635,12 +635,13 @@ void RandomHands(int seed)
   free(d_rank);
 
   long total = 0;
-  for(z = 0; z < 9; z++)
-    {
-      printf("Hand Rank %d Freq %d\n",z, rank_freqs[z]);
-    }
+  /* for(z = 0; z < 9; z++) */
+  /*   { */
+  /*     printf("Hand Rank %d Freq %d\n",z, rank_freqs[z]); */
+  /*   } */
   
   // Print it all out
+  printf("\n");
   for(z = 0; z < 3; z++)
     {
       printf("Num Wins for %d %d\n", z, freqs[z]);
