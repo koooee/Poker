@@ -551,7 +551,7 @@ void check_for_same(CARD * cards, int size)
 	}
 }
 
-void GenRandomHand(CARD *hand, int size, long seed)
+void GenRandomHand(CARD *hand, int size, unsigned int seed)
 {/* user is required to know what they are doing with malloc and size they pass */
   srand(seed);
   CARD chosen[7];
@@ -581,7 +581,7 @@ void GenRandomHand(CARD *hand, int size, long seed)
     }
 }
 
-void RandomHands(int seed)
+void RandomHands(unsigned int seed)
 {
   int *p_rank, *d_rank;
   int num_sims = 1000000;
@@ -598,16 +598,18 @@ void RandomHands(int seed)
   p_rank = (int *)malloc(sizeof(int*));
   d_rank = (int *)malloc(sizeof(int*));
   printf("Running Sim:\n");
+  srand(seed);
   for(i = 0; i < num_sims; i++)
     {
       if((i % (num_sims/step)) == 0) { printf("\r%d/%d", ++count,step); fflush(stdout);}
 
       // Generate Two Random Hands
+      GenRandomHand(dlyr.hand, 7, seed+1+i);
       GenRandomHand(plyr.hand, 7, seed+i);
-      GenRandomHand(dlyr.hand, 7, seed+345+i);
 
       check_for_same(plyr.hand, 7);
       check_for_same(dlyr.hand, 7);
+
       // some initialization
       p_size = 7; 
       d_size = 7;      
@@ -629,7 +631,7 @@ void RandomHands(int seed)
       reset_bin(&plyr.bin);
       reset_bin(&dlyr.bin);
     }
-  /* printf("\n"); */
+
   // clean up
   free(p_rank);
   free(d_rank);
