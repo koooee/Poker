@@ -24,7 +24,11 @@ Date: 5/18/2011
 typedef struct BINS {
   /* I toyed around with not doing it like this ie the 'free' concept.  But, decided to go with it.  I'm sure there is a better way to represent this type of structure...will give it some more thought. */
   /* New Comment 5/31/2011 This is kind of like anarchy. FIXME*/
-
+  
+  /* 7/30/2011 -- OMFG...this is so bad...never should have made seperate structs for each bin.
+     now i have to make a mapping functionc that maps ranks to bins because it is f-ing up the query functions
+     FML
+  */
   CARD HC; /* High Card */
   STD_BIN P;
   STD_BIN TP;
@@ -137,7 +141,6 @@ void *clearbin(CARD **hand, int *count, int max)
   free(*hand);
   *count = 0;
   return malloc(max * sizeof(CARD));
-  
 }
 
 
@@ -182,23 +185,37 @@ void printb(BIN *bin)
   printf("\n******************************\n");
   printf("*        BINS                *\n");
   printf("******************************\n");
-  /* printf("High Card: "); */
-  /* printc(bin->HC); */
-  /* printf("\n"); */
+  printf("High Card: ");
+  printc(bin->HC);
+  printf("\n");
 
-  /* printf("Pair: "); */
-  /* for(i = 0; i < bin->P.b_count; i++) */
-  /*   { */
-  /*     printc(bin->P.b[i]); */
-  /*   } */
-  /* printf("\n"); */
+  printf("Pair: ");
+  for(i = 0; i < bin->P.b_count; i++)
+    {
+      printc(bin->P.b[i]);
+    }
+  printf("\n");
 
-  /* printf("Two Pair: "); */
-  /* for(i = 0; i < bin->TP.b_count; i++) */
-  /*   { */
-  /*     printc(bin->TP.b[i]); */
-  /*   } */
-  /* printf("\n"); */
+  printf("Two Pair: ");
+  for(i = 0; i < bin->TP.b_count; i++)
+    {
+      printc(bin->TP.b[i]);
+    }
+  printf("\n");
+  
+  printf("Three of a Kind: ");
+  for(i = 0; i < bin->TK.b_count; i++)
+    {
+      printc(bin->TK.b[i]);
+    }
+  printf("\n");
+
+  printf("Straight: ");
+  for(i = 0; i < bin->S.b_count; i++)
+    {
+      printc(bin->S.b[i]);
+    }
+  printf("\n");
 
   printf("Flush:\n");
   for(i = 0; i < MAX_NUM_SUITS; i++)
@@ -210,6 +227,20 @@ void printb(BIN *bin)
 	}
       printf("\n");
     }
+
+  printf("Full House: ");
+  for(i = 0; i < bin->FH.b_count; i++)
+    {
+      printc(bin->FH.b[i]);
+    }
+  printf("\n");
+
+  printf("Four of a Kind: ");
+  for(i = 0; i < bin->FK.b_count; i++)
+    {
+      printc(bin->FK.b[i]);
+    }
+  printf("\n");
 
   printf("Straight Flush:\n");
   for(i = 0; i < MAX_NUM_SUITS; i++)
@@ -223,12 +254,6 @@ void printb(BIN *bin)
       printf("\n");
     }
 
-  /* printf("Straight: "); */
-  /* for(i = 0; i < bin->S.b_count; i++) */
-  /*   { */
-  /*     printc(bin->S.b[i]); */
-  /*   } */
-  /* printf("\n"); */
 printf("******************************\n\n");
 
 }

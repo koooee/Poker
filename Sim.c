@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
   CARD *h;
   /* Debugging -- Delete Section when done */
   /* Debugging Init the hand as a straight */
-    ttest();
+  seed = atoi(argv[1]);
+    ttest(seed);
 }
 

@@ -41,12 +41,17 @@ void sort_hand(CARD *hand, int hand_size)
 	else ;
       }
 }
+
 int sum_of_distances(CARD *hand, int len)
 {
-  int i, total=0;
+  int i,d, total=0;
   for(i = 0; i < len-1; i++)
     {
-      total += distance(hand[i], hand[i+1]);
+      
+      d = distance(hand[i], hand[i+1]);
+      if(d == 0)
+	d = 100;
+      total += d;
     }
   return total;
 }
@@ -85,6 +90,20 @@ int distance(CARD c, CARD c2)
     return 1;
     
   return abs(c.rank - c2.rank);
+}
+
+int get_max_rank(BIN *bin)
+{
+  int final_rank;
+  for(final_rank = 8; final_rank >= 0; final_rank--)
+    {
+      if(bin->is_full[final_rank] == TRUE)
+	{
+	  return final_rank;
+	}
+    }
+  return -1;
+
 }
 
 int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
@@ -366,18 +385,7 @@ int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
       d = distance(temp,temp2);
     }
 
-
-  int final_rank;
-  for(final_rank = 8; final_rank >= 0; final_rank--)
-    {
-      if(bin->is_full[final_rank] == TRUE)
-	{
-	  return final_rank;
-	}
-    }
-  return -1;
+  return get_max_rank(bin);
 
 }
-
-
 
