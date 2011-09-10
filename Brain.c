@@ -9,6 +9,7 @@ Date: 5/18/2011
 #include "Deck.c"
 #include "Bins.h"
 #include "math.h"
+#include "Payouts.h"
 
 #define GUNSHOT 'G'
 #define OPENENDED 'O'
