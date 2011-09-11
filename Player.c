@@ -533,25 +533,67 @@ int Winner(PLAYER *p, PLAYER *d, int p_size, int d_size, int *p_rank, int *d_ran
 
 }
 
-// somewhere some how payouts.h got deleted....so have fun making that again.
-/* float Pays(PLAYER *p, PLAYER *d) */
-/* { */
-/*   float pay; */
-/*   pay = 0.0; */
-/*   int *prank, *drank; */
-/*   Winner(p, d, prank, drank); */
-/*   if(drank > 0){ */
-/*     // Dealer Qualifies */
-/*   } */
-/*   else{ */
-/*     // Dealer DOES NOT Qualify */
-/*   } */
-/*   // Does dealer qualify? */
-/*   // if so, Ante Pay */
-/*   // Trips pay regardless */
-/*   // Blind pays only if you beat dealer, pays regardless on straight or better */
-/*   // Else, Ante goes back, all other pay as above */
-/*   // ties push, trips still live. */
-  
-/*   return pay; */
-/* } */
+/* RF is Royal Flush */
+int check_for_RF(int hand_rank, CARD *full_bin)
+{
+  /* check the only condition for RF, SF with Highest card being an Ace */
+  if(hand_rank == 8 && full_bin[0].rank == 12) {
+    return TRUE;
+  }
+  else { return FALSE; }
+
+}
+
+
+float Pays(PLAYER *p, PLAYER *d, float bet, float ante, float blind)
+{/* Get the payout for showdown...I am not building support for trips becasue those should not be played */
+  // Does dealer qualify?
+  // if so, Ante Pay
+  // Trips pay regardless
+  // Blind pays only if you beat dealer, pays regardless on straight or better
+  // Else, Ante goes back, all other pay as above
+  // ties push, trips still live.
+
+  float pay;
+  int *prank, *drank, winner;
+  prank = (int *)malloc(sizeof(int *));
+  drank = (int *)malloc(sizeof(int *));
+  winner = Winner(p, d, 7, 7, prank, drank);
+  int isRoyal = 0;
+  int *size = (int *)malloc(sizeof(int*));
+  /* we set this to one because in the payout arrays a RF index is one greater than SF */
+  if(check_for_RF(*prank, GetBinByRank(p, *prank, size)) == TRUE)
+    isRoyal = 1;
+
+  if(*drank > 0){
+    // Dealer Qualifies
+    if(winner == 1){ /* Dealer Wins */
+      pay = (ante + blind + bet) * ante_pay_loss; /* Player looses all */
+    } 
+    else if(winner == 0){ /* Player wins, dealer qualifies, all bets get some action...giggity */
+      pay = (blind * blind_pay[*prank + isRoyal]) + ((bet+ante) * ante_pay_win);
+    } 
+    else{ /* Draw, all bets push */
+      pay = 0.0;
+    }
+      
+  }
+  else{
+    // Dealer DOES NOT Qualify
+    if(winner == 1) { /* Dealer Wins */
+      pay = (bet + blind) * ante_pay_loss; /* ante goes back, Player looses all */
+    }
+    else if(winner == 0) { /* Player wins, ante goes back, all other bets get action */
+      pay = (bet * ante_pay_win) + (blind * blind_pay[*prank + isRoyal]);
+    }
+    else { /* Draw, all bets push */
+      pay = 0.0;
+    }
+      
+
+  }
+  free(prank);
+  free(drank);
+  free(size);
+  return pay;
+}

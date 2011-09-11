@@ -1070,6 +1070,212 @@ void test_whos_card()
   
 }
 
+void test_pay_function()
+{
+  // Go throught all hands ranks HC - RF
+  // One with Player wins, Dealer Qualifies
+  // One with Player wins, Dealer DOES NOT Qualify
+  // One with Dealer wins
+  // One with Tie
+  char *commentary[40] = {
+    "NULL CASE, for sake of indexes",
+    "HC Player Wins, Dealer DOES NOT Qualify",
+    "HC Dealer Wins",
+    "HC Tie",
+    "P Player Wins, Dealer Qualifies",
+    "P Player Wins, Dealer DOES NOT Qualify",
+    "P Dealer Wins",
+    "P Tie",
+    "TP Player Wins, Dealer Qualifies",
+    "TP Player Wins, Dealer DOES NOT Qualify",
+    "TP Dealer Wins",
+    "TP Tie",
+    "TK Player Wins, Dealer Qualifies",
+    "TK Player Wins, Dealer DOES NOT Qualify",
+    "TK Dealer Wins",
+    "TK Tie",
+    "S Player Wins, Dealer Qualifies",
+    "S Player Wins, Dealer DOES NOT Qualify",
+    "S Dealer Wins",
+    "S Tie",
+    "F Player Wins, Dealer Qualifies",
+    "F Player Wins, Dealer DOES NOT Qualify",
+    "F Dealer Wins",
+    "F Tie",
+    "FH Player Wins, Dealer Qualifies",
+    "FH Player Wins, Dealer DOES NOT Qualify",
+    "FH Dealer Wins",
+    "FH Tie",
+    "FK Player Wins, Dealer Qualifies",
+    "FK Player Wins, Dealer DOES NOT Qualify",
+    "FK Dealer Wins",
+    "FH Tie",
+    "SF Player Wins, Dealer Qualifies",
+    "SF Player Wins, Dealer DOES NOT Qualify",
+    "SF Dealer Wins",
+    "SF Tie",
+    "RF Player Wins, Dealer Qualifies",
+    "RF Player Wins, Dealer DOES NOT Qualify",
+    "RF Dealer Wins",
+    "RF Tie"
+  };
+  
+  PLAYER p, d;
+  InitPlayer(&p);
+  InitPlayer(&d);
+  float payout;
+  int i,j;
+  // Players hand is first, dealers is second.
+  CARD *h[80] = {
+    // NULL CASE, for sake of indexes
+    tconvert("KsTh9s8c6h4d3d", 7)
+    ,tconvert("QsTh9s8c6h4d3d", 7)
+    // HC Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("KsTh9s8c6h4d3d", 7)
+    ,tconvert("QsTh9s8c6h4d3d", 7)
+    // HC Dealer Wins
+    ,tconvert("QsTh9s8c6h4d3d", 7)
+    ,tconvert("KsTh9s8c6h4d3d", 7)
+    // HC Tie
+    ,tconvert("QsTh9s8c6h4d3d", 7)
+    ,tconvert("QsTh9s8c6h4d2d", 7)
+
+    // P Player Wins, Dealer Qualifies
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    ,tconvert("KsTh9s8c4h4d3d", 7)
+    // P Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    ,tconvert("KsTh9s8c6h4d3d", 7)
+    // P Dealer Wins
+    ,tconvert("KsTh9s8c4h4d3d", 7)
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    // P Tie
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+
+    //TP Player Wins, Dealer Qualifies
+    ,tconvert("KsKh9s9c6h4d3d", 7)
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    //TP Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("KsKh9s9c6h4d3d", 7)
+    ,tconvert("KsJh9s8c6h4d3d", 7)
+    //TP Dealer Wins
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    ,tconvert("KsKh9s9c6h4d3d", 7)
+    //TP Tie
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+
+
+
+    // TK Player Wins, Dealer Qualifies
+    ,tconvert("KsKhKc8c6h4d3d", 7)
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    // TK Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("KsKhKc8c6h4d3d", 7)
+    ,tconvert("5cAsKcQsJd4s8d", 7)
+    // TK Dealer Wins
+    ,tconvert("KsKh9s8c6h4d3d", 7)
+    ,tconvert("KsKhKc8c6h4d3d", 7)
+    // TK Tie
+    ,tconvert("KsKhKc8c6h4d3d", 7)
+    ,tconvert("KsKhKc8c6h4d3d", 7)
+
+    //S Player Wins, Dealer Qualifies
+    ,tconvert("AdKsQsJsTs5c8d", 7)
+    ,tconvert("KsQsJsTs9d5c8d", 7)
+    //S Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("AdKsQsJsTs5c8d", 7)
+    ,tconvert("5c4dKcQsJdTs8d", 7)
+    //S Dealer Wins
+    ,tconvert("5cAsKcQsJd9s8d", 7)
+    ,tconvert("AdKsQsJsTs5c8d", 7)
+    //S Tie
+    ,tconvert("AdKsQsJsTs5c8d", 7)
+    ,tconvert("AdKsQsJsTs5c8d", 7)
+
+    // F Player Wins, Dealer Qualifies
+    ,tconvert("2s4s6s8sTsQsAs", 7)
+    ,tconvert("KsKc2h4d6c8sTh", 7)
+    // F Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("2s4s6s8sTsQsAs", 7)
+    ,tconvert("KsQc2h4d6c8sTh", 7)
+    // F Dealer Wins
+    ,tconvert("KsKc2h4d6c8sTh", 7)
+    ,tconvert("2s4s6s8sTsQsAs", 7)
+    // F Tie
+    ,tconvert("2s4s6s8sTsQsAs", 7)
+    ,tconvert("2s4s6s8sTsQsAs", 7)
+
+    // FH Player Wins, Dealer Qualifies
+    ,tconvert("AdAcAhKdKs9sTd", 7)
+    ,tconvert("KsKc2h4d6c8sTh", 7)
+    // FH Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("AdAcAhKdKs9sTd", 7)
+    ,tconvert("KsQc2h4d6c8sTh", 7)
+    // FH Dealer Wins
+    ,tconvert("KsKc2h4d6c8sTh", 7)
+    ,tconvert("AdAcAhKdKs9sTd", 7)
+    // FH Tie
+    ,tconvert("AdAcAhKdKs9sTd", 7)
+    ,tconvert("AdAcAhKdKs9sTd", 7)
+
+    // FK Player Wins, Dealer Qualifies
+    ,tconvert("AdAsAcAh2s6c9d", 7)
+    ,tconvert("5cAsKcQsJdTs8d", 7)
+    // FK Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("AdAsAcAh2s6c9d", 7)
+    ,tconvert("5cAsKcQsJd9s8d", 7)
+    // FK Dealer Wins
+    ,tconvert("5cAsKcQsJdTs8d", 7)
+    ,tconvert("AdAsAcAh2s6c9d", 7)
+    // FK Tie
+    ,tconvert("AdAsAcAh2s6c9d", 7)
+    ,tconvert("AdAsAcAh2s6c9d", 7)
+
+    // SF Player Wins, Dealer Qualifies
+    ,tconvert("2s3s4s5s6s7s8s", 7)
+    ,tconvert("5cAsKcQsJdTs8d", 7)
+    // SF Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("2s3s4s5s6s7s8s", 7)
+    ,tconvert("5cAsKcQsJd9s8d", 7)
+    // SF Dealer Wins
+    ,tconvert("5cAsKcQsJdTs8d", 7)
+    ,tconvert("2s3s4s5s6s7s8s", 7)
+    // SF Tie
+    ,tconvert("2s3s4s5s6s7s8s", 7)
+    ,tconvert("2s3s4s5s6s7s8s", 7)
+
+    // RF Player Wins, Dealer Qualifies
+    ,tconvert("AsKsQsJsTs9s8s", 7)
+    ,tconvert("5cAsKcQsJdTs8d", 7)
+    // RF Player Wins, Dealer DOES NOT Qualify
+    ,tconvert("AsKsQsJsTs9s8s", 7)
+    ,tconvert("5cAsKcQsJd9s8d", 7)
+    // RF Dealer Wins
+    ,tconvert("5cAsKcQsJdTs8d", 7)
+    ,tconvert("AsKsQsJsTs9s8s", 7)
+    // RF Tie
+    ,tconvert("AsKsQsJsTs9s8s", 7)
+    ,tconvert("AsKsQsJsTs9s8s", 7)
+  };
+
+  for(i = 1; i < 80; i+=2)
+    {
+      for(j = 0; j < 7; j++)
+	{
+	  p.hand[j] = h[i-1][j];
+	  d.hand[j] = h[i][j];
+	}
+      payout = Pays(&p, &d, 1.0, .5, .5);
+      printf("%s: %f\n", commentary[i/2], payout);
+      reset_bin(&p.bin);
+      reset_bin(&d.bin);
+    }
+
+  
+}
+
 void ttest(int seed)
 {/* this is the main function for test cases */
 
@@ -1120,7 +1326,8 @@ void ttest(int seed)
   }
   
   printf("Tests Passed.\n");
-  RandomHands(seed);
+  test_pay_function();
+  /* RandomHands(seed); */
   /* test_whos_card(); */
   /* test_SF(); */
   /* printf("Running Big Test...\n"); */

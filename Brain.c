@@ -107,6 +107,7 @@ int get_max_rank(BIN *bin)
 
 }
 
+
 int rank_hand(CARD *hand, BIN *bin, int size_of_hand)
 {/* Rank the hand while keeping State in the BINS */
   /* hand size must be at least 2 */
