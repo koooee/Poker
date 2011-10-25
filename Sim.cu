@@ -7,7 +7,7 @@ Date: 5/29/2011
 #include "cutil_inline.h"
 #include <cuPrintf.cu>
 #include "stdio.h"
-#include "unistd.h" /* hahahah, unistd....giggity? */
+#include "unistd.h" /* hahahah, unistd.... */
 
 #define GRID_DIMX 52
 #define GRID_DIMY 52
@@ -16,7 +16,7 @@ Date: 5/29/2011
 #define BLOCK_DIMY 1
 #define BLOCK_DIMZ 1
 
-int  *h_results, *d_results;
+unsigned long long  *h_results, *d_results;
 
 __device__
 void printc(int rank, int suit)
@@ -37,9 +37,9 @@ void printh(CARD *hand, int size)
   cuPrintf("\n");
 }
 
-/* Kernel Method..where the magic happens...giggity */
+/* Kernel Method..where the magic happens*/
 __global__ 
-void RunSim(int *results)
+void RunSim(unsigned long long *results)
 {
   PLAYER p;
   InitPlayer(&p);
@@ -56,8 +56,8 @@ void RunSim(int *results)
     for(j = i+1; j < 52; j++)
       for(k = j+1; k < 52; k++)
 	for(l = k+1; l < 52; l++)
-	      // for(m = l+1; m < 52; m++)
-	      //   for(n = m+1; n < 52; n++)
+	  for(m = l+1; m < 52; m++)
+	    for(n = m+1; n < 52; n++)
 	  {
 	    if(
 	       threadIdx.x != blockIdx.y && threadIdx.x != blockIdx.x && threadIdx.x != i && threadIdx.x != j && threadIdx.x != k && threadIdx.x != l
@@ -88,11 +88,6 @@ void RunSim(int *results)
 
 		p.hand[6].suit = l % 4;
 		p.hand[6].rank = l % 13;
-
-		// Debugging
-		// printh(p.hand, 7);
-		int ids[7] = { blockIdx.x, blockIdx.y, threadIdx.x, i, j, k, l};
-		// END debugging
 
 		rank = rank_hand(p.hand, &p.bin, 7);
 		atomicAdd(&results[0], 1);
@@ -146,6 +141,6 @@ int main(int argc, char *argv[])
   int i;
   for(i = 0; i < size; i++)
     {
-      printf("Hand Rank %d: %d\n",i,  h_results[i]);
+      printf("Hand Rank %d: %lld\n",i,  h_results[i]);
     }
 }
