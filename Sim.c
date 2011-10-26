@@ -38,6 +38,7 @@ void jtest()
   int decksize = 52;
   for(holep0 = 0; holep0 < decksize; holep0++){
     for(holep1 = holep0+1; holep1 < decksize; holep1++){
+      printf("%d\n", holep1);
       for(holed0 = 0; holed0 < decksize; holed0++){
 	for(holed1 = holed0+1; holed1 < decksize; holed1++){
 	  for(flop0 = 0; flop0 < decksize; flop0++){
