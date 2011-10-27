@@ -9,10 +9,17 @@ Date: 5/29/2011
 #include "stdio.h"
 #include "unistd.h" /* hahahah, unistd.... */
 
-#define GRID_DIMX 52
-#define GRID_DIMY 52
+// #define GRID_DIMX 52
+// #define GRID_DIMY 52
+// #define GRID_DIMZ 1
+// #define BLOCK_DIMX 52
+// #define BLOCK_DIMY 1
+// #define BLOCK_DIMZ 1
+
+#define GRID_DIMX 2
+#define GRID_DIMY 2
 #define GRID_DIMZ 1
-#define BLOCK_DIMX 52
+#define BLOCK_DIMX 2
 #define BLOCK_DIMY 1
 #define BLOCK_DIMZ 1
 
@@ -90,7 +97,7 @@ void RunSim(unsigned long long *results)
 		p.hand[6].rank = l % 13;
 
 		rank = rank_hand(p.hand, &p.bin, 7);
-		atomicAdd(&results[0], 1);
+		atomicAdd(&results[rank], 1);
 	      } 
 	  }
     // }
