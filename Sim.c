@@ -4,8 +4,11 @@
    Date: 5/29/2011
 */
 
+// Note: Compile with -fopenmp option
+
 #include "Player.c"
 #include "Test.h"
+#include "omp.h"
 
 void Simulate();
 void jtest();
@@ -36,15 +39,18 @@ void jtest()
   unsigned long long totalcombin = 0;
   int action, holep0, holep1, holed0, holed1, flop0, flop1, flop2, turn, river;
   int decksize = 52;
-  for(holep0 = 0; holep0 < decksize; holep0++){
+  #pragma omp parallel shared(decksize, totalcombin) private(action, holep0, holep1, holed0, holed1, flop0, flop1, flop2, turn, river)
+  {
+     #pragma omp for
+  for(holep0 = 1; holep0 < decksize; holep0++){
+    printf("Thread %d executing loop iteration %d\n", omp_get_thread_num(), holep0);
     for(holep1 = holep0+1; holep1 < decksize; holep1++){
-      printf("%d\n", holep1);
-      for(holed0 = 0; holed0 < decksize; holed0++){
+      for(holed0 = 1; holed0 < decksize; holed0++){
 	for(holed1 = holed0+1; holed1 < decksize; holed1++){
-	  for(flop0 = 0; flop0 < decksize; flop0++){
+	  for(flop0 = 2; flop0 < decksize; flop0++){
 	    for(flop1 = flop0+1; flop1 < decksize; flop1++){
 	      for(flop2 = flop1+1; flop2 < decksize; flop2++){
-		for(turn = 0; turn < decksize; turn++){
+		for(turn = 1; turn < decksize; turn++){
 		  for(river = turn+1; river < decksize; river++){
 		    if(holep0 != holep1 && holep0 != holed0 && holep0 != holed1 && holep0 != flop0 && holep0 != flop1 && holep0 != flop2 && holep0 != turn && holep0 != river
 		       && holep1 != holed0 && holep1 != holed1 && holep1 != flop0 && holep1 != flop1 && holep1 != flop2 && holep1 != turn && holep1 != river
@@ -65,7 +71,9 @@ void jtest()
       }
     }
   }
-  printf("Final: lld\n", totalcombin);
+
+} // End Parallel Region
+  printf("Final: %lld\n", totalcombin);
 }
 
 void Simulate()
