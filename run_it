@@ -1,6 +1,6 @@
 #!/bin/bash
 /usr/local/cuda/bin/nvcc -g -G Sim.cu -I /root/NVIDIA_GPU_Computing_SDK/C/common/inc,/root/NVIDIA_GPU_Computing_SDK/C/src/simplePrintf -arch=sm_11 -o Sim
-#/usr/local/cuda/bin/cuda-gdb Sim
-./Sim
+/usr/local/cuda/bin/cuda-gdb Sim
+#./Sim
 
 

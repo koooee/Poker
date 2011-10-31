@@ -33,45 +33,30 @@ __device__ void Add(CARD c, CARD hand[5], int max, int *count, BIN *b, int hand_
 __device__ void init_bin(BIN *bin)
 {
   int i;
-  /* don't need to malloc any more since we changed the struct definition */
-  /* bin->P.b = malloc(MAX_SIZE_P * card_size);  */
+
   bin->P.b_max = MAX_SIZE_P;
   bin->P.b_count = 0;
 
-  /* bin->TP.b = malloc(MAX_SIZE_TP * card_size); */
   bin->TP.b_max = MAX_SIZE_TP;
   bin->TP.b_count = 0;
 
-  /* bin->TK.b = malloc(MAX_SIZE_TK * card_size); */
   bin->TK.b_max = MAX_SIZE_TK;
   bin->TK.b_count = 0;
 
-  /* bin->S.b = malloc(MAX_SIZE_S * card_size); */
   bin->S.b_max = MAX_SIZE_S;
   bin->S.b_count = 0;
 
-  /* bin->FH.b = malloc(MAX_SIZE_FH * card_size); */
   bin->FH.b_max = MAX_SIZE_FH;
   bin->FH.b_count = 0;
 
-  /* bin->FK.b = malloc(MAX_SIZE_FK * card_size); */
   bin->FK.b_max = MAX_SIZE_FK;
   bin->FK.b_count = 0;
 
   bin->F.b_max = 5;
   bin->SF.b_max = 5;
-  /* TODO: Enhancement */
-  /* We should dynamically malloc in the Add function (Below)...thus, only using memory when needed...but, this 
-     might have an effect on preformance since we would be calling malloc frequently..and I am very concerned
-     about runtime preformance
-  */
-  /* bin->F.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD)); */
-  /* bin->SF.b_count = malloc(MAX_NUM_SUITS * sizeof(CARD)); */
 
   for(i = 0; i < MAX_NUM_SUITS; i++)
     {
-      /* bin->F.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD)); */
-      /* bin->SF.b[i] = malloc(NUM_CARDS_TO_RANK * sizeof(CARD)); */
       bin->F.b_count[i] = 0;
       bin->SF.b_count[i] = 0;
     }
