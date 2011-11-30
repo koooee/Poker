@@ -15,9 +15,4 @@ Date: 5/18/2011
 
 
 
-CARD deck[MAX_DECK_SIZE];
-
-void Append(CARD c, CARD *h);
-CARD *Draw(void);
-void Shuffle(void);
-void InitDeck(void);
+int deck[MAX_DECK_SIZE];

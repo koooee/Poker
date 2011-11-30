@@ -53,6 +53,7 @@ int stateToIndex(char *state)
     return 8;
   return -1;
 }
+
 // Helper for BinContainsWhosCard function
 char isKey(CARD *hand, char key, int size)
 {
@@ -318,6 +319,7 @@ void QueryBinArray(PLAYER *p, char *state, char *match, char who_is_this, int si
           }
       }
     }
+
 
   // check for a drawing hand
 
