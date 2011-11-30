@@ -13,11 +13,13 @@ Date: 5/18/2011
 #define MAX_DECK_SIZE 52
 #define MAX_HAND_SIZE 7
 
-
-
+int current_deck_size = 0;
 CARD deck[MAX_DECK_SIZE];
 
-void Append(CARD c, CARD *h);
-CARD *Draw(void);
-void Shuffle(void);
-void InitDeck(void);
+void InitDeck();
+void ClearDeck();
+void PrintDeck();
+CARD pop();
+void push(CARD c);
+CARD peek();
+void shuffle(CARD *d);

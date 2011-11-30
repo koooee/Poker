@@ -1,5 +1,6 @@
 #include "Deck.h"
-
+// TODO: need to test the deck functionality
+// TODO: implement shuffle -- get a good PRNG for this..not rand
 void InitDeck(void)
 {
   int i,j;
@@ -11,7 +12,9 @@ void InitDeck(void)
 	deck[di].suit = j;
 	deck[di].whos_card = 'N';
       }
+  current_deck_size = 52; 
 }
+
 void ClearDeck()
 {
   int i;
@@ -21,6 +24,7 @@ void ClearDeck()
       deck[i].suit = EMPTY_CARD;
       deck[i].whos_card = 'N';
     }
+  current_deck_size = 0;
 }
 void PrintDeck()
 { /* For Debugging */
@@ -30,21 +34,32 @@ void PrintDeck()
       printf("%c%c - %c\n", ranks[deck[i].rank], suits[deck[i].suit], deck[i].whos_card);
     }
 }
-void Append(CARD c, CARD *d)
+
+int isEmpty()
 {
+  if(current_deck_size <= 0)
+    return FALSE;
+  else
+    return TRUE;
+  return -1;
+}
+
+CARD draw()
+{
+  deck[MAX_DECK_SIZE-current_deck_size].rank = EMPTY_CARD;
+  deck[MAX_DECK_SIZE-current_deck_size].suit = EMPTY_CARD;
+  deck[MAX_DECK_SIZE-current_deck_size].whos_card = 'N';
+  current_deck_size--;
+  return deck[MAX_DECK_SIZE-(current_deck_size--)];
   
 }
 
-CARD *Draw(void)
+CARD peek()
 {
+  return deck[MAX_DECK_SIZE-current_deck_size];
 }
 
-void Shuffle(void)
+void shuffle(CARD *d)
 {
-  CARD temp[MAX_DECK_SIZE];
-  int i;
-  for(i =0; i < MAX_DECK_SIZE; i++)
-    {
-      temp[i] = deck[i];
-    }
+  
 }
