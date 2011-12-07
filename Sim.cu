@@ -46,6 +46,7 @@ void printh(CARD *hand, int size)
 }
 
 /* Kernel Method..where the magic happens*/
+/* Quora is the shit...just found an answer to a combinatorics function that removes the iteration dependency!!! You sent an email to youself search for combinatorics */
 __global__ 
 void RunSim(int *results)
 {
