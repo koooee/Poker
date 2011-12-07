@@ -104,13 +104,13 @@ void loop_test()
   for(holep0 = 0; holep0 < decksize; holep0++){
     printf("Thread %d executes %d\n", omp_get_thread_num(), holep0);
     for(holep1 = holep0+1; holep1 < decksize; holep1++){
-      for(flop0 = 0; flop0 < decksize; flop0++){
-    	for(flop1 = flop0+1; flop1 < decksize; flop1++){
-    	  for(flop2 = flop1+1; flop2 < decksize; flop2++){
-    	    for(turn = 0; turn < decksize; turn++){
-    	      for(river = 0; river < decksize; river++){
-    		for(holed0 = 0; holed0 < decksize; holed0++){
-    		  for(holed1 = holed0+1; holed1 < decksize; holed1++)
+      for(flop0 = 0; flop0 < decksize && flop0 != holep0 && flop0 != holep1; flop0++){
+    	for(flop1 = flop0+1; flop1 < decksize && flop1 != holep0 && flop1 != holep1; flop1++){
+    	  for(flop2 = flop1+1; flop2 < decksize && flop2 != holep0 && flop2 != holep1; flop2++){
+    	    for(turn = 0; turn < decksize && turn != holep0 && turn != holep1 && turn != flop0 && turn != flop1 && turn != flop2; turn++){
+    	      for(river = 0; river < decksize && river != turn && river != holep0 && river != holep1 && river != flop0 && river != flop1 && river != flop2; river++){
+    		for(holed0 = 0; holed0 < decksize && holed0 != river && holed0 != turn && holed0 != holep0 && holed0 != holep1 && holed0 != flop0 && holed0 != flop1 && holed0 != flop2; holed0++){
+    		  for(holed1 = holed0+1; holed1 < decksize && holed1 != river && holed1 != turn && holed1 != holep0 && holed1 != holep1 && holed1 != flop0 && holed1 != flop1 && holed1 != flop2; holed1++)
 		    {
 		      iterations++;
 		    if(holep0 != holep1 && holep0 != holed0 && holep0 != holed1 && holep0 != flop0 && holep0 != flop1 && holep0 != flop2 && holep0 != turn && holep0 != river
@@ -142,6 +142,7 @@ void loop_test()
       }
     }
   }
+
 
 /* } // End Parallel Region */
   printf("Total Iterations: %lld\n", iterations);
@@ -212,9 +213,11 @@ void Simulate()
     	  for(flop2 = flop1+1; flop2 < decksize; flop2++){
     	    for(turn = 0; turn < decksize; turn++){
     	      for(river = 0; river < decksize; river++){
-    		for(holed0 = 0; holed0 < decksize; holed0++){
-    		  for(holed1 = holed0+1; holed1 < decksize; holed1++)
-		    {
+    		/* for(holed0 = 0; holed0 < decksize; holed0++){ */
+    		/*   for(holed1 = holed0+1; holed1 < decksize; holed1++) */
+		    /* { */
+		holed0 = 23;
+		holed1 = 12;
 		      iterations++;
 		      if(holep0 != holep1 && holep0 != holed0 && holep0 != holed1 && holep0 != flop0 && holep0 != flop1 && holep0 != flop2 && holep0 != turn && holep0 != river
 			 && holep1 != holed0 && holep1 != holed1 && holep1 != flop0 && holep1 != flop1 && holep1 != flop2 && holep1 != turn && holep1 != river
@@ -262,30 +265,32 @@ void Simulate()
 			/* printf("Sim: Flop %d\n", omp_get_thread_num()); */
 		      
 			// Get Payout -- BET 2x
-#pragma omp critical (twoxbet)
+
+			#pragma omp critical (twoxbet)
 			{
-			QueryBinArray(&p, state, is_my_card, PLAYERS, 5);
-			/* printf("Sim: Get 2x Payout %d\n", omp_get_thread_num()); */
+			  QueryBinArray(&p, state, is_my_card, PLAYERS, 5);
+			  /* printf("Sim: Get 2x Payout %d\n", omp_get_thread_num()); */
 
-			// Turnn & River
-			itcard(turn, &p.hand[5]);
-			itcard(river, &p.hand[6]);
-			itcard(turn, &d.hand[5]);
-			itcard(river, &d.hand[6]);
-			p.hand[5].whos_card = BOARDS;
-			p.hand[6].whos_card = BOARDS;
-			d.hand[5].whos_card = BOARDS;
-			d.hand[6].whos_card = BOARDS;
-			/* printf("Sim: Turn and River %d\n", omp_get_thread_num()); */
+			  // Turnn & River
+			  itcard(turn, &p.hand[5]);
+			  itcard(river, &p.hand[6]);
+			  itcard(turn, &d.hand[5]);
+			  itcard(river, &d.hand[6]);
+			  p.hand[5].whos_card = BOARDS;
+			  p.hand[6].whos_card = BOARDS;
+			  d.hand[5].whos_card = BOARDS;
+			  d.hand[6].whos_card = BOARDS;
+			  /* printf("Sim: Turn and River %d\n", omp_get_thread_num()); */
 		      
-			// Get Payouts
-			twoxpay = Pays(&p, &d, 2.0, 1.0, 1.0);
-			onexpay = Pays(&p, &d, 1.0, 1.0, 1.0);
+			  // Get Payouts
+			  twoxpay = Pays(&p, &d, 2.0, 1.0, 1.0);
+			  onexpay = Pays(&p, &d, 1.0, 1.0, 1.0);
 
-			twoxbet_payl[stateToIndex(state)] += twoxpay;
-			QueryBinArray(&p, state, is_my_card, PLAYERS, 7);
-			onexbet_payl[stateToIndex(state)] += onexpay;
-			}
+			  twoxbet_payl[stateToIndex(state)] += twoxpay;
+			  QueryBinArray(&p, state, is_my_card, PLAYERS, 7);
+			  onexbet_payl[stateToIndex(state)] += onexpay;
+			} // END Parallel Critical
+
 			/* printf("Sim: Get Payouts %d\n", omp_get_thread_num()); */
 		      
 			// Debugging Delete Me
@@ -302,22 +307,19 @@ void Simulate()
 			/* printf("Current Combination %d\n", totalcombin); */
 
 		      } // end giant if
-		    } // end river
-		} // end turn
+		/*     } // end river */
+		/* } // end turn */
 	      } // end flop2
 	    } // end flop1
 	  } // end flop0
 	} // end holed1
       } // end holed0
     } // end holep1
-#pragma omp critical (total_payout)
-    {
-      for(i =0; i < 9; i++)
-	{
-	  twoxbet_pay[i] += twoxbet_payl[i];
-	  onexbet_pay[i] += onexbet_pay[i];
-	}
-    }
+    for(i =0; i < 9; i++)
+      {
+	twoxbet_pay[i] += twoxbet_payl[i];
+	onexbet_pay[i] += onexbet_pay[i];
+      }
 
   } // end holep0
   /* printf("Done\n"); */
