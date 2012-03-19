@@ -1,6 +1,6 @@
 /*
 Brain.c
-The purpose of Brain.c is to give the players intelligence/functionality.  Player.c will include a Brain.c which contains functions that will be able to answer common Player questions when analyzing their poker hand
+
 such as... What is My current hand? What Am I drawing to? How many outs do I have? It will also contain various helper functions that you would consider part of someones 'brain'
 Programmer: Nick Kolegraff
 Date: 5/18/2011
@@ -85,6 +85,41 @@ char check_for_s(CARD *hand, int len)
     }
   return FALSE;
 }
+
+double factorial(double n)
+{/* Naive approach */
+  double i;
+  double r;
+  r = 1.0;
+  for(i = n; i > 0.0; i--){
+    r = i*r;
+  }
+  return r;
+}
+
+double choose(double n, double r)
+{
+  return (factorial(n) / (factorial(n-r) * factorial(r)));
+}
+
+double largestv(double n, double r, double c)
+{/* Function is a helper for combinadic */
+  /* See: http://msdn.microsoft.com/en-us/library/aa289166%28VS.71%29.aspx */
+  double v = n - 1.0;
+  double result = choose(v, r);
+  while(c < result){
+    result = choose(--v, r);
+  }
+  return v;
+}
+
+int *combinadic(int n, int r)
+{/* Function will return a representation of the combination integer that can be mapped to a combination element.
+    Have a go at this for more details: http://msdn.microsoft.com/en-us/library/aa289166%28VS.71%29.aspx */
+  int *result = malloc(sizeof(int) * r);
+  int i;
+}
+
 int distance(CARD c, CARD c2)
 {
   if((c.rank == 12 || c2.rank == 12) && (c.rank == 3 || c2.rank == 3))

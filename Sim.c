@@ -22,7 +22,10 @@ int main(int argc, char *argv[])
   /* ttest(seed); */
   /* End Debugging */
   /* Simulate(); */
-  jtest();
+  /* jtest(); */
+  /* test_factorial(); */
+  /* test_choose(); */
+  test_largestv();
 }
 
 void itcard(int icard, CARD *c)

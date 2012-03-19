@@ -1337,3 +1337,55 @@ void ttest(int seed)
   /* all_sf_combos(); */
   /* big_test_2(); */
 }
+
+void test_factorial()
+{/* Hows this for a test case */
+  double r;
+  r = factorial(10.0);
+  if(r == 3628800.0)
+    printf("PASS\n");
+  else 
+    printf("FAIL with %f\n",r);
+  r = factorial(5.0);
+  if( r == 120.0)
+    printf("PASS\n");
+  else
+    printf("FAIL with %f\n",r );  
+  r = factorial(15.0);
+  if(r == 1307674368000.0)
+    printf("PASS\n");
+  else
+    printf("FAIL with %f\n", r);
+
+
+}
+
+void test_choose()
+{
+  double r;
+  r = choose(5,2);
+  if(r == 10.0)
+    printf("PASS\n");
+  else printf("FAIL with %f\n", r);
+
+  r = choose(10,3);
+  if(r == 120.0)
+    printf("PASS\n");
+  else printf("FAIL with %f\n", r);
+
+  r = choose(52,2);
+  if(r > 1325.9999999 && r < 1326.00000001)
+    printf("PASS\n");
+  else printf("FAIL with %f\n", r);
+
+  r = choose(52,7);
+  if(r > 133784559.99999 && r < 133784560.000001)
+    printf("PASS\n");
+  else printf("FAIL with %f\n", r);
+
+}
+
+void test_largestv()
+{
+  printf("LargestV = %f\n", largestv(7,4,28));
+}
