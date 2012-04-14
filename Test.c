@@ -1340,52 +1340,85 @@ void ttest(int seed)
 
 void test_factorial()
 {/* Hows this for a test case */
-  double r;
-  r = factorial(10.0);
-  if(r == 3628800.0)
+  printf("Testing Factorial Function\n");
+  long long r;
+  r = factorial(10LL);
+  if(r == 3628800LL)
     printf("PASS\n");
   else 
-    printf("FAIL with %f\n",r);
-  r = factorial(5.0);
-  if( r == 120.0)
+    printf("FAIL with %lld\n",r);
+  r = factorial(5LL);
+  if( r == 120LL)
     printf("PASS\n");
   else
-    printf("FAIL with %f\n",r );  
-  r = factorial(15.0);
-  if(r == 1307674368000.0)
+    printf("FAIL with %lld\n",r );  
+  r = factorial(15LL);
+  if(r == 1307674368000LL)
     printf("PASS\n");
-  else
-    printf("FAIL with %f\n", r);
+  else{
+    printf("FAIL with %lld\n", r);
+  }
 
 
 }
 
 void test_choose()
 {
-  double r;
-  r = choose(5,2);
-  if(r == 10.0)
+  printf("Testing Choose Function\n");
+  long long r;
+  r = choose(5LL,2LL);
+  if(r == 10LL)
     printf("PASS\n");
-  else printf("FAIL with %f\n", r);
+  else printf("FAIL with %lld\n", r);
 
-  r = choose(10,3);
-  if(r == 120.0)
+  r = choose(10LL,3LL);
+  if(r == 120LL)
     printf("PASS\n");
-  else printf("FAIL with %f\n", r);
+  else printf("FAIL with %lld\n", r);
 
-  r = choose(52,2);
-  if(r > 1325.9999999 && r < 1326.00000001)
+  r = choose(52LL,2LL);
+  if(r == 1326LL)
     printf("PASS\n");
-  else printf("FAIL with %f\n", r);
+  else printf("FAIL with %lld\n", r);
 
   r = choose(52,7);
-  if(r > 133784559.99999 && r < 133784560.000001)
+  if(r == 133784560LL)
     printf("PASS\n");
-  else printf("FAIL with %f\n", r);
+  else printf("FAIL with %lld\n", r);
 
 }
 
 void test_largestv()
 {
-  printf("LargestV = %f\n", largestv(7,4,28));
+  printf("Testing LargestV\n");
+  if(largestv(7LL,4LL,28LL) == 6LL)
+    printf("PASS\n");
+  else printf("FAIL\n");
+    
+}
+
+void print_combinadic(long long *c, long long size)
+{
+  long long i;
+  for (i = 0LL; i < size; i++)
+    {
+      printf("%lld ", c[i]);
+    }
+  printf("\n");
+}
+
+void test_combinadic()
+{
+  printf("Testing Combinadic Function\n");
+  long long n = 52LL;
+  long long r = 5LL;
+  long long i;
+  long long stop;
+  stop = choose(n,r);
+  for(i = 0LL; i < stop; i++)
+    {
+      long long *result = malloc(sizeof(long long) * r);
+      combinadic(n, r, i, result);
+      printf("Combinadic is:\t"); print_combinadic(result, r);
+    }
 }

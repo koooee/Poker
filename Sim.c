@@ -5,7 +5,7 @@
 */
 
 #include "Player.c"
-#include "Test.h"
+#include "Test.c"
 
 void Simulate();
 void jtest();
@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
   /* jtest(); */
   /* test_factorial(); */
   /* test_choose(); */
-  test_largestv();
+  /* test_largestv(); */
+  test_combinadic();
 }
 
 void itcard(int icard, CARD *c)

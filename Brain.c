@@ -86,38 +86,64 @@ char check_for_s(CARD *hand, int len)
   return FALSE;
 }
 
-double factorial(double n)
+long long factorial(long long n)
 {/* Naive approach */
-  double i;
-  double r;
-  r = 1.0;
-  for(i = n; i > 0.0; i--){
+  long long i;
+  long long r;
+  r = 1LL;
+  for(i = n; i > 0LL; i--){
     r = i*r;
   }
   return r;
 }
 
-double choose(double n, double r)
-{
-  return (factorial(n) / (factorial(n-r) * factorial(r)));
+long long choose(long long n, long long r)
+{/* we only need to compute the multilpe until we reach difference of n-r */
+  /* Example: nCr(52, 2) = 52! / 50! * 2! = 52*51*2! */
+
+  long long i;
+  long long o;
+  o = 1LL;
+  for(i = n; i > (n-r); i--){
+    o = i*o;
+  }
+  o = o/factorial(r);
+  return o;
 }
 
-double largestv(double n, double r, double c)
+long long largestv(long long n, long long r, long long c)
 {/* Function is a helper for combinadic */
   /* See: http://msdn.microsoft.com/en-us/library/aa289166%28VS.71%29.aspx */
-  double v = n - 1.0;
-  double result = choose(v, r);
+  long long v = n - 1LL;
+  long long result = choose(v, r);
   while(c < result){
     result = choose(--v, r);
   }
   return v;
 }
 
-int *combinadic(int n, int r)
+int combinadic(long long  n, long long r, long long mth,  long long *result)
 {/* Function will return a representation of the combination integer that can be mapped to a combination element.
     Have a go at this for more details: http://msdn.microsoft.com/en-us/library/aa289166%28VS.71%29.aspx */
-  int *result = malloc(sizeof(int) * r);
-  int i;
+
+  long long dual = (choose(n, r) - 1LL) - mth;
+
+  long long i;
+  long long tempn;
+  long long tempr;
+  tempn = n;
+  tempr = r;
+  for(i = 0LL; i < r; ++i)
+    {
+      result[i] = largestv(tempn,tempr,dual);
+      //printf("i:%lld\tn:%lld\ttempr:%lld\tdual:%lld\tresult[%lld]=%lld\n", i, tempn, tempr, dual,i,result[i]);
+      dual = dual - choose(result[i], tempr);
+      --tempr;
+    }
+  for(i = 0LL; i < r; ++i)
+    {
+      result[i] = (n-1LL) - result[i];
+    }
 }
 
 int distance(CARD c, CARD c2)
