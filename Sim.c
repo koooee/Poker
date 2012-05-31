@@ -5,12 +5,12 @@
 */
 
 #include "Player.c"
-#include "Test.c"
+/*#include "Test.c"*/
 
 void Simulate();
 void jtest();
 void itcard(int icard, CARD *c);
-void RandomSimulation(long long num_times);
+void RandomSimulation();
 int main(int argc, char *argv[])
 {
   PLAYER p;
@@ -27,7 +27,9 @@ int main(int argc, char *argv[])
   /* test_choose(); */
   /* test_largestv(); */
   /* test_combinadic(); */
-  RandomSimulation(100LL);
+  long long x;
+  x = 100LL;
+  RandomSimulation(x);
 }
 
 void itcard(int icard, CARD *c)
@@ -198,17 +200,24 @@ void Simulate()
 
 CARD *random_hand(){
   long long *out;
+  out = (long long *)malloc((9*sizeof(long long)));
   combinadic(52,9,rand()%choose(52,9), out);
   int i;
   CARD *h;
+  h = (CARD *)malloc(sizeof(CARD)*9);
   for(i = 0; i < 9; i++){
     /* FIXME we are casing a long long to int, will break for large games */
     itcard((int)out[i], &h[i]);
   }
+  free(out);
   return h;
 }
 
-void RandomSimulation(long long num_times){
+/* FIXME for some reason gcc is not compiling  this parameter corectly
+I can't pass a value to this function without getting the max value for the
+long long x parameter.  But if I define it inside the function it is fine, yet other
+functions can be used in the same way */
+void RandomSimulation(){
   PLAYER p;
   PLAYER d;
   unsigned long long totalCombin = 0;
@@ -231,7 +240,9 @@ void RandomSimulation(long long num_times){
   char *state = malloc(2 * sizeof(char));
   char *is_my_card;
   long long s;
-  for(s == 0LL; s < num_times; s++){
+  long long num_times;
+  num_times = 1000000LL;
+  for(s = 0LL; s < num_times; s++){
     /*  There are four actions described below */
     /*  Bet 4x                  0 */
     /*  Check First, Bet 2x     1 */
@@ -296,6 +307,7 @@ void RandomSimulation(long long num_times){
     /* Clean Up */
     reset_bin(&p.bin);
     reset_bin(&d.bin);
+    free(rhand);
   }
   
   /* Output Results */

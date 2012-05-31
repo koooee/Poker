@@ -581,77 +581,77 @@ void GenRandomHand(CARD *hand, int size, unsigned int seed)
     }
 }
 
-void RandomHands(unsigned int seed)
-{
-  int *p_rank, *d_rank;
-  int num_sims = 1000000;
-  int step = 100;
-  int p_size=7, d_size=7;
-  int i, j, z, win, count=0;
-  unsigned long freqs[3];
-  unsigned long rank_freqs[9];
-  for(i = 0; i < 9; i++){ rank_freqs[i] = 0; }
-  for(i =0; i < 3; i++) { freqs[i] = 0; }
-  PLAYER plyr, dlyr;
-  InitPlayer(&plyr);
-  InitPlayer(&dlyr);
-  p_rank = (int *)malloc(sizeof(int*));
-  d_rank = (int *)malloc(sizeof(int*));
-  printf("Running Sim:\n");
-  srand(seed);
-  for(i = 0; i < num_sims; i++)
-    {
-      if((i % (num_sims/step)) == 0) { printf("\r%d/%d", ++count,step); fflush(stdout);}
+/* void RandomHands(unsigned int seed) */
+/* { */
+/*   int *p_rank, *d_rank; */
+/*   int num_sims = 1000000; */
+/*   int step = 100; */
+/*   int p_size=7, d_size=7; */
+/*   int i, j, z, win, count=0; */
+/*   unsigned long freqs[3]; */
+/*   unsigned long rank_freqs[9]; */
+/*   for(i = 0; i < 9; i++){ rank_freqs[i] = 0; } */
+/*   for(i =0; i < 3; i++) { freqs[i] = 0; } */
+/*   PLAYER plyr, dlyr; */
+/*   InitPlayer(&plyr); */
+/*   InitPlayer(&dlyr); */
+/*   p_rank = (int *)malloc(sizeof(int*)); */
+/*   d_rank = (int *)malloc(sizeof(int*)); */
+/*   printf("Running Sim:\n"); */
+/*   srand(seed); */
+/*   for(i = 0; i < num_sims; i++) */
+/*     { */
+/*       if((i % (num_sims/step)) == 0) { printf("\r%d/%d", ++count,step); fflush(stdout);} */
 
-      // Generate Two Random Hands
-      GenRandomHand(dlyr.hand, 7, seed+1+i);
-      GenRandomHand(plyr.hand, 7, seed+i);
+/*       // Generate Two Random Hands */
+/*       GenRandomHand(dlyr.hand, 7, seed+1+i); */
+/*       GenRandomHand(plyr.hand, 7, seed+i); */
 
-      check_for_same(plyr.hand, 7);
-      check_for_same(dlyr.hand, 7);
+/*       check_for_same(plyr.hand, 7); */
+/*       check_for_same(dlyr.hand, 7); */
 
-      // some initialization
-      p_size = 7; 
-      d_size = 7;      
+/*       // some initialization */
+/*       p_size = 7;  */
+/*       d_size = 7;       */
       
-      // determine winner
-      win = Winner(&plyr, &dlyr, p_size, d_size, p_rank, d_rank);
+/*       // determine winner */
+/*       win = Winner(&plyr, &dlyr, p_size, d_size, p_rank, d_rank); */
       
-      /* if(win == 2) */
-      /* 	{ */
-      /* 	  printf("TIE!!\n"); */
-      /* 	  printh(plyr.hand, 7); */
-      /* 	  printh(dlyr.hand, 7); */
-      /* 	  printf("\n"); */
-      /* 	} */
-      // Store it 
-      freqs[win]++;
-      rank_freqs[*p_rank]++;
-      rank_freqs[*d_rank]++;
-      reset_bin(&plyr.bin);
-      reset_bin(&dlyr.bin);
-    }
+/*       /\* if(win == 2) *\/ */
+/*       /\* 	{ *\/ */
+/*       /\* 	  printf("TIE!!\n"); *\/ */
+/*       /\* 	  printh(plyr.hand, 7); *\/ */
+/*       /\* 	  printh(dlyr.hand, 7); *\/ */
+/*       /\* 	  printf("\n"); *\/ */
+/*       /\* 	} *\/ */
+/*       // Store it  */
+/*       freqs[win]++; */
+/*       rank_freqs[*p_rank]++; */
+/*       rank_freqs[*d_rank]++; */
+/*       reset_bin(&plyr.bin); */
+/*       reset_bin(&dlyr.bin); */
+/*     } */
 
-  // clean up
-  free(p_rank);
-  free(d_rank);
+/*   // clean up */
+/*   free(p_rank); */
+/*   free(d_rank); */
 
-  long total = 0;
-  /* for(z = 0; z < 9; z++) */
-  /*   { */
-  /*     printf("Hand Rank %d Freq %d\n",z, rank_freqs[z]); */
-  /*   } */
+/*   long total = 0; */
+/*   /\* for(z = 0; z < 9; z++) *\/ */
+/*   /\*   { *\/ */
+/*   /\*     printf("Hand Rank %d Freq %d\n",z, rank_freqs[z]); *\/ */
+/*   /\*   } *\/ */
   
-  // Print it all out
-  printf("\n");
-  for(z = 0; z < 3; z++)
-    {
-      printf("Num Wins for %d %d\n", z, freqs[z]);
-      total += freqs[z];
+/*   // Print it all out */
+/*   printf("\n"); */
+/*   for(z = 0; z < 3; z++) */
+/*     { */
+/*       printf("Num Wins for %ld %d\n", z, freqs[z]); */
+/*       total += freqs[z]; */
 	  
-    }
-  printf("Total Number of Hands: %d\n", total);
-}
+/*     } */
+/*   printf("Total Number of Hands: %d\n", total); */
+/* } */
 
 void big_test_seven()
 {

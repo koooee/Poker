@@ -549,7 +549,7 @@ float Pays(PLAYER *p, PLAYER *d, float bet, float ante, float blind)
 {/* Get the payout for showdown...I am not building support for trips becasue those should not be played */
   // Does dealer qualify?
   // if so, Ante Pay
-  // Trips pay regardless
+  // Trips pay regardless, if they hit
   // Blind pays only if you beat dealer, pays regardless on straight or better
   // Else, Ante goes back, all other pay as above
   // ties push, trips still live.
