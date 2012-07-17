@@ -42,6 +42,10 @@ void InitPlayer(PLAYER *p)
 //Helper function to determine winner
 int stateToIndex(char *state)
 {
+  if(state[1] == 3 && state[0] == 3){
+    printf("\nstate[0]=%d\nstate[1]=%d\n", state[0], state[1]);
+  }
+
   if(state[0] == 1 && state[1] == 1) /* You have a made hand, your card makes the hand, you also havd a draw, your card makes the draw */
     return 0;
   if(state[0] == 1 && state[1] == 2) /* You have a made hand, your card makes the hand, you have a draw, draw is played by the board */
@@ -251,10 +255,10 @@ char drawingto(CARD *hand, char key, char *state, int len)
                         state[1] = YCMH;
                     }
                 }
-            }
+            } // End For
 
           return GUNSHOT;
-        }
+        } // End sum==4
 
       // Openended Draw
       if(sum == 3)
@@ -275,8 +279,9 @@ char drawingto(CARD *hand, char key, char *state, int len)
                     }
                 }
           return OPENENDED;
-        }
-    }
+        } // End if(sum == 3)
+    } // End   for(i = 0; i < offset; i++)
+  state[1]=NH;
   return NOTHING;
 }
 
@@ -325,6 +330,10 @@ void QueryBinArray(PLAYER *p, char *state, char *match, char who_is_this, int si
             state[0] = HPBB; // hand played by board
             break;
           }
+      }
+    else /* Bin is not full, we dno't have a made hand */
+      {
+	/* printf ("NO MADE HAND\n"); */
       }
     }
 
