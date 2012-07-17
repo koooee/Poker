@@ -1,4 +1,4 @@
-/*
+ /*
 Player.c
 The purpose of this file is to hold a structure that represents a player.  Players contain information about their current game state.  Dealers are also players.
 Programmer: Nick Kolegraff
@@ -29,27 +29,36 @@ void InitPlayer(PLAYER *p)
   init_bin(&p->bin);
   InitHand(p);
 }
-
+// 'state' is defined as an abstraction of the current event -- ie, Drawing Hand, Made Hand.
+// the function will return a char array of two elements:
+//  0th index: made a hand
+//      1 -- your card makes the hand
+//      2 -- hand is played by the board
+//      3 -- you don't have a made hand
+//  1th index: drawing to a hand
+//      1 -- your card makes the draw
+//      2 -- draw is played by the board
+//      3 -- you don't have a draw
 //Helper function to determine winner
 int stateToIndex(char *state)
 {
-  if(state[0] == 1 && state[1] == 1)
+  if(state[0] == 1 && state[1] == 1) /* You have a made hand, your card makes the hand, you also havd a draw, your card makes the draw */
     return 0;
-  if(state[0] == 1 && state[1] == 2)
+  if(state[0] == 1 && state[1] == 2) /* You have a made hand, your card makes the hand, you have a draw, draw is played by the board */
     return 1;
-  if(state[0] == 1 && state[1] == 3)
+  if(state[0] == 1 && state[1] == 3) /* You have a made hand, your card makes the hand, you do not have a draw */
     return 2;
-  if(state[0] == 2 && state[1] == 1)
+  if(state[0] == 2 && state[1] == 1) /* You have a made hand played by the board, you have a draw, your hand makes the draw */
     return 3;
-  if(state[0] == 2 && state[1] == 2)
+  if(state[0] == 2 && state[1] == 2) /* You have a made hand played by the board, you also have a draw played by the board */
     return 4;
-  if(state[0] == 2 && state[1] == 3)
+  if(state[0] == 2 && state[1] == 3) /* You have a made hand played by the board, you do not have a draw */
     return 5;
-  if(state[0] == 3 && state[1] == 1)
+  if(state[0] == 3 && state[1] == 1) /* You do not have a made hand, you have a draw, your hand makes the draw */
     return 6;
-  if(state[0] == 3 && state[1] == 2)
+  if(state[0] == 3 && state[1] == 2) /* You do not have a made hand, you have a draw, draw is played by the board */
     return 7;
-  if(state[0] == 3 && state[1] == 3)
+  if(state[0] == 3 && state[1] == 3) /* You do not have a made hand, you do not have a draw */
     return 8;
   return -1;
 }

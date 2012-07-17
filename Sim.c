@@ -11,8 +11,22 @@ void Simulate();
 void jtest();
 void itcard(int icard, CARD *c);
 void RandomSimulation();
+// 'state' is defined as an abstraction of the current event -- ie, Drawing Hand, Made Hand.
+// the function will return a char array of two elements:
+//  0th index: made a hand
+//      1 -- your card makes the hand
+//      2 -- hand is played by the board
+//      3 -- you don't have a made hand
+//  1th index: drawing to a hand
+//      1 -- your card makes the draw
+//      2 -- draw is played by the board
+//      3 -- you don't have a draw
+
+char *state_names[9] = {"You have a made hand, your card makes the hand, you also havd a draw, your card makes the draw", "You have a made hand, your card makes the hand, you have a draw, draw is played by the board", "You have a made hand, your card makes the hand, you do not have a draw", "You have a made hand played by the board, you have a draw, your hand makes the draw", "You have a made hand played by the board, you also have a draw played by the board", "You have a made hand played by the board, you do not have a draw", "You do not have a made hand, you have a draw, your hand makes the draw", "You do not have a made hand, you have a draw, draw is played by the board", "You do not have a made hand, you do not have a draw"};
+
 int main(int argc, char *argv[])
 {
+  
   PLAYER p;
   int i, seed;
   CARD *h;
@@ -28,7 +42,7 @@ int main(int argc, char *argv[])
   /* test_largestv(); */
   /* test_combinadic(); */
   long long x;
-  x = 100LL;
+  x = 10LL;
   RandomSimulation(x);
 }
 
@@ -311,11 +325,22 @@ void RandomSimulation(){
   }
   
   /* Output Results */
+// 'state' is defined as an abstraction of the current event -- ie, Drawing Hand, Made Hand.
+// the function will return a char array of two elements:
+//  0th index: made a hand
+//      1 -- your card makes the hand
+//      2 -- hand is played by the board
+//      3 -- you don't have a made hand
+//  1th index: drawing to a hand
+//      1 -- your card makes the draw
+//      2 -- draw is played by the board
+//      3 -- you don't have a draw
+
   int idx = 0;
   for(idx = 0; idx < 9; idx++)
     {
-      printf("2x State: %d Payout: %f\n", idx, twoxbet_pay[idx]);
-      printf("1x State: %d Payout: %f\n", idx, onexbet_pay[idx]);
+      printf("2x State: %s Payout: %f\n", state_names[idx], twoxbet_pay[idx]);
+      printf("1x State: %s Payout: %f\n", state_names[idx], onexbet_pay[idx]);
     }
 
   printf("Total Iterations: %lld\n", num_times);
