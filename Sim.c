@@ -22,7 +22,17 @@ void RandomSimulation();
 //      2 -- draw is played by the board
 //      3 -- you don't have a draw
 
-char *state_names[9] = {"You have a made hand, your card makes the hand, you also havd a draw, your card makes the draw", "You have a made hand, your card makes the hand, you have a draw, draw is played by the board", "You have a made hand, your card makes the hand, you do not have a draw", "You have a made hand played by the board, you have a draw, your hand makes the draw", "You have a made hand played by the board, you also have a draw played by the board", "You have a made hand played by the board, you do not have a draw", "You do not have a made hand, you have a draw, your hand makes the draw", "You do not have a made hand, you have a draw, draw is played by the board", "You do not have a made hand, you do not have a draw"};
+char *state_names[9] = {
+  "You have a made hand, your card makes the hand, you also havd a draw, your card makes the draw",
+  "You have a made hand, your card makes the hand, you have a draw, draw is played by the board",
+  "You have a made hand, your card makes the hand, you do not have a draw",
+  "You have a made hand played by the board, you have a draw, your hand makes the draw",
+  "You have a made hand played by the board, you also have a draw played by the board",
+  "You have a made hand played by the board, you do not have a draw",
+  "You do not have a made hand, you have a draw, your hand makes the draw",
+  "You do not have a made hand, you have a draw, draw is played by the board",
+  "You do not have a made hand, you do not have a draw"
+};
 
 int main(int argc, char *argv[])
 {
