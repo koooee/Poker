@@ -1072,7 +1072,7 @@ void test_whos_card()
 
 void test_pay_function()
 {
-  // Go throught all hands ranks HC - RF
+  // Go through all hands ranks HC - RF
   // One with Player wins, Dealer Qualifies
   // One with Player wins, Dealer DOES NOT Qualify
   // One with Dealer wins
@@ -1165,8 +1165,6 @@ void test_pay_function()
     //TP Tie
     ,tconvert("KsKh9s8c6h4d3d", 7)
     ,tconvert("KsKh9s8c6h4d3d", 7)
-
-
 
     // TK Player Wins, Dealer Qualifies
     ,tconvert("KsKhKc8c6h4d3d", 7)

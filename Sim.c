@@ -5,7 +5,7 @@
 */
 
 #include "Player.c"
-/*#include "Test.c"*/
+#include "Test.c"
 
 void Simulate();
 void jtest();
@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
   /* test_combinadic(); */
   long long x;
   x = 10LL;
+  ttest(12345);
   RandomSimulation(x);
 }
 
@@ -251,7 +252,10 @@ void RandomSimulation(){
   float onexbet_pay[9];
   float twoxpay, onexpay;
   int i;
-
+  long wins2x, losses2x, wins1x, losses1x;
+  
+  wins2x = wins1x = 0L;
+  losses2x = losses1x = 0L;
   for(i = 0; i < 9; i++)
     {
       twoxbet_pay[i] = 0.0;
@@ -317,7 +321,25 @@ void RandomSimulation(){
 		      
     /*  Get Payouts */
     twoxpay = Pays(&p, &d, 2.0, 1.0, 1.0);
+
+    /* Count the 2x bet wins */
+    if(twoxpay > 0){
+      wins2x++;
+    }
+    else {
+      losses2x++;
+    }
+
     onexpay = Pays(&p, &d, 1.0, 1.0, 1.0);
+    
+    /* Count the 1x bet wins */
+    if(onexpay > 0){
+      wins1x++;
+    }
+    else {
+      losses1x++;
+    }
+
     twoxbet_pay[stateToIndex(state)] += twoxpay;
     QueryBinArray(&p, state, is_my_card, PLAYERS, 7);
     onexbet_pay[stateToIndex(state)] += onexpay;
@@ -352,7 +374,7 @@ void RandomSimulation(){
       printf("2x State: %s Payout: %f\n", state_names[idx], twoxbet_pay[idx]);
       printf("1x State: %s Payout: %f\n", state_names[idx], onexbet_pay[idx]);
     }
-
+  printf("Wins2x: %ld\nLosses2x: %ld\nWins1x: %ld\nLosses1x: %ld\n", wins2x, losses2x, wins1x, losses1x);
   printf("Total Iterations: %lld\n", num_times);
 
 }

@@ -6,6 +6,9 @@ Date: 5/18/2011
 */
 
 #include "Brain.c"
+#define MADEHAND 0
+#define DRAWINGHAND 1
+
 typedef struct player {
   CARD hand[MAX_HAND_SIZE];
   BIN bin;
@@ -42,27 +45,26 @@ void InitPlayer(PLAYER *p)
 //Helper function to determine winner
 int stateToIndex(char *state)
 {
-  if(state[1] == 3 && state[0] == 3){
-    printf("\nstate[0]=%d\nstate[1]=%d\n", state[0], state[1]);
-  }
-
-  if(state[0] == 1 && state[1] == 1) /* You have a made hand, your card makes the hand, you also havd a draw, your card makes the draw */
+  /* if(state[DRAWINGHAND] == 3 && state[MADEHAND] == 3){ */
+  /*   printf("\nstate[MADEHAND]=%d\nstate[DRAWINGHAND]=%d\n", state[MADEHAND], state[DRAWINGHAND]); */
+  /* } */
+  if(state[MADEHAND] == YCMH && state[DRAWINGHAND] == YCMH) /* You have a made hand, your card makes the hand, you also havd a draw, your card makes the draw */
     return 0;
-  if(state[0] == 1 && state[1] == 2) /* You have a made hand, your card makes the hand, you have a draw, draw is played by the board */
+  if(state[MADEHAND] == YCMH && state[DRAWINGHAND] == HPBB) /* You have a made hand, your card makes the hand, you have a draw, draw is played by the board */
     return 1;
-  if(state[0] == 1 && state[1] == 3) /* You have a made hand, your card makes the hand, you do not have a draw */
+  if(state[MADEHAND] == YCMH && state[DRAWINGHAND] == NH) /* You have a made hand, your card makes the hand, you do not have a draw */
     return 2;
-  if(state[0] == 2 && state[1] == 1) /* You have a made hand played by the board, you have a draw, your hand makes the draw */
+  if(state[MADEHAND] == HPBB && state[DRAWINGHAND] == YCMH) /* You have a made hand played by the board, you have a draw, your hand makes the draw */
     return 3;
-  if(state[0] == 2 && state[1] == 2) /* You have a made hand played by the board, you also have a draw played by the board */
+  if(state[MADEHAND] == HPBB && state[DRAWINGHAND] == HPBB) /* You have a made hand played by the board, you also have a draw played by the board */
     return 4;
-  if(state[0] == 2 && state[1] == 3) /* You have a made hand played by the board, you do not have a draw */
+  if(state[MADEHAND] == HPBB && state[DRAWINGHAND] == NH) /* You have a made hand played by the board, you do not have a draw */
     return 5;
-  if(state[0] == 3 && state[1] == 1) /* You do not have a made hand, you have a draw, your hand makes the draw */
+  if(state[MADEHAND] == NH && state[DRAWINGHAND] == YCMH) /* You do not have a made hand, you have a draw, your hand makes the draw */
     return 6;
-  if(state[0] == 3 && state[1] == 2) /* You do not have a made hand, you have a draw, draw is played by the board */
+  if(state[MADEHAND] == NH && state[DRAWINGHAND] == HPBB) /* You do not have a made hand, you have a draw, draw is played by the board */
     return 7;
-  if(state[0] == 3 && state[1] == 3) /* You do not have a made hand, you do not have a draw */
+  if(state[MADEHAND] == NH && state[DRAWINGHAND] == NH) /* You do not have a made hand, you do not have a draw */
     return 8;
   return -1;
 }
@@ -241,7 +243,7 @@ char drawingto(CARD *hand, char key, char *state, int len)
       // Gunshot Draw
       if(sum == 4)
         {
-          state[1] = HPBB;
+          state[DRAWINGHAND] = HPBB;
           // in the case of a pair, we might miss our card...so this is a final check
           for(l = 0; l < 4; l++)
             {
@@ -250,9 +252,9 @@ char drawingto(CARD *hand, char key, char *state, int len)
                   if(hand[k].rank == temp[l].rank && hand[k].suit != temp[l].suit)
                     {
                       if(hand[k].whos_card == BOARDS || temp[l].whos_card == BOARDS)
-                        state[1] = HPBB;
+                        state[DRAWINGHAND] = HPBB;
                       else
-                        state[1] = YCMH;
+                        state[DRAWINGHAND] = YCMH;
                     }
                 }
             } // End For
@@ -263,7 +265,7 @@ char drawingto(CARD *hand, char key, char *state, int len)
       // Openended Draw
       if(sum == 3)
         {
-              state[1] = HPBB;
+              state[DRAWINGHAND] = HPBB;
               //in the case of a pair, we might miss our card...so this is a final check
               for(l = 0; l < 4; l++)
                 {
@@ -272,16 +274,15 @@ char drawingto(CARD *hand, char key, char *state, int len)
                       if(hand[k].rank == temp[l].rank && hand[k].suit != temp[l].suit)
                         {
                           if(hand[k].whos_card == BOARDS || temp[l].whos_card == BOARDS)
-                            state[1] = HPBB;
+                            state[DRAWINGHAND] = HPBB;
                           else
-                            state[1] = YCMH;
+                            state[DRAWINGHAND] = YCMH;
                         }
                     }
                 }
           return OPENENDED;
         } // End if(sum == 3)
     } // End   for(i = 0; i < offset; i++)
-  state[1]=NH;
   return NOTHING;
 }
 
@@ -302,43 +303,45 @@ char drawingto(CARD *hand, char key, char *state, int len)
 // as in drawing to a Straight with x outs to y hands
 
 void QueryBinArray(PLAYER *p, char *state, char *match, char who_is_this, int size_of_hand)
-{// TODO: add ability to distinguish between Gunshot and Openended draws
+{
+  // TODO: add ability to distinguish between Gunshot and Openended draws
   // check if any bin is full
   // if the bin is full, check whos card
   // if the any bin is not full
   // check if it is drawing to anything
   // if it is: check whos card
-  state[0] = NH;
-  state[1] = NH;
+  state[MADEHAND] = NH;
+  state[DRAWINGHAND] = NH;
   int i, j, max_rank;
   max_rank = get_max_rank(&p->bin);
   for(i = max_rank; i >= 0; i--)
     {
-    if(p->bin.is_full[i] == TRUE && i > 0)
-      {// we have a made hand
-        // now check Does the highest ranking hand contain my card?
-        if(BinContainsWhosCard(&p->bin, i, who_is_this) == TRUE)
-          {
-            state[0] = YCMH; // your card makes hand
-            /* we break because this is our best made hand and we now
-               want to check to see if we are also drawing to something
-            */
-            break;
-          }
-        else
-          {
-            state[0] = HPBB; // hand played by board
-            break;
-          }
-      }
-    else /* Bin is not full, we dno't have a made hand */
-      {
-	/* printf ("NO MADE HAND\n"); */
-      }
+      if(p->bin.is_full[i] == TRUE && i > 0)
+	{
+	  // we have a made hand
+	  // now check Does the highest ranking hand contain my card?
+	  if(BinContainsWhosCard(&p->bin, i, who_is_this) == TRUE)
+	    {
+	      state[MADEHAND] = YCMH; // your card makes hand
+	      /* we break because this is our best made hand and we now
+		 want to check to see if we are also drawing to something
+	      */
+	      break;
+	    }
+	  else
+	    {
+	      state[MADEHAND] = HPBB; // hand played by board
+	      break;
+	    }
+	}
+      else /* Bin is not full, we dno't have a made hand */
+	{
+	  break;
+	  /* printf ("NO MADE HAND\n"); */
+	}
     }
 
   // check for a drawing hand
-
   // check Flush
   for(i = 0; i < MAX_NUM_SUITS; i++)
     {     
@@ -346,24 +349,27 @@ void QueryBinArray(PLAYER *p, char *state, char *match, char who_is_this, int si
         {
           if(BinContainsWhosCard(&p->bin, 5, who_is_this) == TRUE)
             {
-              state[1] = YCMH;
-              return;
-            }
+              state[DRAWINGHAND] = YCMH;
+	      break;
+	    }
           else
             {
-              state[1] = HPBB;
-              return;
-            }
+              state[DRAWINGHAND] = HPBB;
+	      break;
+	    }
         }
     }
   
+
+
   // Since my rank algo is flawed we need to check for drawing hands
   // as the state isn't kept quite correctly in the BINS data structure.
   // Would be a good thing to fix...
-  // Straight Flush and Straights will get checked in this function
+  // Straight Flush, Flushes, and Straights will get checked in this function
 
   char draw;
   draw = drawingto(p->hand, who_is_this, state, size_of_hand);
+  
   return;
 }
 
@@ -594,7 +600,7 @@ float Pays(PLAYER *p, PLAYER *d, float bet, float ante, float blind)
     else{ /* Draw, all bets push */
       pay = 0.0;
     }
-      
+
   }
   else{
     // Dealer DOES NOT Qualify
